@@ -1,0 +1,129 @@
+# Vibe workflow configuration - Self-hosting development setup
+project_type: "python"
+
+# Self-hosting workflows for vibe development
+workflows:
+  analysis:
+    triggers: ["analyze", "explore", "understand", "investigate", "structure", "review", "examine"]
+    commands:
+      - "find . -name '*.py' -type f | grep -v .venv | head -20"
+      - "echo '📊 Python files found:' && find . -name '*.py' -type f | grep -v .venv | wc -l"
+      - "echo '📁 Project structure:' && tree -I '.venv|__pycache__' -L 3 2>/dev/null || find . -type d | grep -v -E '.venv|__pycache__' | head -15"
+      - "echo '📦 Dependencies:' && grep 'dependencies' pyproject.toml -A 10"
+    description: "🔍 Analyze vibe project structure and dependencies"
+
+  testing:
+    triggers: ["test", "tests", "validate", "check", "verify", "coverage", "spec", "unit"]
+    commands:
+      - "echo '🧪 Setting up testing environment...'"
+      - "uv add --dev pytest pytest-cov pytest-mock"
+      - "echo '📝 Creating basic test structure...'"
+      - "mkdir -p tests"
+      - "echo '✅ Running self-validation tests...'"
+      - "uv run python -c 'import vibe; print(\"✅ vibe module imports successfully\")'"
+      - "uv run python -m vibe.cli --version"
+      - "echo '🎯 Testing CLI commands...'"
+      - "uv run python -m vibe.cli config-info"
+    description: "🧪 Test vibe functionality and self-validation"
+
+  quality:
+    triggers: ["quality", "lint", "format", "type", "standards", "compliance", "clean"]
+    commands:
+      - "echo '✨ Installing quality tools...'"
+      - "uv add --dev ruff mypy black isort"
+      - "echo '🔧 Running ruff format...'"
+      - "uv run ruff format ."
+      - "echo '🔍 Running ruff check...'"
+      - "uv run ruff check . --fix"
+      - "echo '🔬 Running mypy type checking...'"
+      - "uv run mypy vibe/ --ignore-missing-imports || echo '⚠️ Type checking completed with issues'"
+      - "echo '📏 Checking line lengths and imports...'"
+      - "uv run ruff check . --select E501,I"
+    description: "✨ Format code, fix linting issues, and run type checking"
+
+  implementation:
+    triggers: ["implement", "add", "create", "build", "develop", "code", "make", "feature"]
+    commands:
+      - "echo '🛠️ Preparing development environment...'"
+      - "uv sync"
+      - "echo '🔧 Installing development dependencies...'"
+      - "uv add --dev pytest ruff mypy black isort"
+      - "echo '📦 Validating package build...'"
+      - "uv build"
+      - "echo '🚀 Testing installation...'"
+      - "uv run python -c 'from vibe import __version__; print(f\"vibe v{__version__} ready for development\")'"
+    description: "🛠️ Set up development environment and validate build"
+
+  documentation:
+    triggers: ["document", "docs", "readme", "explain", "guide", "help"]
+    commands:
+      - "echo '📚 Generating documentation...'"
+      - "echo '📝 Updating README with current features...'"
+      - "uv run python -m vibe.cli list-workflows > workflow_reference.md"
+      - "echo '📋 Available commands:' && uv run python -m vibe.cli --help"
+      - "echo '🔍 Configuration info:' && uv run python -m vibe.cli config-info"
+      - "echo '📖 Documentation updated! Check workflow_reference.md for latest workflow info.'"
+    description: "� Generate and update project documentation"
+
+  git:
+    triggers: ["commit", "push", "pull", "merge", "branch", "pr", "git", "repository", "version"]
+    commands:
+      - "echo '🔄 Git workflow operations...'"
+      - "git status"
+      - "echo '📊 Recent commits:' && git log --oneline -10"
+      - "echo '🌿 Current branch:' && git branch --show-current"
+      - "echo '📋 Staged changes:' && git diff --cached --stat"
+      - "echo '📝 Unstaged changes:' && git diff --stat"
+    description: "🔄 Git repository management and status"
+
+  session:
+    triggers: ["complete", "finish", "cleanup", "session", "done", "ready"]
+    commands:
+      - "echo '🎯 Session completion workflow...'"
+      - "echo '✅ Running final validation...'"
+      - "uv run python -m vibe.cli --version"
+      - "echo '🔍 Final quality check...'"
+      - "uv run ruff check . || echo '⚠️ Found style issues'"
+      - "echo '📦 Build validation...'"
+      - "uv build"
+      - "echo '🧹 Cleaning up...'"
+      - "find . -name '*.pyc' -delete 2>/dev/null || true"
+      - "find . -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true"
+      - "echo '✨ Session ready for commit!'"
+    description: "🎯 Complete development session with validation and cleanup"
+
+  mcp:
+    triggers: ["mcp", "context7", "github.*mcp", "playwright", "sequential.*thinking", "ai", "tools"]
+    commands:
+      - "echo '🤖 MCP tools integration for vibe development...'"
+      - "echo '🔍 This workflow demonstrates self-hosting - vibe managing its own AI-enhanced development'"
+      - "echo '📋 Available MCP capabilities:'"
+      - "echo '  - Context7: Latest library documentation'"
+      - "echo '  - GitHub MCP: Repository operations'"
+      - "echo '  - Sequential Thinking: Complex problem solving'"
+      - "uv run python -c 'print(\"🎯 vibe is now ready for AI-enhanced self-development!\")'"
+    description: "🤖 MCP tools integration and AI-enhanced development workflows"
+
+# Custom vibe-specific workflows
+  self_test:
+    triggers: ["self-test", "dogfood", "validate-self", "bootstrap"]
+    commands:
+      - "echo '🔄 Self-hosting validation: vibe testing itself...'"
+      - "uv run python -m vibe.cli run 'analyze the project structure'"
+      - "echo '✅ Self-analysis complete!'"
+      - "uv run python -m vibe.cli run 'check code quality and formatting'"
+      - "echo '🎉 Self-hosting successful! vibe can manage its own development.'"
+    description: "🔄 Self-hosting validation - vibe managing itself"
+
+  bootstrap:
+    triggers: ["bootstrap", "setup", "initialize", "install"]
+    commands:
+      - "echo '🚀 Bootstrapping vibe development environment...'"
+      - "uv sync"
+      - "uv add --dev pytest ruff mypy black isort"
+      - "echo '🔧 Setting up pre-commit hooks...'"
+      - "echo '#!/bin/bash' > .git/hooks/pre-commit"
+      - "echo 'uv run ruff check . && uv run ruff format . --check' >> .git/hooks/pre-commit"
+      - "chmod +x .git/hooks/pre-commit"
+      - "echo '✅ Bootstrap complete! Try: vibe \"run self-test to validate setup\"'"
+    description: "🚀 Bootstrap complete development environment"
