@@ -20,9 +20,3 @@ conditions:
   - "pattern:*.py"
 dependencies:
   - "python_env"
-project_types:
-  - "python"
-conditions:
-  - "pattern:*.py"
-dependencies:
-  - "python_env"

@@ -24,7 +24,7 @@ conditions:
   - "Before project milestones"
   - "When onboarding new contributors"
 steps:
-  - "� **Discover Documentation**: Run `find . -name '*.md' | head -20` to map existing docs and `find . -name 'README*'` for entry points"
+  - "🔎 **Discover Documentation**: Run `find . -name '*.md' | head -20` to map existing docs and `find . -name 'README*'` for entry points"
   - "📊 **Analyze Structure**: Check for documentation directories, ADRs (`find . -name '*adr*'`), and documentation organization patterns"
   - "🔄 **Review Recent Activity**: Use `git log --oneline --since='2 weeks ago'` to identify commits that might need documentation updates"
   - "📂 **Check Modified Files**: Run `git log --name-only --since='1 week ago' | grep -E '\\.(py|ts|js|vue|rs|go|md)$'` for files needing doc updates"

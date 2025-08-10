@@ -77,11 +77,29 @@ class VibeConfig(BaseModel):
 
     def _load_defaults(self) -> None:
         """Load default workflow and project type configurations."""
+        # Merge default workflows (do not overwrite user-defined)
+        default_workflows = self._get_default_workflows()
         if not self.workflows:
-            self.workflows = self._get_default_workflows()
+            self.workflows = default_workflows
+        else:
+            for key, wf in default_workflows.items():
+                if key not in self.workflows:
+                    self.workflows[key] = wf
 
+        # Merge default project types and their workflows
+        default_pt = self._get_default_project_types()
         if not self.project_types:
-            self.project_types = self._get_default_project_types()
+            self.project_types = default_pt
+        else:
+            for pt_name, pt_cfg in default_pt.items():
+                if pt_name not in self.project_types:
+                    self.project_types[pt_name] = pt_cfg
+                else:
+                    # Ensure default workflows exist for the project type without overriding
+                    existing = self.project_types[pt_name]
+                    for wf_name, wf_cfg in pt_cfg.workflows.items():
+                        if wf_name not in existing.workflows:
+                            existing.workflows[wf_name] = wf_cfg
 
     def _get_default_workflows(self) -> dict[str, WorkflowConfig]:
         """Get default workflow configurations."""

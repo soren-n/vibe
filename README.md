@@ -38,6 +38,21 @@ vibe "run all tests and check quality"
 vibe "create a pull request"
 ```
 
+## Workflow YAML Quality Tools
+
+Validate and normalize the built-in YAML workflows or your custom ones:
+
+```bash
+# Validate all workflow YAML files (schema, encoding, unknown keys)
+vibe workflows validate
+
+# Preview normalization changes (key order, legacy migrations)
+vibe workflows format
+
+# Apply normalization changes in-place
+vibe workflows format --write
+```
+
 ## Workflow Types
 
 - 🔍 **Analysis**: Codebase exploration, pattern identification, research

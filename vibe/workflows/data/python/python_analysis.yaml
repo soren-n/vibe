@@ -9,7 +9,7 @@ triggers:
   - "examine.*codebase"
   - "project.*overview"
 steps:
-  - "� **Discover Python files in your project**: `find . -name '*.py' -type f | grep -v .venv | grep -v __pycache__ | head -20`"
+  - "📄 **Discover Python files in your project**: `find . -name '*.py' -type f | grep -v .venv | grep -v __pycache__ | head -20`"
   - "📈 **Get a count of Python files**: `find . -name '*.py' -type f | grep -v .venv | grep -v __pycache__ | wc -l`"
   - "📁 **Understand project structure**: Use `tree -I '.venv|__pycache__' -L 3` or `find . -type d | head -15` to see organization"
   - "📦 **Check dependency configuration**: Look for `pyproject.toml`, `requirements.txt`, or `setup.py` files"
