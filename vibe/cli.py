@@ -393,7 +393,7 @@ def check() -> None:
                         console.print(f"✅ {description}: {version_info}")
                     else:
                         console.print(f"✅ {description}: available")
-                except:
+                except Exception:
                     console.print(f"✅ {description}: available")
             else:
                 console.print(f"⚠️  {description}: not found")
@@ -588,6 +588,7 @@ def workflows_format(write: bool, path: Path | None) -> None:
         console.print(f" - {c}")
     if not write:
         console.print("\n[dim]Tip: re-run with --write to apply these changes[/dim]")
+
 
 @cli.command("config-info")
 def config_info() -> None:

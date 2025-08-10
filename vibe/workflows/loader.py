@@ -10,7 +10,7 @@ from .models import Workflow
 class WorkflowLoader:
     """Loads workflows from YAML files with fallback to Python definitions."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.data_dir = Path(__file__).parent / "data"
         self._cache: dict[str, Workflow] = {}
         self._loaded = False
@@ -68,7 +68,7 @@ class WorkflowLoader:
         """Load a specific workflow by name (alias for get_workflow)."""
         return self.get_workflow(name)
 
-    def reload(self):
+    def reload(self) -> dict[str, Workflow]:
         """Clear cache and reload workflows."""
         self._cache.clear()
         self._loaded = False

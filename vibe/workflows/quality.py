@@ -7,8 +7,12 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+
 try:  # Runtime-safe imports; avoid type resolution issues in some analyzers
-    from yaml.nodes import MappingNode as _MappingNode, ScalarNode as _ScalarNode, SequenceNode as _SequenceNode, Node as _Node  # type: ignore
+    from yaml.nodes import MappingNode as _MappingNode
+    from yaml.nodes import Node as _Node
+    from yaml.nodes import ScalarNode as _ScalarNode
+    from yaml.nodes import SequenceNode as _SequenceNode
 except Exception:  # pragma: no cover
     _MappingNode = type("MappingNode", (), {})  # type: ignore
     _ScalarNode = type("ScalarNode", (), {})  # type: ignore
@@ -54,7 +58,11 @@ def _collect_duplicate_keys_from_text(text: str) -> list[str]:
         if isinstance(node, _MappingNode):
             seen: set[str] = set()
             for key_node, value_node in node.value:
-                key_str = key_node.value if isinstance(key_node, _ScalarNode) else str(key_node)
+                key_str = (
+                    key_node.value
+                    if isinstance(key_node, _ScalarNode)
+                    else str(key_node)
+                )
                 if key_str in seen:
                     dups.append(key_str)
                 else:
@@ -108,6 +116,10 @@ def validate_workflow_yamls(root: Path | None = None) -> list[str]:
             issues.append(err)
             continue
 
+        if data is None:
+            issues.append(f"{file}: empty or invalid YAML content")
+            continue
+
         # Required fields
         for key in ("name", "description", "triggers", "steps"):
             if key not in data:
@@ -131,11 +143,11 @@ def validate_workflow_yamls(root: Path | None = None) -> list[str]:
             issues.append(f"{file}: 'steps' must be a list of strings")
 
         # Encoding sanity (replacement character indicates prior decode issues)
-        REPLACEMENT = "\ufffd"
+        replacement = "\ufffd"
 
         def _contains_repl(val: Any) -> bool:
             if isinstance(val, str):
-                return REPLACEMENT in val
+                return replacement in val
             if isinstance(val, list):
                 return any(_contains_repl(v) for v in val)
             if isinstance(val, dict):
@@ -192,7 +204,9 @@ def _normalize_data(data: dict[str, Any]) -> dict[str, Any]:
     return ordered
 
 
-def format_workflow_yamls(root: Path | None = None, *, write: bool = False) -> list[str]:
+def format_workflow_yamls(
+    root: Path | None = None, *, write: bool = False
+) -> list[str]:
     """
     Normalize workflow YAMLs and optionally write back.
 
@@ -220,7 +234,9 @@ def format_workflow_yamls(root: Path | None = None, *, write: bool = False) -> l
         )
 
         if new_text != original_text:
-            change_msg = f"{file}: will reformat ({len(original_text)} -> {len(new_text)} chars)"
+            change_msg = (
+                f"{file}: will reformat ({len(original_text)} -> {len(new_text)} chars)"
+            )
             changes.append(change_msg)
             if write:
                 file.write_text(new_text, encoding="utf-8")

@@ -32,7 +32,7 @@ def get_core_workflows() -> dict[str, Workflow]:
 CORE_WORKFLOWS = get_core_workflows()
 
 
-def reload_workflows():
+def reload_workflows() -> dict[str, Workflow]:
     """Reload workflows from YAML files."""
     global CORE_WORKFLOWS
     CORE_WORKFLOWS = get_core_workflows()

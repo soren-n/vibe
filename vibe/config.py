@@ -19,7 +19,7 @@ class WorkflowConfig(BaseModel):
     description: str = ""
     dependencies: list[str] = Field(default_factory=list)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Convert legacy commands to steps if needed."""
         # If commands are provided but steps are empty, use commands as steps
         if self.commands and not self.steps:

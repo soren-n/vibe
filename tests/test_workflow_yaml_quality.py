@@ -36,9 +36,6 @@ steps: ["bad � char"]
 
     issues = validate_workflow_yamls(root=tmp_path)
     assert any("Unicode replacement character" in m for m in issues)
-from pathlib import Path
-
-from vibe.workflows.quality import validate_workflow_yamls
 
 
 def test_yaml_workflows_validate_clean() -> None:
