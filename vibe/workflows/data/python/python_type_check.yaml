@@ -1,0 +1,16 @@
+name: python_type_check
+description: "Run static type checking with mypy"
+triggers:
+  - "type.*check"
+  - "mypy.*check"
+  - "static.*analysis"
+  - "check.*types"
+steps:
+  - "🔍 **Run MyPy Type Checking**: Execute `python -m mypy .` or `mypy .` to perform static type analysis on Python code"
+  - "✅ **Review Type Issues**: Address any type errors, missing annotations, or incompatible type usage found by MyPy"
+  - "📝 **Add Type Annotations**: Consider adding missing type hints to improve code clarity and catch potential bugs"
+project_types:
+  - "python"
+conditions:
+  - "file:pyproject.toml"
+  - "pattern:*.py"

@@ -1,363 +1,39 @@
 """Core workflows that apply to any project type."""
 
-from dataclasses import dataclass
+from .loader import WorkflowLoader
+from .models import Workflow
+
+# Initialize workflow loader for dynamic YAML-based workflows
+_workflow_loader = WorkflowLoader()
 
 
-@dataclass
-class Workflow:
-    """A workflow definition with triggers, commands, and metadata."""
+def get_core_workflows() -> dict[str, Workflow]:
+    """
+    Get all core workflows from YAML files.
 
-    name: str
-    description: str
-    triggers: list[str]
-    commands: list[str]
-    dependencies: list[str] | None = None
-    project_types: list[str] | None = None  # None means applies to all
-    conditions: list[str] | None = None  # File/directory existence checks
+    This function loads workflows exclusively from YAML files in the data directory.
+    All workflows should be defined as YAML files for consistency and maintainability.
 
-    def __post_init__(self) -> None:
-        """Initialize default values."""
-        if self.dependencies is None:
-            self.dependencies = []
-        if self.project_types is None:
-            self.project_types = []
-        if self.conditions is None:
-            self.conditions = []
+    Returns:
+        dict[str, Workflow]: Dictionary mapping workflow names to Workflow objects
+    """
+    try:
+        # Load all workflows from YAML files
+        yaml_workflows = _workflow_loader.load_workflows()
+        return yaml_workflows
+
+    except Exception as e:
+        print(f"Error: Failed to load workflows from YAML files: {e}")
+        print("Please ensure YAML workflow files exist in vibe/workflows/data/")
+        return {}
 
 
-# Core workflows that apply to any project type
-CORE_WORKFLOWS = {
-    "analysis": Workflow(
-        name="analysis",
-        description="Analyze project structure and identify areas for improvement",
-        triggers=[
-            r"analy[sz]e",
-            r"inspect",
-            r"review",
-            r"assess",
-            r"evaluate",
-            r"check",
-            r"scan",
-            r"audit",
-            r"investigate",
-            r"explore",
-            r"understand",
-            r"structure",
-            r"breakdown",
-            r"examine",
-            r"study",
-        ],
-        commands=[
-            "echo '🔍 PROJECT ANALYSIS & RESEARCH GUIDANCE'",
-            "echo '============================================'",
-            "echo ''",
-            "echo '📁 DISCOVERING PROJECT STRUCTURE:'",
-            "find . -name '*.py' -o -name '*.js' -o -name '*.ts' -o -name '*.vue' -o -name '*.go' -o -name '*.rs' | head -20",
-            "find . -name 'package.json' -o -name 'pyproject.toml' -o -name 'Cargo.toml' -o -name 'go.mod' | head -10",
-            "find . -name 'README*' -o -name 'docs' -type d | head -5",
-            "find . -name 'test*' -type d -o -name '*test*' -name '*.py' -o -name '*.test.*' | head -10",
-            "ls -la",
-            "echo ''",
-            "echo '🌐 AI AGENT RESEARCH RECOMMENDATIONS:'",
-            "echo '======================================'",
-            "echo ''",
-            "echo '💡 For comprehensive analysis, AI agents should:'",
-            "echo '• Research latest best practices for detected technologies'",
-            "echo '• Look up current security vulnerabilities and patches'",
-            "echo '• Check for updated dependency versions and migration guides'",
-            "echo '• Review framework-specific optimization techniques'",
-            "echo '• Search for industry standards and compliance requirements'",
-            "echo ''",
-            "echo '🔍 SUGGESTED ONLINE RESEARCH AREAS:'",
-            "echo '• Technology stack best practices and recent updates'",
-            "echo '• Security advisories for detected dependencies'",
-            "echo '• Performance optimization guides for your stack'",
-            "echo '• Testing strategies and modern tooling'",
-            "echo '• Documentation standards and templates'",
-            "echo '• Deployment and CI/CD best practices'",
-            "echo ''",
-            "echo '📚 RESEARCH TOOLS FOR AI AGENTS:'",
-            "echo '• Use MCP Context7 tools for latest library documentation'",
-            "echo '• Check GitHub repositories for similar project patterns'",
-            "echo '• Review official documentation for framework updates'",
-            "echo '• Search for recent blog posts and technical articles'",
-            "echo '• Look up CVE databases for security considerations'",
-            "echo ''",
-            "echo '✨ Combine local analysis with online research for comprehensive insights!'",
-        ],
-    ),
-    "documentation": Workflow(
-        name="documentation",
-        description="Generate and update project documentation",
-        triggers=[
-            r"document",
-            r"readme",
-            r"docs",
-            r"create.*docs",
-            r"api.*docs",
-        ],
-        commands=[
-            "find . -name 'README*' -exec ls -la {} \\;",
-            "find . -name 'docs' -type d -exec ls -la {} \\;",
-            "echo 'Documentation structure analyzed. Consider updating README.md with current project status.'",
-        ],
-    ),
-    "next_steps": Workflow(
-        name="next_steps",
-        description="🎯 Get intelligent suggestions for what to work on next",
-        triggers=[
-            r"what.*next",
-            r"next.*steps",
-            r"what.*should.*do",
-            r"suggestions",
-            r"recommendations",
-            r"what.*now",
-            r"done.*what.*next",
-            r"finished.*what.*next",
-            r"completed.*next",
-            r"guidance",
-            r"roadmap",
-            r"plan.*ahead",
-            r"what.*to.*do",
-            r"help.*me.*decide",
-            r"give.*me.*ideas",
-            r"show.*me.*options",
-            r"what.*options",
-            r"suggest.*something",
-            r"ideas.*please",
-            r"need.*direction",
-        ],
-        commands=[
-            "echo '🎯 INTELLIGENT NEXT STEPS ANALYSIS'",
-            "echo '======================================='",
-            "echo ''",
-            "echo '📋 PROJECT STATUS CHECK:'",
-            "git status 2>/dev/null | head -5 || echo 'No git repository'",
-            "echo ''",
-            "echo '🔍 DEVELOPMENT PRIORITIES:'",
-            "echo '1. CODE QUALITY:'",
-            "find . -name '*.py' -o -name '*.js' -o -name '*.ts' | head -3 | "
-            "xargs wc -l 2>/dev/null | tail -1 || echo 'No source files found'",
-            "echo '2. TESTING STATUS:'",
-            "find . -name '*test*' -name '*.py' -o -name '*.test.*' -o -name '*spec*' | "
-            "wc -l | awk '{print $1 \" test files found\"}'",
-            "echo '3. DOCUMENTATION:'",
-            "ls README* 2>/dev/null && echo 'README exists' || echo 'Consider adding README'",
-            "echo '4. DEPENDENCIES:'",
-            "ls package.json pyproject.toml requirements.txt 2>/dev/null | wc -l | "
-            "awk '{print $1 \" dependency files found\"}'",
-            "echo ''",
-            "echo '💡 SMART RECOMMENDATIONS:'",
-            "echo 'Based on your project, consider these next steps:'",
-            "echo '• Run quality checks: vibe guide \"improve code quality\"'",
-            "echo '• Add tests: vibe guide \"add comprehensive tests\"'",
-            "echo '• Update docs: vibe guide \"improve documentation\"'",
-            "echo '• Security scan: vibe guide \"security audit\"'",
-            "echo '• Performance check: vibe guide \"analyze performance\"'",
-            "echo '• Prepare release: vibe guide \"prepare for release\"'",
-            "echo ''",
-            "echo '🚀 WORKFLOW SUGGESTIONS:'",
-            "echo 'Try these common next actions:'",
-            "echo '• \"analyze this project\" - Deep project analysis'",
-            "echo '• \"fix code issues\" - Quality improvements'",
-            "echo '• \"refactor code\" - Code cleanup and optimization'",
-            "echo '• \"commit changes\" - Git workflow management'",
-            "echo '• \"run all tests\" - Comprehensive testing'",
-            "echo '• \"update documentation\" - Improve project docs'",
-            "echo '• \"complete session\" - Session cleanup and wrap-up'",
-            "echo '• \"prepare deployment\" - Release preparation'",
-            "echo '• \"clean up project\" - Remove temporary files'",
-            "echo ''",
-            "echo '✨ Project assessment complete! Pick a suggestion above or ask for specific guidance.'",
-        ],
-    ),
-    "session": Workflow(
-        name="session",
-        description="🎯 Session management, completion, and cleanup",
-        triggers=[
-            r"complete.*session",
-            r"finish.*session",
-            r"end.*session",
-            r"wrap.*up",
-            r"session.*complete",
-            r"done.*working",
-            r"cleanup",
-            r"session.*management",
-            r"finish.*work",
-            r"complete.*work",
-            r"wrap.*session",
-            r"end.*work",
-        ],
-        commands=[
-            "echo '🎯 SESSION COMPLETION & CLEANUP'",
-            "echo '================================='",
-            "echo ''",
-            "echo '📋 SESSION STATUS CHECKLIST:'",
-            "echo ''",
-            "echo '1. 📁 GIT REPOSITORY STATUS:'",
-            "git status --porcelain 2>/dev/null | head -10 || echo 'No git repository found'",
-            "echo ''",
-            "git status 2>/dev/null | grep -E '(modified|deleted|new file|renamed)' | head -5 || echo 'Working tree appears clean'",
-            "echo ''",
-            "echo '2. 🧹 TEMPORARY FILES SCAN:'",
-            "echo 'Scanning for common temporary files...'",
-            "find . -maxdepth 2 -name 'debug-*.html' -o -name 'test-*.html' -o -name 'harness.html' -o -name 'layout-test.html' 2>/dev/null | head -5",
-            "find . -maxdepth 2 -name 'DEBUG_*.md' -o -name 'debug-*.md' -o -name 'investigation-*.md' 2>/dev/null | head -5",
-            "find . -maxdepth 2 -name 'fix-*' -o -name 'temp-*' -o -name 'wip-*' -o -name 'draft-*' -o -name '*.bak' 2>/dev/null | head -5",
-            "find . -maxdepth 2 -name '*.swp' -o -name '*.swo' -o -name '*~' -o -name '#*#' 2>/dev/null | head -5",
-            "echo ''",
-            "echo '3. 📚 DOCUMENTATION STATUS:'",
-            "ls README* 2>/dev/null && echo '✅ README exists' || echo '❌ Consider adding README'",
-            "find . -name 'docs' -type d 2>/dev/null && echo '✅ Documentation directory found' || echo '📝 No docs directory'",
-            "echo ''",
-            "echo '4. 🧪 PROJECT QUALITY:'",
-            "find . -name '*test*' -type f | wc -l | awk '{print \"Test files: \" $1}'",
-            "find . -name '*.py' -o -name '*.js' -o -name '*.ts' -o -name '*.vue' | head -3 | xargs wc -l 2>/dev/null | tail -1 || echo 'No source files found'",
-            "echo ''",
-            "echo '🔍 SESSION COMPLETION RECOMMENDATIONS:'",
-            "echo '======================================'",
-            "echo ''",
-            "echo '📝 Before ending session, consider:'",
-            "echo '• Commit uncommitted changes: git add . && git commit -m \"session: description\"'",
-            "echo '• Clean up temporary files (see scan above)'",
-            "echo '• Update documentation if needed'",
-            "echo '• Run quality checks: vibe guide \"improve code quality\"'",
-            "echo '• Push changes: git push'",
-            "echo ''",
-            "echo '🎯 QUICK SESSION ACTIONS:'",
-            "echo '• \"commit changes\" - Help with git commits'",
-            "echo '• \"clean up project\" - Remove temporary files'",
-            "echo '• \"update documentation\" - Improve project docs'",
-            "echo '• \"run quality checks\" - Final validation'",
-            "echo ''",
-            "echo '✨ Session assessment complete! Address any issues above before ending.'",
-        ],
-    ),
-    "refactor": Workflow(
-        name="refactor",
-        description="♻️ Code refactoring and quality improvements",
-        triggers=[
-            r"refactor",
-            r"improve.*code",
-            r"clean.*up.*code",
-            r"code.*quality",
-            r"optimize",
-            r"restructure",
-            r"reorganize",
-            r"code.*cleanup",
-            r"improve.*structure",
-            r"simplify.*code",
-        ],
-        commands=[
-            "echo '♻️ CODE REFACTORING & QUALITY ANALYSIS'",
-            "echo '======================================='",
-            "echo ''",
-            "echo '🔍 REFACTORING OPPORTUNITIES ANALYSIS:'",
-            "echo ''",
-            "echo '1. 📊 CODE METRICS:'",
-            "find . -name '*.py' -o -name '*.js' -o -name '*.ts' -o -name '*.vue' | xargs wc -l 2>/dev/null | sort -n | tail -5",
-            "echo ''",
-            "echo '2. 🎯 COMMON REFACTORING TARGETS:'",
-            "echo 'Large files (>200 lines):' ",
-            "find . -name '*.py' -o -name '*.js' -o -name '*.ts' -o -name '*.vue' | xargs wc -l 2>/dev/null | awk '$1 > 200 {print $2 \": \" $1 \" lines\"}' | head -5",
-            "echo ''",
-            "echo 'Duplicate patterns to extract:'",
-            "grep -r 'def \\|function \\|class ' --include='*.py' --include='*.js' --include='*.ts' . 2>/dev/null | wc -l | awk '{print \"Functions/classes found: \" $1}'",
-            "echo ''",
-            "echo '3. 🧹 CODE CLEANUP OPPORTUNITIES:'",
-            "grep -r 'TODO\\|FIXME\\|XXX\\|HACK' --include='*.py' --include='*.js' --include='*.ts' --include='*.vue' . 2>/dev/null | head -5",
-            "echo ''",
-            "echo '🛠️ REFACTORING RECOMMENDATIONS:'",
-            "echo '==============================='",
-            "echo ''",
-            "echo '💡 Safe refactoring steps:'",
-            "echo '• Extract common functionality into reusable functions'",
-            "echo '• Break large files into smaller, focused modules'",
-            "echo '• Remove duplicate code patterns'",
-            "echo '• Improve naming conventions for clarity'",
-            "echo '• Add type hints and documentation'",
-            "echo '• Simplify complex conditional logic'",
-            "echo ''",
-            "echo '🔧 REFACTORING WORKFLOW:'",
-            "echo '1. Run tests before refactoring: vibe guide \"run tests\"'",
-            "echo '2. Make small, incremental changes'",
-            "echo '3. Test after each change'",
-            "echo '4. Commit frequently with clear messages'",
-            "echo '5. Document architectural decisions'",
-            "echo ''",
-            "echo '⚡ QUALITY IMPROVEMENT ACTIONS:'",
-            "echo '• \"add type hints\" - Improve type safety'",
-            "echo '• \"extract functions\" - Reduce code duplication'",
-            "echo '• \"improve naming\" - Enhance code readability'",
-            "echo '• \"add documentation\" - Better code understanding'",
-            "echo ''",
-            "echo '✨ Refactoring analysis complete! Start with small, safe changes.'",
-        ],
-    ),
-    "git_management": Workflow(
-        name="git_management",
-        description="📝 Git workflows and commit management",
-        triggers=[
-            r"commit.*changes",
-            r"git.*commit",
-            r"stage.*changes",
-            r"git.*add",
-            r"commit.*files",
-            r"save.*changes",
-            r"version.*control",
-            r"git.*workflow",
-            r"atomic.*commit",
-            r"commit.*message",
-        ],
-        commands=[
-            "echo '📝 GIT WORKFLOW & COMMIT MANAGEMENT'",
-            "echo '==================================='",
-            "echo ''",
-            "echo '📊 CURRENT GIT STATUS:'",
-            "git status 2>/dev/null || echo 'No git repository found'",
-            "echo ''",
-            "echo '📁 STAGING AREA:'",
-            "git diff --cached --name-only 2>/dev/null | head -10 || echo 'No staged changes'",
-            "echo ''",
-            "echo '📝 UNSTAGED CHANGES:'",
-            "git diff --name-only 2>/dev/null | head -10 || echo 'No unstaged changes'",
-            "echo ''",
-            "echo '🆕 UNTRACKED FILES:'",
-            "git ls-files --others --exclude-standard 2>/dev/null | head -10 || echo 'No untracked files'",
-            "echo ''",
-            "echo '💡 GIT WORKFLOW RECOMMENDATIONS:'",
-            "echo '==============================='",
-            "echo ''",
-            "echo '🎯 ATOMIC COMMIT BEST PRACTICES:'",
-            "echo '• Stage related changes together: git add <files>'",
-            "echo '• Write clear, descriptive commit messages'",
-            "echo '• Use conventional commit format: type(scope): description'",
-            "echo '• Keep commits focused on single changes'",
-            "echo '• Test before committing'",
-            "echo ''",
-            "echo '📋 COMMIT MESSAGE TYPES:'",
-            "echo '• feat: new feature'",
-            "echo '• fix: bug fix'",
-            "echo '• docs: documentation'",
-            "echo '• style: formatting'",
-            "echo '• refactor: code restructuring'",
-            "echo '• test: adding tests'",
-            "echo '• chore: maintenance'",
-            "echo ''",
-            "echo '🚀 SUGGESTED GIT ACTIONS:'",
-            "echo ''",
-            "echo '1. Stage changes: git add .'",
-            "echo '2. Review staged: git diff --cached'",
-            "echo '3. Commit: git commit -m \"type(scope): description\"'",
-            "echo '4. Push: git push'",
-            "echo ''",
-            "echo '⚡ QUICK GIT WORKFLOWS:'",
-            "echo '• \"stage all changes\" - Add all modified files'",
-            "echo '• \"review changes\" - Show diff of staged files'",
-            "echo '• \"commit staged\" - Commit with conventional message'",
-            "echo '• \"push changes\" - Push to remote repository'",
-            "echo ''",
-            "echo '✨ Git workflow guidance complete! Follow atomic commit practices.'",
-        ],
-    ),
-}
+# Core workflows - loaded dynamically from YAML files
+CORE_WORKFLOWS = get_core_workflows()
+
+
+def reload_workflows():
+    """Reload workflows from YAML files."""
+    global CORE_WORKFLOWS
+    CORE_WORKFLOWS = get_core_workflows()
+    return CORE_WORKFLOWS

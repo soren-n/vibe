@@ -1,0 +1,16 @@
+name: guidance_demo
+description: "Demonstrate Vibe's guidance-oriented approach"
+triggers:
+  - "guidance demo"
+  - "show guidance"
+  - "demo guidance"
+steps:
+  - "Welcome to Vibe's guidance system! This workflow demonstrates how steps provide helpful guidance rather than just commands."
+  - "Check your current working directory and understand your project structure"
+  - "If you need to run tests, consider using: `python -m pytest` or `npm test` depending on your project type"
+  - "Remember to commit your changes when you're satisfied with the results"
+  - "For complex tasks, break them down into smaller, manageable steps"
+  - "Vibe is here to guide you through workflows, not automate everything - you maintain control!"
+project_types: []
+dependencies: []
+conditions: []

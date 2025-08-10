@@ -49,6 +49,30 @@ vibe "create a pull request"
 - 🤖 **MCP**: MCP tools integration and AI-enhanced workflows
 - 🎯 **Session**: Session management, completion, cleanup
 
+## Documentation
+
+For comprehensive documentation including philosophy, architecture, and guidelines:
+
+📖 **[Full Documentation](docs/README.md)**
+
+Key documents:
+- **[Vibe Philosophy](docs/vibe-philosophy.md)**: Core principles of autonomous AI agent operation
+- **[Workflow Architecture](docs/workflow-architecture.md)**: YAML-based workflow system design
+- **[Development Guidelines](docs/development-guidelines.md)**: Project standards and best practices
+- **[ADRs](docs/adr/)**: Architecture Decision Records for significant design decisions
+
+## AI Agent Integration
+
+🤖 **[GitHub Configuration](.github/README.md)**: AI agent collaboration setup
+
+This project uses Vibe to develop itself (dogfooding). AI agents working on Vibe should:
+
+- **Follow [copilot-instructions.md](.github/copilot-instructions.md)**: Comprehensive development guidelines
+- **Use [vibe-agent.chatmode.md](.github/chatmodes/vibe-agent.chatmode.md)**: VSCode Copilot chat mode
+- **Query Vibe workflows first**: Always use `python main.py "what should I do for [task]?"` before manual operations
+- **Demonstrate capabilities**: Show Vibe's natural language interface by using it
+- **Create new workflows**: Document successful patterns as YAML workflows
+
 ## Configuration
 
 Create a `.vibe.yaml` file in your project root to customize workflows:

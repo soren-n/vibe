@@ -1,0 +1,22 @@
+name: python_quality
+description: "Run Python code quality checks with ruff and formatting"
+triggers:
+  - "format.*code"
+  - "lint.*python"
+  - "check.*quality"
+  - "fix.*style"
+  - "ruff.*check"
+  - "black.*format"
+  - "improve.*code"
+steps:
+  - "🔍 **Run linting and auto-fix issues**: `python -m ruff check . --fix` (or `ruff check . --fix` if installed globally)"
+  - "🎨 **Format code for consistency**: `python -m ruff format .` (or `ruff format .` if available globally)"
+  - "✅ **Review the changes** that were made automatically and ensure they look correct"
+  - "📋 **If ruff is not installed**: Install it with `pip install ruff` or add it to your requirements"
+  - "💡 **Consider setting up pre-commit hooks** to run quality checks automatically before commits"
+project_types:
+  - "python"
+conditions:
+  - "file:pyproject.toml"
+  - "file:requirements.txt"
+  - "pattern:*.py"

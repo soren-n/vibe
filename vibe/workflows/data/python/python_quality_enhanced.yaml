@@ -1,0 +1,28 @@
+name: python_quality_enhanced
+description: "✨ Enhanced Python code quality with comprehensive tool setup"
+triggers:
+  - "enhance.*quality"
+  - "setup.*quality.*tools"
+  - "install.*linting"
+  - "comprehensive.*quality"
+  - "quality.*standards"
+  - "full.*quality.*check"
+steps:
+  - "🔧 **Install Quality Tools**: Set up comprehensive tooling with `uv add --dev ruff mypy black isort` or `pip install --upgrade ruff mypy black isort`"
+  - "🎨 **Format Code**: Apply consistent formatting with `ruff format .` to standardize code style across the project"
+  - "🔍 **Auto-Fix Issues**: Run `ruff check . --fix` to automatically resolve fixable linting issues and style violations"
+  - "🔬 **Type Check**: Execute `mypy . --ignore-missing-imports` to perform static type analysis and catch type-related errors"
+  - "📏 **Check Style Rules**: Validate specific style issues with `ruff check . --select E501,I` for line length and import organization"
+  - "✅ **Review Results**: Address any remaining issues that couldn't be auto-fixed and ensure all quality standards are met"
+project_types:
+  - "python"
+conditions:
+  - "pattern:*.py"
+dependencies:
+  - "python_env"
+project_types:
+  - "python"
+conditions:
+  - "pattern:*.py"
+dependencies:
+  - "python_env"

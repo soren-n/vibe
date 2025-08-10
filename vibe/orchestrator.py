@@ -74,26 +74,26 @@ class WorkflowOrchestrator:
         if not built_in_workflow and not workflow_config:
             return None
 
-        # Determine which workflow to use and get commands
-        commands = []
+        # Determine which workflow to use and get steps
+        steps = []
         description = ""
         source = ""
 
         if built_in_workflow:
             # Use built-in workflow
-            commands = built_in_workflow.commands
+            steps = built_in_workflow.steps
             description = built_in_workflow.description
             source = "built-in"
         elif workflow_config:
             # Use config workflow
-            # Get project type and project-specific commands
+            # Get project type and project-specific steps
             project_type = self.config.detect_project_type()
             project_config = self.config.project_types.get(project_type)
 
             if project_config and workflow_name in project_config.workflows:
-                commands = project_config.workflows[workflow_name].commands
+                steps = project_config.workflows[workflow_name].steps
             else:
-                commands = workflow_config.commands
+                steps = workflow_config.steps
 
             description = (
                 workflow_config.description or f"{workflow_name.title()} workflow"
@@ -103,7 +103,7 @@ class WorkflowOrchestrator:
         return {
             "name": workflow_name,
             "description": description,
-            "commands": commands,
+            "steps": steps,
             "source": source,
             "reasoning": self._get_workflow_reasoning(workflow_name, prompt),
         }
@@ -183,14 +183,14 @@ class WorkflowOrchestrator:
         table.add_column("Step", style="cyan", no_wrap=True)
         table.add_column("Workflow", style="magenta")
         table.add_column("Source", style="yellow")
-        table.add_column("Commands", style="green")
+        table.add_column("Steps", style="green")
 
         for i, step in enumerate(execution_plan, 1):
-            commands_text = "\n".join(step["commands"][:3])  # Show first 3 commands
-            if len(step["commands"]) > 3:
-                commands_text += f"\n... and {len(step['commands']) - 3} more"
+            steps_text = "\n".join(step["steps"][:3])  # Show first 3 steps
+            if len(step["steps"]) > 3:
+                steps_text += f"\n... and {len(step['steps']) - 3} more"
 
-            table.add_row(str(i), step["description"], step["source"], commands_text)
+            table.add_row(str(i), step["description"], step["source"], steps_text)
 
         self.console.print(table)
 
@@ -208,10 +208,10 @@ class WorkflowOrchestrator:
             guidance_lines.append(f"Description: {step['description']}")
             guidance_lines.append(f"Reasoning: {step['reasoning']}")
             guidance_lines.append(f"Source: {step['source']}")
-            guidance_lines.append("Commands to execute:")
+            guidance_lines.append("Workflow steps to follow:")
 
-            for j, command in enumerate(step["commands"], 1):
-                guidance_lines.append(f"  {j}. {command}")
+            for j, workflow_step in enumerate(step["steps"], 1):
+                guidance_lines.append(f"  {j}. {workflow_step}")
 
             if i < len(execution_plan):
                 guidance_lines.append("-" * 40)

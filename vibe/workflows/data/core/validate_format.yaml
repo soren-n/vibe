@@ -1,0 +1,62 @@
+name: "validate_format"
+display_name: "✅ Validate .vibe.yaml configuration format"
+description: "Comprehensive validation of .vibe.yaml structure and format for any project"
+category: "configuration"
+triggers:
+  - "validate config"
+  - "check yaml format"
+  - "validate .vibe.yaml"
+  - "config validation"
+  - "validate vibe config"
+  - "check config format"
+  - "validate configuration"
+steps:
+  - echo '🔍 VIBE CONFIGURATION VALIDATION'
+  - echo '================================='
+  - echo ''
+  - echo '📁 Checking for .vibe.yaml file:'
+  - |
+    if [ -f ".vibe.yaml" ]; then
+      echo '✅ .vibe.yaml found'
+    else
+      echo '❌ .vibe.yaml not found'
+      echo '   💡 Create .vibe.yaml with: protocol_version: 1 and project_type: "auto"'
+      exit 1
+    fi
+  - echo ''
+  - echo '🔍 Running comprehensive validation:'
+  - vibe check
+  - echo ''
+  - echo '📋 Validating YAML syntax:'
+  - |
+    if command -v python >/dev/null 2>&1; then
+      python -c "import yaml; yaml.safe_load(open('.vibe.yaml'))" && echo '✅ YAML syntax valid'
+    elif command -v python3 >/dev/null 2>&1; then
+      python3 -c "import yaml; yaml.safe_load(open('.vibe.yaml'))" && echo '✅ YAML syntax valid'
+    else
+      echo '⚠️  Python not available for YAML validation'
+    fi
+  - echo ''
+  - echo '✅ .vibe.yaml format validation complete'
+  - echo ''
+  - echo '💡 For detailed configuration guidance:'
+  - echo '   • vibe guide "setup vibe project" - Project setup guidance'
+  - echo '   • vibe guide "optimize vibe configuration" - Configuration optimization tips'
+guidance: |
+  This workflow validates the .vibe.yaml configuration format for any Vibe project.
+  It checks for:
+
+  • Required fields (protocol_version, project_type)
+  • Proper YAML syntax and structure
+  • Environment compatibility
+  • Tool dependencies
+
+  This is a general-purpose workflow available to all Vibe projects. Use 'vibe check'
+  for the most comprehensive validation, or this workflow for focused configuration
+  validation with additional YAML syntax checking.
+
+  Common fixes:
+  • Add 'protocol_version: 1' if missing
+  • Add 'project_type: "auto"' or specific type if missing
+  • Fix YAML indentation or syntax errors
+  • Ensure workflows section uses proper list/dictionary structure

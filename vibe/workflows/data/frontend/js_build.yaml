@@ -1,0 +1,23 @@
+name: js_build
+description: "Build JavaScript/TypeScript project"
+triggers:
+  - "build.*js"
+  - "build.*typescript"
+  - "compile.*typescript"
+  - "npm.*build"
+  - "webpack.*build"
+  - "vite.*build"
+steps:
+  - "🔨 **Run Build**: Execute `npm run build` or `yarn build` to compile/bundle the project"
+  - "📂 **Check Output**: Verify build artifacts are created in `dist/` or `build/` directory"
+  - "📋 **Review Size**: Check build output size and verify all expected files are generated"
+  - "✅ **Validate Build**: Test build output functionality if possible"
+dependencies:
+  - "js_test"
+  - "js_quality"
+project_types:
+  - "javascript"
+  - "typescript"
+  - "node"
+conditions:
+  - "file:package.json"

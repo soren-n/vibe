@@ -14,9 +14,16 @@ class WorkflowConfig(BaseModel):
     """Configuration for a specific workflow."""
 
     triggers: list[str] = Field(default_factory=list)
-    commands: list[str] = Field(default_factory=list)
+    steps: list[str] = Field(default_factory=list)  # Guidance steps (preferred)
+    commands: list[str] = Field(default_factory=list)  # Legacy format, maps to steps
     description: str = ""
     dependencies: list[str] = Field(default_factory=list)
+
+    def __post_init__(self):
+        """Convert legacy commands to steps if needed."""
+        # If commands are provided but steps are empty, use commands as steps
+        if self.commands and not self.steps:
+            self.steps = self.commands
 
 
 class ProjectTypeConfig(BaseModel):

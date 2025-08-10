@@ -1,8 +1,7 @@
 """Workflow management system with built-in intelligent workflows."""
 
-from .core import CORE_WORKFLOWS, Workflow
-from .javascript import JAVASCRIPT_WORKFLOWS
-from .python import PYTHON_WORKFLOWS
+from .core import get_core_workflows
+from .models import Workflow
 
 
 class WorkflowRegistry:
@@ -13,13 +12,9 @@ class WorkflowRegistry:
         self._load_built_in_workflows()
 
     def _load_built_in_workflows(self) -> None:
-        """Load all built-in workflows into the registry."""
-        # Load core workflows (always available)
-        self.workflows.update(CORE_WORKFLOWS)
-
-        # Load project-type specific workflows
-        self.workflows.update(PYTHON_WORKFLOWS)
-        self.workflows.update(JAVASCRIPT_WORKFLOWS)
+        """Load all built-in workflows from YAML files."""
+        # Load all workflows from YAML files (includes core + language-specific)
+        self.workflows.update(get_core_workflows())
 
     def get_workflows_for_project_type(self, project_type: str) -> dict[str, Workflow]:
         """Get workflows applicable to a specific project type."""

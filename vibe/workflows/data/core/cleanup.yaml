@@ -1,0 +1,17 @@
+name: cleanup
+description: "🧹 Clean up temporary files and maintain project hygiene"
+triggers:
+  - "cleanup"
+  - "clean up"
+  - "remove temp files"
+  - "project cleanup"
+  - "tidy up"
+steps:
+  - "🔍 Scan for debug files that may have been created during development: `find . -name 'debug-*.html' -o -name 'test-*.html' -o -name 'harness.html' -o -name 'layout-test.html' | grep -v node_modules`"
+  - "📝 Check for investigation documents that are no longer needed: `find . -name 'DEBUG_*.md' -o -name 'debug-*.md' -o -name 'investigation-*.md'`"
+  - "🔧 Look for development artifacts that can be removed: `find . -name 'fix-*' -o -name 'temp-*' -o -name 'wip-*' -o -name 'draft-*' -o -name '*.bak'`"
+  - "📄 Clean up editor temporary files: `find . -name '*.swp' -o -name '*.swo' -o -name '*~' -o -name '#*#'`"
+  - "🗂️ Review any legacy or backup files that might be outdated: `find . -name '*backup*' -o -name '*legacy*' -o -name '*old*'`"
+  - "💾 Check for log files that have accumulated: `find . -name '*.log' -o -name '*.tmp'`"
+  - "📊 Before removing files, verify they're not needed and consider adding patterns to .gitignore"
+  - "Use `git status` to ensure important files are tracked before cleanup"
