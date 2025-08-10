@@ -21,7 +21,7 @@ steps:
   - "📁 **Discover project structure** by examining source files: `find . -name '*.py' -o -name '*.js' -o -name '*.ts' -o -name '*.vue' -o -name '*.go' -o -name '*.rs' | head -20`"
   - "📋 **Identify project configuration files**: `find . -name 'package.json' -o -name 'pyproject.toml' -o -name 'Cargo.toml' -o -name 'go.mod' | head -10`"
   - "📚 **Locate documentation and tests**: `find . -name 'README*' -o -name 'docs' -type d` and `find . -name 'test*' -type d`"
-  - "👀 **Get an overview of the project root**: `ls -la` to understand the basic structure"
+  - "👀 **Get an overview of the project root**: `find . -maxdepth 1 -type f -name '*' | head -20` to understand the basic structure"
   - "🌐 **For AI agents**: Research latest best practices for detected technologies using MCP Context7 tools"
   - "🔒 **Security review**: Look up current vulnerabilities and patches for identified dependencies"
   - "📈 **Performance opportunities**: Check for framework-specific optimization techniques and modern tooling"
