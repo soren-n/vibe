@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2025-08-11
+
 ### Added
 - Comprehensive research guidance fallback for unmatched queries
 - Dynamic workflow discovery with timestamp-based cache invalidation
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed FFmpeg from image conversion workflow (focused on static images)
 - Resolved workflow schema validation issues
 - Fixed duplicate function definitions in loader
+- Added proper type annotations to resolve mypy errors
 
 ## [0.1.0] - 2025-01-01
 
