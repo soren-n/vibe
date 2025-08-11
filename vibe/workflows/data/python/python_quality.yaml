@@ -1,5 +1,5 @@
 name: python_quality
-description: "Run Python code quality checks with ruff and formatting"
+description: "✨ Comprehensive Python code quality, linting, formatting, and compliance"
 triggers:
   - "format.*code"
   - "lint.*python"
@@ -8,12 +8,21 @@ triggers:
   - "ruff.*check"
   - "black.*format"
   - "improve.*code"
+  - "quality.*check"
+  - "code.*standards"
+  - "typing.*check"
 steps:
-  - "🔍 **Run linting and auto-fix issues**: `python -m ruff check . --fix` (or `ruff check . --fix` if installed globally)"
-  - "🎨 **Format code for consistency**: `python -m ruff format .` (or `ruff format .` if available globally)"
-  - "✅ **Review the changes** that were made automatically and ensure they look correct"
-  - "📋 **If ruff is not installed**: Install it with `pip install ruff` or add it to your requirements"
-  - "💡 **Consider setting up pre-commit hooks** to run quality checks automatically before commits"
+  - "🔍 **Run linting checks**: `uv run ruff check .` to identify code style and quality issues"
+  - "🛠️ **Auto-fix linting issues**: `uv run ruff check --fix .` to automatically resolve fixable issues"
+  - "📏 **Format code**: `uv run ruff format .` to ensure consistent code formatting (modern alternative to black)"
+  - "🔤 **Type checking**: `uv run mypy .` to validate type annotations and catch type-related issues"
+  - "🧪 **Run tests after quality fixes**: `uv run pytest` to ensure code quality doesn't break functionality"
+  - "📋 **Check imports**: Look for unused imports, missing imports, and import organization"
+  - "📚 **Docstring quality**: Ensure all public functions have proper docstrings following standards"
+  - "🔒 **Security scan**: `uv run bandit -r .` for security vulnerability detection (optional but recommended)"
+  - "📦 **Dependency audit**: `uv audit` to check for known security vulnerabilities in dependencies"
+  - "✅ **Final validation**: Verify all quality checks pass before considering work complete"
+  - "💡 **Consider pre-commit hooks**: Set up automated quality checks with `pre-commit install` for future commits"
 project_types:
   - "python"
 conditions:

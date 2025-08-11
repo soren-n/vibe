@@ -46,7 +46,8 @@ class WorkflowLoader:
 
         # Convert YAML data to Workflow instance
         # Support both 'steps' (preferred format) and 'commands' (legacy format)
-        # 'steps' reflects that these are guidance suggestions, not just executable commands
+        # 'steps' reflects that these are guidance suggestions,
+        # not just executable commands
         steps = data.get("steps") or data.get("commands", [])
 
         return Workflow(

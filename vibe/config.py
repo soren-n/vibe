@@ -95,7 +95,8 @@ class VibeConfig(BaseModel):
                 if pt_name not in self.project_types:
                     self.project_types[pt_name] = pt_cfg
                 else:
-                    # Ensure default workflows exist for the project type without overriding
+                    # Ensure default workflows exist for the project type
+                    # without overriding
                     existing = self.project_types[pt_name]
                     for wf_name, wf_cfg in pt_cfg.workflows.items():
                         if wf_name not in existing.workflows:
@@ -115,7 +116,10 @@ class VibeConfig(BaseModel):
                     "examine",
                     "study",
                 ],
-                description="🔍 Codebase exploration, pattern identification, and research",
+                description=(
+                    "🔍 Codebase exploration, pattern identification, "
+                    "and research"
+                ),
                 commands=["echo 'Analyzing project structure...'"],
             ),
             "implementation": WorkflowConfig(
@@ -189,7 +193,9 @@ class VibeConfig(BaseModel):
                     "repository",
                     "version",
                 ],
-                description="🔄 Git operations, commits, PRs, and repository management",
+                description=(
+                    "🔄 Git operations, commits, PRs, and repository management"
+                ),
             ),
             "mcp": WorkflowConfig(
                 triggers=[

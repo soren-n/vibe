@@ -111,8 +111,14 @@ class WorkflowOrchestrator:
     def _get_workflow_reasoning(self, workflow_name: str, prompt: str) -> str:
         """Generate reasoning for why this workflow is needed."""
         reasoning_map = {
-            "analysis": f"To understand the project structure and identify what needs to be done for: '{prompt}'",
-            "python_quality": "To ensure code quality with formatting, linting, and style checks",
+            "analysis": (
+                f"To understand the project structure and identify what "
+                f"needs to be done for: '{prompt}'"
+            ),
+            "python_quality": (
+                "To ensure code quality with formatting, linting, "
+                "and style checks"
+            ),
             "python_test": "To validate that all tests pass and code works correctly",
             "python_build": "To create distribution packages ready for release",
             "git_status": "To check the current state of the repository",

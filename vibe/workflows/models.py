@@ -17,7 +17,8 @@ class Workflow:
     - name: Unique identifier for the workflow
     - description: Human-readable description of what the workflow does
     - triggers: List of patterns that should activate this workflow
-    - steps: List of guidance text/suggestions (may contain commands, but not limited to commands)
+    - steps: List of guidance text/suggestions (may contain commands,
+      but not limited to commands)
     - dependencies: Optional list of required tools/packages
     - project_types: Optional list of project types this applies to
     - conditions: Optional list of conditions that must be met

@@ -175,7 +175,8 @@ def check() -> None:
         console.print("❌ .vibe.yaml not found")
         issues_found.append("missing_config")
         console.print(
-            '   💡 [dim]Create .vibe.yaml with: protocol_version: 1 and project_type: "auto"[/dim]'
+            '   💡 [dim]Create .vibe.yaml with: '
+            'protocol_version: 1 and project_type: "auto"[/dim]'
         )
     else:
         console.print("✅ .vibe.yaml found")
@@ -206,7 +207,8 @@ def check() -> None:
 
                     if normalized_version != current_version:
                         console.print(
-                            f"⚠️  Protocol version {protocol_version} != current {current_version}"
+                            f"⚠️  Protocol version {protocol_version} "
+                            f"!= current {current_version}"
                         )
                         issues_found.append("outdated_protocol")
 
@@ -231,7 +233,8 @@ def check() -> None:
                 console.print("⚠️  Project type missing")
                 issues_found.append("missing_project_type")
                 console.print(
-                    "   💡 [dim]Add 'project_type: \"auto\"' or specific type to .vibe.yaml[/dim]"
+                    "   💡 [dim]Add 'project_type: \"auto\"' "
+                    "or specific type to .vibe.yaml[/dim]"
                 )
             else:
                 console.print(f"✅ Project type: {config_data['project_type']}")
@@ -287,7 +290,8 @@ def check() -> None:
         # Get built-in workflows
         for workflow_name, workflow in config.workflows.items():
             for step in workflow.steps:
-                # Extract tool commands from workflow steps (first word of each step if it's a command)
+                # Extract tool commands from workflow steps
+                # (first word of each step if it's a command)
                 if step and not step.strip().startswith("echo"):
                     # Handle complex commands like "python -m pytest"
                     step_parts = step.strip().split()
@@ -422,7 +426,8 @@ def check() -> None:
             console.print("⚠️  copilot-instructions.md not found")
             issues_found.append("missing_copilot_instructions")
             console.print(
-                "   💡 [dim]Create copilot-instructions.md in .github/ for AI agent guidance[/dim]"
+                "   💡 [dim]Create copilot-instructions.md in .github/ "
+                "for AI agent guidance[/dim]"
             )
 
         # Check for chatmodes directory and vibe-agent.chatmode.md
@@ -437,19 +442,22 @@ def check() -> None:
                 console.print("⚠️  vibe-agent.chatmode.md not found")
                 issues_found.append("missing_chatmode_file")
                 console.print(
-                    "   💡 [dim]Create vibe-agent.chatmode.md in .github/chatmodes/ for VS Code chat mode[/dim]"
+                    "   💡 [dim]Create vibe-agent.chatmode.md in "
+                    ".github/chatmodes/ for VS Code chat mode[/dim]"
                 )
         else:
             console.print("⚠️  .github/chatmodes directory not found")
             issues_found.append("missing_chatmodes_dir")
             console.print(
-                "   💡 [dim]Create .github/chatmodes/ directory and vibe-agent.chatmode.md[/dim]"
+                "   💡 [dim]Create .github/chatmodes/ directory "
+                "and vibe-agent.chatmode.md[/dim]"
             )
     else:
         console.print("⚠️  .github directory not found")
         issues_found.append("missing_github_dir")
         console.print(
-            "   💡 [dim]Create .github directory with copilot-instructions.md and chatmodes/[/dim]"
+            "   💡 [dim]Create .github directory with "
+            "copilot-instructions.md and chatmodes/[/dim]"
         )
 
     console.print()
@@ -457,7 +465,8 @@ def check() -> None:
     # Summary
     if issues_found:
         console.print(
-            f"[yellow]⚠️  Found {len(issues_found)} issue(s) that may affect vibe functionality[/yellow]"
+            f"[yellow]⚠️  Found {len(issues_found)} issue(s) "
+            "that may affect vibe functionality[/yellow]"
         )
         console.print()
         console.print("[bold]🔧 Quick Fix Commands:[/bold]")
@@ -467,7 +476,8 @@ def check() -> None:
             console.print("  [cyan]protocol_version: 1[/cyan]")
             console.print('  [cyan]project_type: "auto"[/cyan]')
             console.print(
-                '• [cyan]vibe guide "setup vibe project configuration"[/cyan] - Get detailed setup steps'
+                '• [cyan]vibe guide "setup vibe project configuration"[/cyan] '
+                "- Get detailed setup steps"
             )
         if (
             "missing_protocol_version" in issues_found
@@ -478,7 +488,8 @@ def check() -> None:
                 "• Edit .vibe.yaml and add/update: [cyan]protocol_version: 1[/cyan]"
             )
             console.print(
-                '• [cyan]vibe guide "migrate protocol version"[/cyan] - Get migration guidance'
+                '• [cyan]vibe guide "migrate protocol version"[/cyan] '
+                "- Get migration guidance"
             )
         if "missing_project_type" in issues_found:
             console.print(
@@ -487,12 +498,14 @@ def check() -> None:
         if "missing_python" in issues_found:
             console.print("• Install Python 3.13+ from [cyan]https://python.org[/cyan]")
             console.print(
-                '• [cyan]vibe guide "setup python environment"[/cyan] - Get environment setup steps'
+                '• [cyan]vibe guide "setup python environment"[/cyan] '
+                "- Get environment setup steps"
             )
         if "missing_vibe_cli" in issues_found:
             console.print("• Install vibe: [cyan]pip install vibe[/cyan]")
             console.print(
-                '• [cyan]vibe guide "install vibe cli"[/cyan] - Get installation guidance'
+                '• [cyan]vibe guide "install vibe cli"[/cyan] '
+                "- Get installation guidance"
             )
 
         # GitHub AI integration suggestions
@@ -503,13 +516,15 @@ def check() -> None:
             or "missing_chatmode_file" in issues_found
         ):
             console.print(
-                '• [cyan]vibe guide "setup github ai integration"[/cyan] - Get GitHub AI setup steps'
+                '• [cyan]vibe guide "setup github ai integration"[/cyan] '
+                "- Get GitHub AI setup steps"
             )
             console.print(
                 "• Create .github/copilot-instructions.md for AI agent guidance"
             )
             console.print(
-                "• Create .github/chatmodes/vibe-agent.chatmode.md for VS Code integration"
+                "• Create .github/chatmodes/vibe-agent.chatmode.md "
+                "for VS Code integration"
             )
 
         console.print()
@@ -526,10 +541,12 @@ def check() -> None:
         )
         console.print("• [cyan]vibe list-workflows[/cyan] - See available workflows")
         console.print(
-            '• [cyan]vibe guide "setup development workflow"[/cyan] - Get development guidance'
+            '• [cyan]vibe guide "setup development workflow"[/cyan] '
+            "- Get development guidance"
         )
         console.print(
-            '• [cyan]vibe guide "optimize vibe configuration"[/cyan] - Get configuration tips'
+            '• [cyan]vibe guide "optimize vibe configuration"[/cyan] '
+            "- Get configuration tips"
         )
 
 
