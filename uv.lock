@@ -840,7 +840,7 @@ wheels = [
 ]
 
 [[package]]
-name = "vibe-workflows"
+name = "vibe-soren-n"
 source = { editable = "." }
 dependencies = [
     { name = "click" },

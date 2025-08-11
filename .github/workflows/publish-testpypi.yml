@@ -1,0 +1,53 @@
+name: Publish to TestPyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build and publish (leave empty for current version)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-publish:
+    name: Build and publish to TestPyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.13
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
+    - name: Checkout specific version
+      if: ${{ github.event.inputs.version != '' }}
+      run: git checkout v${{ github.event.inputs.version }}
+
+    - name: Build package
+      run: uv build
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
+
+    - name: Output TestPyPI URL
+      run: |
+        if [ -n "${{ github.event.inputs.version }}" ]; then
+          echo "Package published to: https://test.pypi.org/project/vibe-soren-n/${{ github.event.inputs.version }}/"
+        else
+          echo "Package published to: https://test.pypi.org/project/vibe-soren-n/"
+        fi
