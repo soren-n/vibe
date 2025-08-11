@@ -170,6 +170,18 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
 
+    - name: Get latest tag
+      id: get_tag
+      run: |
+        latest_tag=$(git describe --tags --abbrev=0)
+        echo "tag=$latest_tag" >> $GITHUB_OUTPUT
+        echo "Latest tag: $latest_tag"
+
+    - name: Checkout latest tag
+      run: |
+        git checkout ${{ steps.get_tag.outputs.tag }}
+        echo "Checked out tag: ${{ steps.get_tag.outputs.tag }}"
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -209,6 +221,18 @@ jobs:
       with:
         fetch-depth: 0
         fetch-tags: true
+
+    - name: Get latest tag
+      id: get_tag
+      run: |
+        latest_tag=$(git describe --tags --abbrev=0)
+        echo "tag=$latest_tag" >> $GITHUB_OUTPUT
+        echo "Latest tag: $latest_tag"
+
+    - name: Checkout latest tag
+      run: |
+        git checkout ${{ steps.get_tag.outputs.tag }}
+        echo "Checked out tag: ${{ steps.get_tag.outputs.tag }}"
 
     - name: Set up Python
       uses: actions/setup-python@v5
