@@ -1,3 +1,9 @@
+## [0.2.3](https://github.com/soren-n/vibe/compare/v0.2.2...v0.2.3) (2025-08-11)
+
+### Bug Fixes
+
+* properly pass VSCE_PAT environment variable to semantic-release ([544ed14](https://github.com/soren-n/vibe/commit/544ed14ad210d2857b2eeed71bd0d525d85664e6))
+
 ## [0.2.2](https://github.com/soren-n/vibe/compare/v0.2.1...v0.2.2) (2025-08-11)
 
 ### Bug Fixes
