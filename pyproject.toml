@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-vibe = "vibe.cli:main"
+vibe = "vibe.cli.main:main"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]

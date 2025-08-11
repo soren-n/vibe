@@ -16,3 +16,4 @@ steps:
   - "🧪 **If unsure about stability**: Try \"run tests\" to validate that everything works as expected"
   - "💡 **For complex decisions**: Use \"session retrospective\" to capture learnings and plan next moves"
   - "🗣️ **Remember**: Ask Vibe specific questions about what you want to accomplish - it understands natural language!"
+  - "♻️ Be concise: avoid dumping long logs; paste links; summarize in ≤6 bullets."

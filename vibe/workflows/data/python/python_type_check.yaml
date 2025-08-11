@@ -6,9 +6,8 @@ triggers:
   - "static.*analysis"
   - "check.*types"
 steps:
-  - "🔍 **Run MyPy Type Checking**: Execute `python -m mypy .` or `mypy .` to perform static type analysis on Python code"
-  - "✅ **Review Type Issues**: Address any type errors, missing annotations, or incompatible type usage found by MyPy"
-  - "📝 **Add Type Annotations**: Consider adding missing type hints to improve code clarity and catch potential bugs"
+  - "Type-check: `uv run mypy . --hide-error-context --no-error-summary` (or `python -m mypy . ...`)."
+  - "Fix reported issues and add missing type hints; re-run until clean."
 project_types:
   - "python"
 conditions:

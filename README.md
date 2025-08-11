@@ -14,6 +14,7 @@ Vibe is an intelligent workflow orchestrator that analyzes your natural language
 - ⚙️ **Configurable**: Customize workflows and commands for your project needs
 - 🎨 **Rich Output**: Beautiful, colored terminal output with progress indicators
 - 🔌 **Extensible**: Plugin architecture for custom workflows and project types
+- 🚀 **Automated Releases**: Full CI/CD pipeline with semantic versioning and marketplace publishing
 
 ## Installation
 
@@ -87,6 +88,18 @@ This project uses Vibe to develop itself (dogfooding). AI agents working on Vibe
 - **Query Vibe workflows first**: Always use `python main.py "what should I do for [task]?"` before manual operations
 - **Demonstrate capabilities**: Show Vibe's natural language interface by using it
 - **Create new workflows**: Document successful patterns as YAML workflows
+
+## Concise-by-default (TPS-aware)
+
+Vibe is optimized to minimize tokens-per-second and overall token footprint:
+
+- Always concise guidance: short summaries, delta updates, ≤6 bullets
+- Quiet flags by default (e.g., `pytest -q --maxfail=1`, `mypy --hide-error-context --no-error-summary`)
+- Sample large listings (e.g., `head`) and avoid dumping long outputs
+- Prefer batched operations over many small calls; backoff + jitter on 429s
+- Guidance steps are messages (not commands) and include inline command examples when needed
+
+Downstream projects can keep their workflows token-thrifty by mirroring these patterns.
 
 ## Configuration
 

@@ -205,28 +205,32 @@ class WorkflowOrchestrator:
         self.console.print(table)
 
     def _format_guidance_for_agent(self, execution_plan: list[dict[str, Any]]) -> str:
-        """Format guidance as plain text for AI agent consumption."""
+        """Format guidance as concise plain text for AI agents (TPS-aware)."""
         if not execution_plan:
             return "No specific workflows needed."
 
-        guidance_lines = []
-        guidance_lines.append("WORKFLOW EXECUTION GUIDANCE:")
-        guidance_lines.append("=" * 40)
+        lines: list[str] = []
+        # Global TPS-aware reminder (one line)
+        lines.append(
+            "Token-thrifty: keep outputs short, batch commands, use quiet flags, "
+            "sample large listings, summarize ≤6 bullets."
+        )
 
         for i, step in enumerate(execution_plan, 1):
-            guidance_lines.append(f"\nSTEP {i}: {step['name'].upper()}")
-            guidance_lines.append(f"Description: {step['description']}")
-            guidance_lines.append(f"Reasoning: {step['reasoning']}")
-            guidance_lines.append(f"Source: {step['source']}")
-            guidance_lines.append("Workflow steps to follow:")
+            # One-liner per workflow
+            lines.append(f"{i}. {step['name']}: {step['description']}")
 
-            for j, workflow_step in enumerate(step["steps"], 1):
-                guidance_lines.append(f"  {j}. {workflow_step}")
+            # Include only the first few actionable steps to reduce tokens
+            max_steps = 5
+            step_items = step.get("steps", [])[:max_steps]
+            for s in step_items:
+                lines.append(f"   - {s}")
 
-            if i < len(execution_plan):
-                guidance_lines.append("-" * 40)
+            remaining = len(step.get("steps", [])) - len(step_items)
+            if remaining > 0:
+                lines.append(f"   - (+{remaining} more)")
 
-        return "\n".join(guidance_lines)
+        return "\n".join(lines)
 
     def _plan_execution_order(self, workflows: list[str]) -> list[str]:
         """Plan workflow execution order based on dependencies."""

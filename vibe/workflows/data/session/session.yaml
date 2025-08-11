@@ -13,3 +13,4 @@ steps:
   - "💡 **Use \"session retrospective\"** for a detailed analysis of what you learned and next steps"
   - "🧹 **Use \"cleanup\"** for a comprehensive project hygiene check if needed"
   - "✅ **End with a clean working tree** - either commit changes or stash them for later"
+  - "Stay concise: capture outcomes in ≤6 bullets; avoid verbose logs and paste links instead of large output."

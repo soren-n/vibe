@@ -1,6 +1,5 @@
-"""CLI interface for vibe."""
+"""Environment validation and configuration checking for vibe."""
 
-import json
 import shutil
 import subprocess
 import sys
@@ -10,120 +9,9 @@ import click
 import yaml
 from rich.console import Console
 
-from . import __version__
-from .analyzer import PromptAnalyzer
-from .config import VibeConfig
-from .orchestrator import WorkflowOrchestrator
-from .workflows.quality import (
-    format_workflow_yamls,
-    validate_workflow_yamls,
-)
+from ..config import VibeConfig
 
 console = Console()
-
-
-@click.group()
-@click.option("--version", "-v", is_flag=True, help="Show version and exit")
-@click.pass_context
-def cli(ctx: click.Context, version: bool) -> None:
-    """Vibe: Intelligent workflow orchestrator for vibe coding.
-
-    Analyzes your prompts and executes appropriate development workflows.
-    """
-    if version:
-        console.print(f"vibe version {__version__}")
-        sys.exit(0)
-
-
-@cli.command()
-@click.option("--workflow", "-w", help="Force specific workflow")
-@click.option("--config", "-c", type=click.Path(exists=True), help="Config file path")
-@click.option("--project-type", "-t", help="Override project type detection")
-@click.option("--quiet", "-q", is_flag=True, help="Suppress analysis output")
-@click.argument("prompt")
-def run(
-    workflow: str | None,
-    config: str | None,
-    project_type: str | None,
-    quiet: bool,
-    prompt: str,
-) -> None:
-    """Run workflow based on prompt analysis.
-
-    Examples:
-        vibe run "analyze the codebase structure"
-        vibe run "implement user authentication"
-        vibe run --workflow testing "validate everything"
-
-    """
-    run_workflow(prompt, workflow, config, project_type, quiet)
-
-
-def run_workflow(
-    prompt: str,
-    workflow: str | None = None,
-    config_path: str | None = None,
-    project_type: str | None = None,
-    quiet: bool = False,
-) -> None:
-    """Run workflow based on prompt analysis."""
-    try:
-        # Load configuration
-        config = VibeConfig.load_from_file(Path(config_path) if config_path else None)
-
-        # Override project type if specified
-        if project_type:
-            config.project_type = project_type
-
-        # Analyze prompt or use forced workflow
-        if workflow:
-            workflows = [workflow]
-            if not quiet:
-                console.print(f"[blue]🎯 Using forced workflow: {workflow}[/blue]")
-                console.print()
-        else:
-            analyzer = PromptAnalyzer(config)
-            workflows = analyzer.analyze(prompt, show_analysis=not quiet)
-
-        # Plan workflows and provide guidance
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.plan_workflows(workflows, prompt)
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except KeyboardInterrupt:
-        console.print("\n[yellow]🛑 Interrupted by user[/yellow]")
-        sys.exit(130)
-    except Exception as e:
-        console.print(f"[red]❌ Error: {e}[/red]")
-        sys.exit(1)
-
-
-@cli.command()
-@click.option(
-    "--project-type", "-t", help="Project type (python, vue_typescript, generic)"
-)
-def init(project_type: str | None) -> None:
-    """Initialize vibe configuration and provide setup guidance."""
-    # Check if .vibe.yaml already exists in current working directory
-    vibe_config_path = Path.cwd() / ".vibe.yaml"
-
-    if vibe_config_path.exists():
-        console.print("[yellow]📋 Vibe project already initialized![/yellow]")
-        console.print()
-        console.print("Found existing [blue].vibe.yaml[/blue] file.")
-        console.print("To validate your current configuration, run:")
-        console.print()
-        console.print("  [bold cyan]vibe check[/bold cyan]")
-        console.print()
-        console.print("To see available workflows for this project:")
-        console.print()
-        console.print('  [bold cyan]vibe run "what can I do?"[/bold cyan]')
-        return
-
-    # Use the init workflow for guidance instead of creating files
-    run_workflow("initialize vibe project", "init", quiet=False)
 
 
 def _get_migration_guide(from_version: int | str, to_version: int) -> str:
@@ -149,8 +37,14 @@ def _get_migration_guide(from_version: int | str, to_version: int) -> str:
         return f"Update to 'protocol_version: {to_version}' in .vibe.yaml"
 
 
-@cli.command()
-def check() -> None:
+@click.command()
+@click.option(
+    "--json",
+    "output_json",
+    is_flag=True,
+    help="Output results in JSON format for MCP",
+)
+def check(output_json: bool = False) -> None:
     """Validate vibe environment and configuration.
 
     Checks:
@@ -158,25 +52,50 @@ def check() -> None:
     - .vibe.yaml configuration validity and protocol version
     - Workflow dependencies and tool availability
     """
-    console.print("[bold]🔍 Vibe Environment & Configuration Check[/bold]")
-    console.print("=" * 45)
-    console.print()
+    # Collect results for JSON output
+    check_results = {
+        "success": True,
+        "issues_found": [],
+        "checks": {
+            "configuration": {},
+            "environment": {},
+            "tools": {},
+            "github_integration": {},
+        },
+    }
+
+    if not output_json:
+        console.print("[bold]🔍 Vibe Environment & Configuration Check[/bold]")
+        console.print("=" * 45)
+        console.print()
 
     issues_found = []
 
     # Check 1: Configuration file validation
-    console.print("[bold]📁 Configuration Status:[/bold]")
+    if not output_json:
+        console.print("[bold]📁 Configuration Status:[/bold]")
     vibe_config_path = Path.cwd() / ".vibe.yaml"
 
     if not vibe_config_path.exists():
-        console.print("❌ .vibe.yaml not found")
+        if not output_json:
+            console.print("❌ .vibe.yaml not found")
+        check_results["checks"]["configuration"]["config_file"] = {
+            "status": "missing",
+            "message": ".vibe.yaml not found",
+        }
         issues_found.append("missing_config")
-        console.print(
-            "   💡 [dim]Create .vibe.yaml with: "
-            'protocol_version: 1 and project_type: "auto"[/dim]'
-        )
+        if not output_json:
+            console.print(
+                "   💡 [dim]Create .vibe.yaml with: "
+                'protocol_version: 1 and project_type: "auto"[/dim]'
+            )
     else:
-        console.print("✅ .vibe.yaml found")
+        if not output_json:
+            console.print("✅ .vibe.yaml found")
+        check_results["checks"]["configuration"]["config_file"] = {
+            "status": "found",
+            "message": ".vibe.yaml found",
+        }
 
         # Validate config content
         try:
@@ -225,7 +144,9 @@ def check() -> None:
                     issues_found.append("invalid_protocol_version")
                     console.print(
                         "   💡 [dim]Use integer format: protocol_version: 1[/dim]"
-                    )  # Check project type
+                    )
+
+            # Check project type
             if "project_type" not in config_data:
                 console.print("⚠️  Project type missing")
                 issues_found.append("missing_project_type")
@@ -462,8 +383,8 @@ def check() -> None:
     # Summary
     if issues_found:
         console.print(
-            f"[yellow]⚠️  Found {len(issues_found)} issue(s) "
-            "that may affect vibe functionality[/yellow]"
+            f"[yellow]⚠️  Found {len(issues_found)} issue(s) that may affect "
+            "vibe functionality[/yellow]"
         )
         console.print()
         console.print("[bold]🔧 Quick Fix Commands:[/bold]")
@@ -485,8 +406,8 @@ def check() -> None:
                 "• Edit .vibe.yaml and add/update: [cyan]protocol_version: 1[/cyan]"
             )
             console.print(
-                '• [cyan]vibe guide "migrate protocol version"[/cyan] '
-                "- Get migration guidance"
+                '• [cyan]vibe guide "migrate protocol version"[/cyan] - Get '
+                "migration guidance"
             )
         if "missing_project_type" in issues_found:
             console.print(
@@ -495,14 +416,14 @@ def check() -> None:
         if "missing_python" in issues_found:
             console.print("• Install Python 3.13+ from [cyan]https://python.org[/cyan]")
             console.print(
-                '• [cyan]vibe guide "setup python environment"[/cyan] '
-                "- Get environment setup steps"
+                '• [cyan]vibe guide "setup python environment"[/cyan] - Get '
+                "environment setup steps"
             )
         if "missing_vibe_cli" in issues_found:
             console.print("• Install vibe: [cyan]pip install vibe[/cyan]")
             console.print(
-                '• [cyan]vibe guide "install vibe cli"[/cyan] '
-                "- Get installation guidance"
+                '• [cyan]vibe guide "install vibe cli"[/cyan] - Get '
+                "installation guidance"
             )
 
         # GitHub AI integration suggestions
@@ -513,8 +434,8 @@ def check() -> None:
             or "missing_chatmode_file" in issues_found
         ):
             console.print(
-                '• [cyan]vibe guide "setup github ai integration"[/cyan] '
-                "- Get GitHub AI setup steps"
+                '• [cyan]vibe guide "setup github ai integration"[/cyan] - Get '
+                "GitHub AI setup steps"
             )
             console.print(
                 "• Create .github/copilot-instructions.md for AI agent guidance"
@@ -546,65 +467,16 @@ def check() -> None:
             "- Get configuration tips"
         )
 
+    # Output JSON if requested
+    if output_json:
+        check_results["issues_found"] = issues_found
+        check_results["success"] = len(issues_found) == 0
+        import json
 
-@cli.group()
-def workflows() -> None:
-    """Operations for YAML-defined workflows (validate/format)."""
-
-
-@workflows.command("validate")
-@click.option(
-    "--path",
-    "path",
-    type=click.Path(exists=True),
-    default=None,
-    help="Directory to scan (defaults to built-in workflows directory)",
-)
-def workflows_validate(path: Path | None) -> None:
-    """Validate all YAML workflow files for schema and quality issues."""
-    issues = validate_workflow_yamls(path)
-    if not issues:
-        console.print("[green]✅ All workflow YAML files look good[/green]")
-        return
-
-    console.print("[yellow]⚠️ Found workflow YAML issues:[/yellow]")
-    for issue in issues:
-        console.print(f" - {issue}")
-    sys.exit(1)
+        print(json.dumps(check_results, indent=2))
 
 
-@workflows.command("format")
-@click.option(
-    "--write/--no-write",
-    default=False,
-    help="Write normalized YAML back to files (default: dry-run)",
-)
-@click.option(
-    "--path",
-    "path",
-    type=click.Path(exists=True),
-    default=None,
-    help="Directory to scan (defaults to built-in workflows directory)",
-)
-def workflows_format(write: bool, path: Path | None) -> None:
-    """Normalize and optionally rewrite YAML workflow files for consistency."""
-    changes = format_workflow_yamls(path, write=write)
-    if not changes:
-        console.print("[green]✅ No formatting changes needed[/green]")
-        return
-
-    console.print(
-        "[bold]🧹 Workflow YAML normalization preview[/bold]"
-        if not write
-        else "[bold]🧹 Applied workflow YAML normalization[/bold]"
-    )
-    for c in changes:
-        console.print(f" - {c}")
-    if not write:
-        console.print("\n[dim]Tip: re-run with --write to apply these changes[/dim]")
-
-
-@cli.command("config-info")
+@click.command("config-info")
 def config_info() -> None:
     """Show current configuration information."""
     try:
@@ -634,7 +506,7 @@ def config_info() -> None:
         sys.exit(1)
 
 
-@cli.command("list-workflows")
+@click.command("list-workflows")
 @click.argument("workflows", nargs=-1)
 def list_workflows(workflows: tuple[str, ...]) -> None:
     """List available workflows and their triggers."""
@@ -668,342 +540,3 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
     except Exception as e:
         console.print(f"[red]❌ Error: {e}[/red]")
         sys.exit(1)
-
-
-# MCP (Model Context Protocol) commands for step-by-step workflow execution
-@cli.group()
-def mcp() -> None:
-    """MCP server commands for step-by-step workflow execution.
-
-    These commands are designed to be called by MCP servers to provide
-    token-efficient workflow orchestration for AI agents.
-    """
-    pass
-
-
-@mcp.command("start")
-@click.argument("prompt")
-@click.option("--config", "-c", type=click.Path(exists=True), help="Config file path")
-@click.option("--project-type", "-t", help="Override project type detection")
-def mcp_start(prompt: str, config: str | None, project_type: str | None) -> None:
-    """Start a new workflow session for step-by-step execution.
-
-    Args:
-        prompt: The original prompt that triggered workflows
-        config: Optional path to configuration file
-        project_type: Optional override for project type detection
-
-    Returns JSON with session info and first step.
-
-    """
-    try:
-        # Load configuration
-        config_obj = VibeConfig.load_from_file(Path(config) if config else None)
-
-        # Override project type if specified
-        if project_type:
-            config_obj.project_type = project_type
-
-        # Start session
-        orchestrator = WorkflowOrchestrator(config_obj)
-        result = orchestrator.start_session(prompt)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {"success": False, "error": f"Failed to start session: {str(e)}"}
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("status")
-@click.argument("session_id")
-def mcp_status(session_id: str) -> None:
-    """Get current status of a workflow session.
-
-    Args:
-        session_id: ID of the session to check
-
-    Returns JSON with session status and current step.
-
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.get_session_status(session_id)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {
-            "success": False,
-            "error": f"Failed to get session status: {str(e)}",
-        }
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("next")
-@click.argument("session_id")
-def mcp_next(session_id: str) -> None:
-    """Mark current step as complete and advance to next step.
-
-    Args:
-        session_id: ID of the session to advance
-
-    Returns JSON with next step info or completion status.
-
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.advance_session(session_id)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {
-            "success": False,
-            "error": f"Failed to advance session: {str(e)}",
-        }
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("break")
-@click.argument("session_id")
-def mcp_break(session_id: str) -> None:
-    """Break out of current workflow and return to parent workflow.
-
-    Args:
-        session_id: ID of the session
-
-    Returns JSON with parent workflow step info.
-
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.break_session(session_id)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {"success": False, "error": f"Failed to break session: {str(e)}"}
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("back")
-@click.argument("session_id")
-def mcp_back(session_id: str) -> None:
-    """Go back to the previous step in the current workflow.
-
-    Args:
-        session_id: ID of the session
-
-    Returns JSON with previous step info.
-
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.back_session(session_id)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {"success": False, "error": f"Failed to go back: {str(e)}"}
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("restart")
-@click.argument("session_id")
-def mcp_restart(session_id: str) -> None:
-    """Restart the session from the beginning.
-
-    Args:
-        session_id: ID of the session to restart
-
-    Returns JSON with first step info.
-
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.restart_session(session_id)
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {
-            "success": False,
-            "error": f"Failed to restart session: {str(e)}",
-        }
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-@mcp.command("list")
-def mcp_list() -> None:
-    """List all active workflow sessions.
-
-    Returns JSON with list of active sessions.
-    """
-    try:
-        # Use default config for session operations
-        config = VibeConfig.load_from_file()
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.list_sessions()
-
-        # Output JSON
-        print(json.dumps(result, indent=2))
-
-        if not result["success"]:
-            sys.exit(1)
-
-    except Exception as e:
-        error_result = {"success": False, "error": f"Failed to list sessions: {str(e)}"}
-        print(json.dumps(error_result, indent=2))
-        sys.exit(1)
-
-
-# For backwards compatibility with simple prompt usage
-def main() -> None:
-    """Main entry point with smart command detection."""
-    args = sys.argv[1:]
-
-    # If no args, show help
-    if not args:
-        cli(["--help"])
-        return
-
-    # If first arg is a known command, use normal CLI
-    known_commands = [
-        "run",
-        "init",
-        "check",
-        "config-info",
-        "list-workflows",
-        "guide",
-        "workflows",
-        "mcp",
-    ]
-    if args[0] in known_commands or args[0].startswith("-"):
-        cli()
-        return
-
-    # Otherwise, treat as a prompt for run command
-    # Extract options first
-    prompt_args = []
-    options = []
-    i = 0
-    while i < len(args):
-        if args[i].startswith("--"):
-            options.append(args[i])
-            if i + 1 < len(args) and not args[i + 1].startswith("--"):
-                options.append(args[i + 1])
-                i += 2
-            else:
-                i += 1
-        elif args[i].startswith("-") and args[i] != "-":
-            options.append(args[i])
-            if i + 1 < len(args) and not args[i + 1].startswith("-"):
-                options.append(args[i + 1])
-                i += 2
-            else:
-                i += 1
-        else:
-            prompt_args.append(args[i])
-            i += 1
-
-    # Join all non-option args as prompt
-    prompt = " ".join(prompt_args)
-
-    # Run the command
-    sys.argv = ["vibe", "run"] + options + [prompt]
-    cli()
-
-
-@cli.command()
-@click.argument("prompt", required=True)
-@click.option("--config", "-c", "config_path", help="Path to config file")
-@click.option(
-    "--project-type", "-t", help="Project type (python, vue_typescript, generic)"
-)
-def guide(
-    prompt: str,
-    config_path: str | None = None,
-    project_type: str | None = None,
-) -> None:
-    """Get plain text guidance for AI agents (no rich formatting).
-
-    This command outputs structured guidance that AI agents can easily
-    parse and execute.
-
-    Examples:
-        vibe guide "implement authentication"
-        vibe guide "prepare for release"
-        vibe guide "fix code quality issues"
-
-    """
-    try:
-        # Load configuration
-        config = VibeConfig.load_from_file(Path(config_path) if config_path else None)
-
-        # Override project type if specified
-        if project_type:
-            config.project_type = project_type
-
-        # Analyze prompt
-        analyzer = PromptAnalyzer(config)
-        workflows = analyzer.analyze(prompt, show_analysis=False)
-
-        # Plan workflows
-        orchestrator = WorkflowOrchestrator(config)
-        result = orchestrator.plan_workflows(workflows, prompt, show_display=False)
-
-        if result["success"]:
-            # Output plain text guidance for AI agents
-            print(result["guidance"])
-        else:
-            print("ERROR: Unable to generate workflow guidance")
-            sys.exit(1)
-
-    except Exception as e:
-        print(f"ERROR: {e}")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()

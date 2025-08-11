@@ -26,7 +26,7 @@ steps:
   - "🔒 **Security review**: Look up current vulnerabilities and patches for identified dependencies"
   - "📈 **Performance opportunities**: Check for framework-specific optimization techniques and modern tooling"
   - "📖 **Documentation assessment**: Review if documentation standards are met and templates are current"
-  - "✨ **Combine local analysis with online research** - Use GitHub, official docs, and technical articles for comprehensive insights"
+  - "✨ **Token‑thrifty research**: Use short prompts, batch tool calls, avoid dumping large outputs (prefer `head`, counts), and summarize findings in ≤6 bullets with next steps. Backoff/retry on 429; reduce detail level if rate‑limited."
 dependencies: []
 project_types: []
 conditions: []

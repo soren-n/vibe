@@ -1,5 +1,5 @@
 name: python_quality
-description: "✨ Comprehensive Python code quality, linting, formatting, and compliance"
+description: "Concise Python code quality (lint, format, types, tests)"
 triggers:
   - "format.*code"
   - "lint.*python"
@@ -12,17 +12,12 @@ triggers:
   - "code.*standards"
   - "typing.*check"
 steps:
-  - "🔍 **Run linting checks**: `uv run ruff check .` to identify code style and quality issues"
-  - "🛠️ **Auto-fix linting issues**: `uv run ruff check --fix .` to automatically resolve fixable issues"
-  - "📏 **Format code**: `uv run ruff format .` to ensure consistent code formatting (modern alternative to black)"
-  - "🔤 **Type checking**: `uv run mypy .` to validate type annotations and catch type-related issues"
-  - "🧪 **Run tests after quality fixes**: `uv run pytest` to ensure code quality doesn't break functionality"
-  - "📋 **Check imports**: Look for unused imports, missing imports, and import organization"
-  - "📚 **Docstring quality**: Ensure all public functions have proper docstrings following standards"
-  - "🔒 **Security scan**: `uv run bandit -r .` for security vulnerability detection (install with `uv add --dev bandit` if needed, optional)"
-  - "📦 **Dependency audit**: Check for known security vulnerabilities with `pip-audit` (install with `uv add --dev pip-audit` if needed) or use GitHub security advisories"
-  - "✅ **Final validation**: Verify all quality checks pass before considering work complete"
-  - "💡 **Consider pre-commit hooks**: Set up automated quality checks with `pre-commit install` for future commits"
+  - "Lint: `uv run ruff check .`"
+  - "Auto-fix: `uv run ruff check . --fix`"
+  - "Format: `uv run ruff format .`"
+  - "Type-check: `uv run mypy . --hide-error-context --no-error-summary`"
+  - "Tests: `uv run pytest -q --maxfail=1`"
+  - "Optional security: `uv run bandit -r .` or `uv run pip-audit`"
 project_types:
   - "python"
 conditions:

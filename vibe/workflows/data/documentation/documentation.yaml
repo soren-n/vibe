@@ -12,3 +12,4 @@ steps:
   - "💡 **Update as needed**: Add missing sections, clarify confusing parts, include examples"
   - "🔄 **Keep docs current**: Make sure documentation reflects recent changes and current project state"
   - "✅ **Test examples**: Verify that code examples and instructions actually work"
+  - "Be token‑thrifty: prefer links over long quotes, and summarize changes briefly (≤6 bullets)."

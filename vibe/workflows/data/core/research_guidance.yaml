@@ -19,3 +19,4 @@ steps:
   - "✅ **Validate Information** - Cross-reference multiple sources and verify that information is current and accurate"
   - "📝 **Document Insights** - Create clear guidance based on research findings with specific commands and examples"
   - "🎯 **Provide Next Steps** - Give the user concrete actions they can take based on the research results"
+  - "♻️ Token‑thrifty: batch lookups, avoid pasting large excerpts (link instead), sample long outputs with `head`, and backoff on 429s."

@@ -25,6 +25,7 @@ steps:
   - "📦 **Dependency audit**: Check for known security issues in dependencies"
   - "✅ **Validate compliance**: Ensure all quality checks pass before considering work complete"
   - "💡 **Set up automation**: Consider pre-commit hooks or CI/CD integration for ongoing quality"
+  - "♻️ Token‑thrifty: prefer quiet reporters and summarize results succinctly; sample long outputs with `head`."
 dependencies: []
 project_types: []
 conditions: []

@@ -14,7 +14,6 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 
 /**
  * Execute a Vibe CLI command and return parsed JSON result.
@@ -28,7 +27,7 @@ async function executeVibeCommand(args) {
     const mcpServerDir = new URL('.', import.meta.url).pathname;
     const vibeProjectDir = mcpServerDir + '../';
 
-    const process = spawn('uv', ['run', 'python', 'main.py', ...args], {
+    const process = spawn('uv', ['run', 'vibe', ...args], {
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: vibeProjectDir // Run from vibe project root
     });
@@ -79,7 +78,7 @@ function isValidSessionId(sessionId) {
 const server = new Server(
   {
     name: 'vibe-workflow-server',
-    version: '0.1.0',
+    version: '0.1.1',
   },
   {
     capabilities: {
@@ -225,6 +224,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'init_vibe_project': {
+        const { project_type } = args;
+
+        const vibeArgs = ['mcp', 'init'];
+        if (project_type) vibeArgs.push('--project-type', project_type);
+
+        const result = await executeVibeCommand(vibeArgs);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'check_vibe_environment': {
+        const result = await executeVibeCommand(['mcp', 'check']);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -343,6 +373,27 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'list_workflow_sessions',
         description: 'List all active workflow sessions',
+        inputSchema: {
+          type: 'object',
+          properties: {}
+        }
+      },
+      {
+        name: 'init_vibe_project',
+        description: 'Initialize vibe configuration and provide setup guidance for a project',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            project_type: {
+              type: 'string',
+              description: 'Optional project type (python, vue_typescript, generic)'
+            }
+          }
+        }
+      },
+      {
+        name: 'check_vibe_environment',
+        description: 'Validate vibe environment, configuration, and tool dependencies',
         inputSchema: {
           type: 'object',
           properties: {}

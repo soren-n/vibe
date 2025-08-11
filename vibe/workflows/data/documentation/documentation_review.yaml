@@ -36,4 +36,4 @@ steps:
   - "🔧 **Execute Improvements**: Update README for evolution, create ADRs for undocumented decisions, add inline docs for complex functions"
   - "🧪 **Validate Examples**: Ensure all documentation examples still work and are up-to-date with current codebase"
   - "📋 **Health Check**: Verify README exists, architecture documented, code has inline docs, setup instructions clear, examples current"
-  - "echo '• Documentation structure is logical and navigable'"
+  - "Be token‑thrifty: summarize findings in ≤6 bullets, avoid long diffs, and link to sources instead of pasting large excerpts."
