@@ -8,7 +8,7 @@ from rich.console import Console
 from .. import __version__
 from .commands import guide, init, run
 from .mcp import mcp
-from .validation import check, config_info, list_workflows
+from .validation import check, config_info, list_workflows, validate
 from .workflows import workflows
 
 console = Console()
@@ -34,6 +34,7 @@ cli.add_command(guide)
 cli.add_command(check)
 cli.add_command(config_info)
 cli.add_command(list_workflows)
+cli.add_command(validate)
 
 # Add command groups
 cli.add_command(workflows)
@@ -56,6 +57,7 @@ def main() -> None:
         "check",
         "config-info",
         "list-workflows",
+        "validate",
         "guide",
         "workflows",
         "mcp",

@@ -10,6 +10,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "pyyaml>=6.0.0",
     "typing-extensions>=4.0.0",
+    "watchdog>=6.0.0",
+    "jsonschema>=4.20.0",
 ]
 
 [project.scripts]
@@ -68,4 +70,5 @@ dev = [
     "pre-commit>=4.0.0",
     "hatch-vcs>=0.4.0",
     "twine>=6.1.0",
+    "types-jsonschema>=4.25.0.20250809",
 ]

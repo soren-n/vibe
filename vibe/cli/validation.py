@@ -541,3 +541,85 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
     except Exception as e:
         console.print(f"[red]❌ Error: {e}[/red]")
         sys.exit(1)
+
+
+def validate_workflow_schemas() -> None:
+    """Validate all workflow YAML files against the JSON schema."""
+
+    from ..workflows.loader import WorkflowLoader
+    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
+
+    console.print("🔍 [bold blue]Validating Workflow Schemas[/bold blue]")
+    console.print()
+
+    # Create a loader with validation enabled
+    loader = WorkflowLoader(enable_validation=True)
+
+    if not loader.data_dir.exists():
+        console.print(f"[red]❌ Workflow directory not found: {loader.data_dir}[/red]")
+        return
+
+    yaml_files = list(loader.data_dir.rglob("*.yaml"))
+    if not yaml_files:
+        console.print("[yellow]⚠️ No YAML workflow files found[/yellow]")
+        return
+
+    console.print(f"📋 Found {len(yaml_files)} workflow files to validate")
+    console.print()
+
+    valid_count = 0
+    invalid_count = 0
+
+    for yaml_file in yaml_files:
+        relative_path = yaml_file.relative_to(loader.data_dir)
+
+        try:
+            with open(yaml_file, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+
+            if not data:
+                console.print(
+                    f"[yellow]⚠️ {relative_path}: Empty or invalid YAML[/yellow]"
+                )
+                invalid_count += 1
+                continue
+
+            # Validate against schema
+            validate_workflow_data(data)
+            console.print(f"[green]✅ {relative_path}[/green]")
+            valid_count += 1
+
+        except WorkflowValidationError as e:
+            console.print(f"[red]❌ {relative_path}:[/red]")
+            # Print validation errors with indentation
+            for line in str(e).split("\n")[1:]:  # Skip the first line
+                if line.strip():
+                    console.print(f"   {line}")
+            invalid_count += 1
+
+        except Exception as e:
+            console.print(f"[red]❌ {relative_path}: {e}[/red]")
+            invalid_count += 1
+
+    console.print()
+    console.print("📊 [bold]Validation Summary:[/bold]")
+    console.print(f"   [green]✅ Valid: {valid_count}[/green]")
+    console.print(f"   [red]❌ Invalid: {invalid_count}[/red]")
+    console.print(f"   📋 Total: {len(yaml_files)}")
+
+    if invalid_count > 0:
+        console.print()
+        console.print(
+            "[yellow]💡 Tip: Use 'vibe guide \"fix workflow validation\"' "
+            "for help resolving issues[/yellow]"
+        )
+        sys.exit(1)
+    else:
+        console.print()
+        console.print("[green]🎉 All workflows pass schema validation![/green]")
+
+
+@click.command()
+def validate() -> None:
+    """Validate all workflow YAML files against the JSON schema."""
+    validate_workflow_schemas()
