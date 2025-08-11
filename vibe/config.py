@@ -1,11 +1,170 @@
 """Configuration management for vibe."""
 
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, Field
 
 from .project_types import ProjectDetector
+
+
+def _read_gitignore_patterns(project_root: Path) -> list[str]:
+    """Read patterns from all .gitignore files in the project tree."""
+    all_patterns = []
+
+    # Find all .gitignore files in the project
+    gitignore_files = []
+    try:
+        # Add root .gitignore
+        root_gitignore = project_root / ".gitignore"
+        if root_gitignore.exists():
+            gitignore_files.append((root_gitignore, ""))
+
+        # Find subdirectory .gitignore files, but exclude cache directories
+        for gitignore_path in project_root.rglob(".gitignore"):
+            if gitignore_path != root_gitignore:
+                # Skip .gitignore files in cache/build directories that might
+                # contain overly broad patterns
+                rel_path = gitignore_path.relative_to(project_root)
+                path_parts = rel_path.parts[:-1]  # exclude .gitignore filename
+
+                # Skip if in cache/build directories
+                skip_dirs = {
+                    "__pycache__",
+                    ".pytest_cache",
+                    ".mypy_cache",
+                    ".ruff_cache",
+                    "node_modules",
+                    "dist",
+                    "build",
+                    ".venv",
+                    "venv",
+                    "coverage",
+                    ".git",
+                    ".github",
+                }
+                if any(part in skip_dirs for part in path_parts):
+                    continue
+
+                # Calculate relative path from project root
+                rel_dir = gitignore_path.parent.relative_to(project_root)
+                gitignore_files.append((gitignore_path, str(rel_dir)))
+    except (OSError, ValueError):
+        pass
+
+    # Process each .gitignore file
+    for gitignore_path, relative_dir in gitignore_files:
+        try:
+            content = gitignore_path.read_text(encoding="utf-8")
+            for line in content.split("\n"):
+                line = line.strip()
+                # Skip empty lines and comments
+                if not line or line.startswith("#"):
+                    continue
+
+                # Skip overly broad patterns that would exclude everything
+                if line in ["*", "**", "*/**"]:
+                    continue
+
+                # Apply patterns relative to their .gitignore location
+                if relative_dir:
+                    # For subdirectory .gitignore, prefix patterns with the
+                    # directory path
+                    if line.startswith("/"):
+                        # Absolute pattern (relative to .gitignore location)
+                        pattern = f"{relative_dir}/{line[1:]}"
+                    else:
+                        # Relative pattern applies within that subdirectory
+                        pattern = f"{relative_dir}/{line}"
+                else:
+                    # Root .gitignore patterns
+                    pattern = line[1:] if line.startswith("/") else line
+
+                # Convert gitignore patterns to our format
+                if pattern.endswith("/"):
+                    # Directory patterns
+                    dir_pattern = pattern[:-1]
+                    all_patterns.extend([dir_pattern, f"{dir_pattern}/**"])
+                else:
+                    all_patterns.append(pattern)
+                    # For potential directories, also exclude contents
+                    if "." not in pattern.split("/")[-1] and "*" not in pattern:
+                        all_patterns.append(f"{pattern}/**")
+
+        except (OSError, UnicodeDecodeError):
+            continue  # Skip unreadable .gitignore files
+
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_patterns = []
+    for pattern in all_patterns:
+        if pattern not in seen:
+            seen.add(pattern)
+            unique_patterns.append(pattern)
+
+    return unique_patterns
+
+
+class LintConfig(BaseModel):
+    """Configuration for project linting."""
+
+    # Language and tone linting
+    check_emojis: bool = True
+    check_professional_language: bool = True
+    exclude_ui_files: list[str] = Field(
+        default_factory=lambda: ["*cli*", "*ui*", "*frontend*"]
+    )
+
+    # File naming conventions by extension
+    naming_conventions: dict[str, Literal["snake_case", "camelCase", "kebab-case"]] = (
+        Field(
+            default_factory=lambda: {
+                ".py": "snake_case",
+                ".js": "camelCase",
+                ".ts": "camelCase",
+                ".vue": "kebab-case",
+                ".yaml": "snake_case",
+                ".yml": "snake_case",
+                ".md": "kebab-case",
+                ".json": "snake_case",
+            }
+        )
+    )
+
+    # Directory naming conventions
+    directory_naming: Literal["snake_case", "camelCase", "kebab-case"] = "snake_case"
+
+    # File patterns to exclude from linting
+    exclude_patterns: list[str] = Field(
+        default_factory=lambda: [
+            "node_modules/**",
+            ".git/**",
+            "__pycache__/**",
+            "*.pyc",
+            ".venv/**",
+            "venv/**",
+            "dist/**",
+            "build/**",
+            ".next/**",
+            "coverage/**",
+        ]
+    )
+
+    # Text quality thresholds
+    max_step_message_length: int = 100
+    min_action_word_percentage: float = 5.0  # 5% minimum action words
+
+    # Professional language patterns to flag
+    unprofessional_patterns: list[str] = Field(
+        default_factory=lambda: [
+            r"\b(awesome|cool|amazing|epic)\b",  # Removed 'super' to avoid Python super()
+            r"\b(gonna|wanna|gotta)\b",
+            r"\b(omg|lol|btw|fyi)\b",
+            r"!!+",  # Multiple exclamation marks
+            r"\?\?+",  # Multiple question marks
+        ]
+    )
 
 
 class WorkflowConfig(BaseModel):
@@ -38,6 +197,7 @@ class VibeConfig(BaseModel):
     project_type: str = "auto"
     workflows: dict[str, WorkflowConfig] = Field(default_factory=dict)
     project_types: dict[str, ProjectTypeConfig] = Field(default_factory=dict)
+    lint: LintConfig = Field(default_factory=LintConfig)
 
     @classmethod
     def load_from_file(cls, config_path: Path | None = None) -> "VibeConfig":
@@ -45,17 +205,53 @@ class VibeConfig(BaseModel):
         if config_path is None:
             config_path = cls._find_config_file()
 
+        project_root = config_path.parent if config_path else Path.cwd()
+
         if config_path and config_path.exists():
             with open(config_path) as f:
                 data = yaml.safe_load(f) or {}
 
             # Merge with defaults
             config = cls(**data)
+
+            # Add gitignore patterns to lint exclude_patterns
+            gitignore_patterns = _read_gitignore_patterns(project_root)
+            # Add essential patterns that might not be in gitignore
+            essential_patterns = [
+                ".git",
+                ".git/**",  # Git metadata
+                ".github",
+                ".github/**",  # GitHub workflows
+                ".gitignore",  # Git ignore file itself
+                ".gitattributes",  # Git attributes
+            ]
+
+            all_patterns = gitignore_patterns + essential_patterns
+
+            if all_patterns:
+                # Merge with existing exclude patterns, avoiding duplicates
+                existing_patterns = set(config.lint.exclude_patterns)
+                for pattern in all_patterns:
+                    if pattern not in existing_patterns:
+                        config.lint.exclude_patterns.append(pattern)
+
             config._load_defaults()
             return config
 
-        # Return default config
+        # Return default config with gitignore patterns
         config = cls()
+        gitignore_patterns = _read_gitignore_patterns(project_root)
+        essential_patterns = [
+            ".git",
+            ".git/**",
+            ".github",
+            ".github/**",
+            ".gitignore",
+            ".gitattributes",
+        ]
+        all_patterns = gitignore_patterns + essential_patterns
+        if all_patterns:
+            config.lint.exclude_patterns.extend(all_patterns)
         config._load_defaults()
         return config
 

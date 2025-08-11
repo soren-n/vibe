@@ -1,0 +1,68 @@
+# Example Vibe configuration with project linting
+project_type: "python"
+
+# Project linting configuration
+lint:
+  # Language and tone settings
+  check_emojis: true
+  check_professional_language: true
+  exclude_ui_files:
+    - "*cli*"
+    - "*ui*"
+    - "*frontend*"
+    - "*console*"
+
+  # File naming conventions by extension
+  naming_conventions:
+    ".py": "snake_case"
+    ".js": "camelCase"
+    ".ts": "camelCase"
+    ".vue": "kebab-case"
+    ".yaml": "snake_case"
+    ".yml": "snake_case"
+    ".md": "kebab-case"
+    ".json": "snake_case"
+    ".css": "kebab-case"
+    ".scss": "kebab-case"
+    ".html": "kebab-case"
+
+  # Directory naming convention
+  directory_naming: "snake_case"
+
+  # Files and directories to exclude from linting
+  exclude_patterns:
+    - "node_modules/**"
+    - ".git/**"
+    - "__pycache__/**"
+    - "*.pyc"
+    - ".venv/**"
+    - "venv/**"
+    - "dist/**"
+    - "build/**"
+    - ".next/**"
+    - "coverage/**"
+    - "*.min.*"
+    - "vendor/**"
+
+  # Text quality thresholds
+  max_step_message_length: 100
+  min_action_word_percentage: 5.0
+
+  # Patterns that flag unprofessional language
+  unprofessional_patterns:
+    - "\\b(awesome|cool|super|amazing|epic)\\b"
+    - "\\b(gonna|wanna|gotta)\\b"
+    - "\\b(omg|lol|btw|fyi)\\b"
+    - "!!+"
+    - "\\?\\?+"
+
+# Custom workflows for this project
+workflows:
+  lint:
+    triggers: ["lint", "check-style", "code-quality"]
+    description: "Run comprehensive project linting"
+    steps:
+      - "Run file naming convention checks"
+      - "Scan source code for unprofessional language"
+      - "Check for emoji usage in non-UI files"
+      - "Generate improvement suggestions"

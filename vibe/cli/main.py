@@ -7,6 +7,7 @@ from rich.console import Console
 
 from .. import __version__
 from .commands import guide, init, run
+from .lint import lint
 from .mcp import mcp
 from .validation import check, config_info, list_workflows, validate
 from .workflows import workflows
@@ -39,6 +40,7 @@ cli.add_command(validate)
 # Add command groups
 cli.add_command(workflows)
 cli.add_command(mcp)
+cli.add_command(lint)
 
 
 def main() -> None:
@@ -61,6 +63,7 @@ def main() -> None:
         "guide",
         "workflows",
         "mcp",
+        "lint",
     ]
     if args[0] in known_commands or args[0].startswith("-"):
         cli()

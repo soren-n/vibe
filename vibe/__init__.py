@@ -7,8 +7,13 @@ __description__ = "A CLI tool for vibe coding with intelligent workflow orchestr
 
 from .analyzer import PromptAnalyzer
 from .config import VibeConfig
+from .lint import ProjectLinter
 from .orchestrator import WorkflowOrchestrator
 
-__all__ = ["__version__", "PromptAnalyzer", "VibeConfig", "WorkflowOrchestrator"]
-
-__all__ = ["PromptAnalyzer", "VibeConfig", "WorkflowOrchestrator"]
+__all__ = [
+    "__version__",
+    "PromptAnalyzer",
+    "VibeConfig",
+    "WorkflowOrchestrator",
+    "ProjectLinter",
+]

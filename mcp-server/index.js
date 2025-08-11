@@ -265,9 +265,65 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'check_vibe_environment': {
         const { working_dir } = args;
 
-        // Use provided working directory or default to process.cwd()
         const workingDir = working_dir || process.cwd();
-        const result = await executeVibeCommand(['mcp', 'check'], workingDir);
+        const result = await executeVibeCommand(['check'], workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'lint_project': {
+        const { 
+          path: projectPath, 
+          format = 'json',  // Default to JSON for MCP compatibility
+          severity, 
+          type: issueType, 
+          working_dir 
+        } = args;
+
+        const vibeArgs = ['lint', 'project'];
+        if (projectPath) vibeArgs.push('--path', projectPath);
+        vibeArgs.push('--format', format);  // Always specify format for consistency
+        if (severity) vibeArgs.push('--severity', severity);
+        if (issueType) vibeArgs.push('--type', issueType);
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'lint_text': {
+        const { 
+          text, 
+          context = 'general', 
+          format = 'json',  // Default to JSON for MCP compatibility
+          working_dir 
+        } = args;
+
+        if (!text || typeof text !== 'string') {
+          throw new Error('text is required and must be a string');
+        }
+
+        const vibeArgs = ['lint', 'text', text];
+        if (context) vibeArgs.push('--context', context);
+        vibeArgs.push('--format', format);  // Always specify format for consistency
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
 
         return {
           content: [
@@ -434,6 +490,66 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Optional working directory to run commands in (defaults to current directory)'
             }
           }
+        }
+      },
+      {
+        name: 'lint_project',
+        description: 'Lint entire project for naming conventions, professional language, and emoji usage',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            path: {
+              type: 'string',
+              description: 'Path to project directory (default: current directory)'
+            },
+            format: {
+              type: 'string',
+              enum: ['rich', 'json', 'summary'],
+              description: 'Output format (default: json for MCP compatibility)'
+            },
+            severity: {
+              type: 'string',
+              enum: ['error', 'warning', 'info'],
+              description: 'Filter by severity level'
+            },
+            type: {
+              type: 'string',
+              enum: ['naming_convention', 'emoji_usage', 'unprofessional_language'],
+              description: 'Filter by issue type'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          }
+        }
+      },
+      {
+        name: 'lint_text',
+        description: 'Lint specific text content for quality and professionalism',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            text: {
+              type: 'string',
+              description: 'Text content to lint'
+            },
+            context: {
+              type: 'string',
+              enum: ['general', 'step_message', 'documentation'],
+              description: 'Context for linting rules (default: general)'
+            },
+            format: {
+              type: 'string',
+              enum: ['rich', 'json', 'summary'],
+              description: 'Output format (default: json for MCP compatibility)'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          },
+          required: ['text']
         }
       }
     ]

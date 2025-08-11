@@ -54,6 +54,35 @@ vibe workflows format
 vibe workflows format --write
 ```
 
+## Project Linting
+
+Comprehensive project quality analysis with naming conventions, language professionalism, and emoji detection:
+
+```bash
+# Lint entire project for quality issues
+vibe lint project
+
+# Filter by severity or issue type
+vibe lint project --severity=warning --type=emoji_usage
+
+# Different output formats
+vibe lint project --format=summary
+vibe lint project --format=json
+
+# Lint specific text content
+vibe lint text "This is awesome! 😀"
+
+# Context-specific text analysis
+vibe lint text "Long workflow step message..." --context=step_message
+```
+
+**Features:**
+- 🏷️ **Naming Conventions**: File and directory naming consistency
+- 💬 **Language Quality**: Professional language detection and emoji analysis
+- 🎯 **Smart Filtering**: Gitignore integration and context-aware exclusions
+- ⚡ **High Performance**: Pre-filtering architecture for large codebases
+- 📖 **[Full Documentation](docs/project-linting.md)**: Comprehensive linting guide
+
 ## Workflow Types
 
 - 🔍 **Analysis**: Codebase exploration, pattern identification, research

@@ -27,9 +27,15 @@ def workflows() -> None:
     default=None,
     help="Directory to scan (defaults to built-in workflows directory)",
 )
-def workflows_validate(path: Path | None) -> None:
+@click.option(
+    "--strict",
+    is_flag=True,
+    default=False,
+    help="Enable strict validation rules (e.g., no emojis in step messages)",
+)
+def workflows_validate(path: Path | None, strict: bool) -> None:
     """Validate all YAML workflow files for schema and quality issues."""
-    issues = validate_workflow_yamls(path)
+    issues = validate_workflow_yamls(path, strict_mode=strict)
     if not issues:
         console.print("[green]✅ All workflow YAML files look good[/green]")
         return
@@ -37,6 +43,18 @@ def workflows_validate(path: Path | None) -> None:
     console.print("[yellow]⚠️ Found workflow YAML issues:[/yellow]")
     for issue in issues:
         console.print(f" - {issue}")
+
+    if strict:
+        console.print(
+            "\n[dim]Note: Running in strict mode. "
+            "Use `--no-strict` for relaxed validation.[/dim]"
+        )
+    else:
+        console.print(
+            "\n[dim]Note: Running in normal mode. "
+            "Use `--strict` for stricter validation.[/dim]"
+        )
+
     sys.exit(1)
 
 
