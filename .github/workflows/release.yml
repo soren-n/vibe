@@ -111,7 +111,7 @@ jobs:
       run: |
         if [ -f ~/.vsce-pat ]; then
           cd vscode-extension
-          npx @vscode/vsce login soren-n --pat "$(cat ~/.vsce-pat)"
+          export VSCE_PAT="$(cat ~/.vsce-pat)"
         fi
 
     - name: Run semantic release
