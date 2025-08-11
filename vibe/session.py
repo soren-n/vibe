@@ -160,6 +160,30 @@ class WorkflowSession:
         # If there are more workflows in the stack, we've returned to parent
         return len(self.workflow_stack) > 0
 
+    def back_step(self) -> bool:
+        """Go back to the previous step in the current workflow.
+
+        Returns:
+            True if went back a step, False if already at first step
+
+        """
+        current_frame = self.current_frame
+        if not current_frame or current_frame.current_step <= 0:
+            return False
+
+        current_frame.current_step -= 1
+        self.last_accessed = datetime.now()
+        return True
+
+    def restart_session(self) -> None:
+        """Restart the entire session from the beginning.
+
+        Resets all workflows in the stack back to step 0.
+        """
+        for frame in self.workflow_stack:
+            frame.current_step = 0
+        self.last_accessed = datetime.now()
+
     def break_workflow(self) -> bool:
         """Break out of the current workflow and return to parent.
 

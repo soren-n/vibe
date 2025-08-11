@@ -47,18 +47,21 @@ Vibe is an AI-powered workflow orchestration system that bridges natural languag
 **Architecture Patterns:**
 
 - Python-based core with modular workflow system
-- YAML-defined workflows organized by category (core/, python/, frontend/, etc.)
+- YAML-defined workflows organized by category (automation/, core/, development/, documentation/, frontend/, media/, python/, session/, test/, testing/)
 - Natural language query processing with intelligent workflow routing
 - Composable workflow system with dependency management
 - Self-documenting workflow architecture
+- MCP (Model Context Protocol) server for step-by-step workflow execution
 
 **Code Organization:**
 
 - `vibe/` - Core Python package
 - `vibe/workflows/` - Workflow system and definitions
-- `vibe/workflows/data/` - Organized YAML workflow definitions
+- `vibe/workflows/data/` - Organized YAML workflow definitions (49 workflows across 10 categories)
 - `vibe/agents/` - AI agent configurations and chat modes
 - `vibe/analyzer.py` - Natural language query analysis
+- `vibe/session.py` - Session-based workflow execution with MCP support
+- `mcp-server/` - Model Context Protocol server for AI agent integration
 - `docs/` - Project documentation and examples
 
 **Quality Patterns:**
@@ -87,6 +90,50 @@ Vibe is an AI-powered workflow orchestration system that bridges natural languag
 - **Session Management**: Use `vibe/workflows/data/session/` workflows for development sessions
 - **Development Process**: Use `vibe/workflows/data/development/` workflows for git, dependencies, branching
 
+### MCP Tool Integration
+
+**MANDATORY**: All AI agents must leverage Vibe MCP tools for session-based workflow execution:
+
+#### Available MCP Tools (7 total):
+1. **start_workflow** - Begin new step-by-step workflow sessions from natural language prompts
+2. **get_workflow_status** - Check current session progress, workflow stack, and step details
+3. **advance_workflow** - Move to next step in current workflow
+4. **back_workflow** - Navigate back to previous step (error correction/retry)
+5. **restart_workflow** - Restart entire session from beginning with same prompt
+6. **break_workflow** - Exit current workflow, return to parent workflow
+7. **list_workflow_sessions** - View all active sessions for management
+
+#### MCP-Enhanced Development Patterns:
+- **Session-Based Execution**: Use MCP tools instead of linear command execution
+- **Workflow Stack Management**: Leverage nested workflow visibility for complex tasks
+- **Error Recovery**: Use `back_workflow` and `restart_workflow` for corrections
+- **Multi-Session Management**: Handle concurrent workflows via `list_workflow_sessions`
+- **Step-by-Step Guidance**: Use `get_workflow_status` to understand current context
+
+#### MCP Usage Examples:
+```javascript
+// Start guided workflow
+mcp_vibe-workflow_start_workflow({
+  prompt: "analyze project and run quality checks",
+  project_type: "python"
+})
+
+// Monitor progress and workflow stack
+mcp_vibe-workflow_get_workflow_status({
+  session_id: "abc12345"
+})
+
+// Navigate backwards if needed
+mcp_vibe-workflow_back_workflow({
+  session_id: "abc12345"
+})
+
+// Restart if major correction needed
+mcp_vibe-workflow_restart_workflow({
+  session_id: "abc12345"
+})
+```
+
 ## Technology Stack
 
 - **Core**: Python 3.x with Rich for beautiful terminal output
@@ -112,13 +159,17 @@ Vibe is an AI-powered workflow orchestration system that bridges natural languag
 │       ├── __init__.py       # Workflow loading
 │       ├── loader.py         # YAML workflow loader
 │       ├── models.py         # Workflow data models
-│       └── data/             # Organized workflow definitions
+│       └── data/             # Organized workflow definitions (49 workflows across 10 categories)
 │           ├── core/         # Core project operations (6 workflows)
 │           ├── session/      # Session management (2 workflows)
 │           ├── documentation/ # Documentation workflows (4 workflows)
 │           ├── development/  # Development process (3 workflows)
 │           ├── python/       # Python-specific (6 workflows)
-│           └── frontend/     # Frontend/JavaScript (8 workflows)
+│           ├── frontend/     # Frontend/JavaScript (8 workflows)
+│           ├── automation/   # CI/CD and automation (6 workflows)
+│           ├── testing/      # Test suites and validation (5 workflows)
+│           └── media/        # Media processing (4 workflows)
+├── mcp-server/               # Model Context Protocol server
 ├── docs/                     # Project documentation
 ├── README.md                 # Project overview and quick start
 ├── pyproject.toml           # Python project configuration
@@ -207,6 +258,9 @@ The application implements a comprehensive workflow orchestration system:
 - **Documentation**: Creation, review, ADR management, documentation-driven development
 - **Development Process**: Git workflow, branching, dependency management
 - **Session Management**: Development session lifecycle and retrospectives
+- **Automation**: CI/CD, quality gates, deployment automation
+- **Testing**: Comprehensive test suites, performance testing
+- **Media**: Image processing, video handling, asset optimization
 
 ### Key Components
 

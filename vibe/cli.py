@@ -813,6 +813,67 @@ def mcp_break(session_id: str) -> None:
         sys.exit(1)
 
 
+@mcp.command("back")
+@click.argument("session_id")
+def mcp_back(session_id: str) -> None:
+    """Go back to the previous step in the current workflow.
+
+    Args:
+        session_id: ID of the session
+
+    Returns JSON with previous step info.
+
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.back_session(session_id)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {"success": False, "error": f"Failed to go back: {str(e)}"}
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
+@mcp.command("restart")
+@click.argument("session_id")
+def mcp_restart(session_id: str) -> None:
+    """Restart the session from the beginning.
+
+    Args:
+        session_id: ID of the session to restart
+
+    Returns JSON with first step info.
+
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.restart_session(session_id)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {
+            "success": False,
+            "error": f"Failed to restart session: {str(e)}",
+        }
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
 @mcp.command("list")
 def mcp_list() -> None:
     """List all active workflow sessions.

@@ -174,6 +174,44 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'back_workflow': {
+        const { session_id } = args;
+
+        if (!session_id || !isValidSessionId(session_id)) {
+          throw new Error('session_id is required and must be a valid 8-character hex string');
+        }
+
+        const result = await executeVibeCommand(['mcp', 'back', session_id]);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'restart_workflow': {
+        const { session_id } = args;
+
+        if (!session_id || !isValidSessionId(session_id)) {
+          throw new Error('session_id is required and must be a valid 8-character hex string');
+        }
+
+        const result = await executeVibeCommand(['mcp', 'restart', session_id]);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
       case 'list_workflow_sessions': {
         const result = await executeVibeCommand(['mcp', 'list']);
 
@@ -269,6 +307,34 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             session_id: {
               type: 'string',
               description: 'The session ID for the workflow to break out of'
+            }
+          },
+          required: ['session_id']
+        }
+      },
+      {
+        name: 'back_workflow',
+        description: 'Go back to the previous step in the current workflow',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            session_id: {
+              type: 'string',
+              description: 'The session ID for the workflow to go back a step'
+            }
+          },
+          required: ['session_id']
+        }
+      },
+      {
+        name: 'restart_workflow',
+        description: 'Restart the session from the beginning, keeping the same prompt but resetting all progress',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            session_id: {
+              type: 'string',
+              description: 'The session ID for the workflow to restart'
             }
           },
           required: ['session_id']

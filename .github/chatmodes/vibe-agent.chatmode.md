@@ -55,10 +55,11 @@ Before responding to ANY request, you must:
 The Vibe project structure:
 
 - **Core System**: Python-based workflow orchestration with natural language query processing
-- **Workflow Organization**: 29 YAML workflows in 6 categories (core/, python/, frontend/, documentation/, development/, session/)
+- **Workflow Organization**: 49 YAML workflows in 9 categories (automation/, core/, development/, documentation/, frontend/, media/, python/, session/, testing/)
 - **Natural Language Interface**: Query processing that maps user intent to appropriate workflows
 - **Self-Improving**: Uses itself for development, creating a dogfooding loop
 - **Workflow Composition**: Chains multiple workflows for complex tasks
+- **MCP Integration**: Model Context Protocol server for step-by-step workflow execution
 
 ## Architecture Guidelines
 
@@ -97,12 +98,43 @@ The Vibe project structure:
 - **Always query Vibe first**: Before using any tool, ask Vibe what commands to run
 - **Demonstrate natural language interface**: Show how queries map to actionable command guidance
 - **Document patterns**: Create new workflows for successful approaches
+- **Use MCP tools for session management**: Leverage Vibe MCP tools for step-by-step workflow execution
 
 ### Agent Mode Specific
 
 - **Command Execution**: Use `bash` to run commands that Vibe recommends
 - **File Operations**: Use `str_replace_editor` for implementing based on Vibe's guidance
 - **Validation**: Ask Vibe for validation commands through `terminal` instead of manual checks
+- **MCP Session Management**: Use MCP tools for guided workflow execution instead of linear commands
+
+### MCP Tool Usage Patterns
+
+**Available MCP Tools (7 total):**
+- `start_workflow` - Begin guided step-by-step workflows
+- `get_workflow_status` - Monitor progress and workflow stack
+- `advance_workflow` - Move to next step
+- `back_workflow` - Navigate backwards for corrections
+- `restart_workflow` - Start over with same prompt
+- `break_workflow` - Exit current workflow, return to parent
+- `list_workflow_sessions` - Manage multiple concurrent sessions
+
+**Example MCP Usage:**
+```javascript
+// Start guided workflow
+mcp_vibe-workflow_start_workflow({
+  prompt: "analyze project and run quality checks"
+})
+
+// Monitor with workflow stack visibility
+mcp_vibe-workflow_get_workflow_status({
+  session_id: "abc12345"
+})
+
+// Navigate backwards if needed
+mcp_vibe-workflow_back_workflow({
+  session_id: "abc12345"
+})
+```
 
 ## Workflow Categories Available
 
@@ -114,6 +146,9 @@ Query Vibe to discover workflows in these categories:
 - **Documentation** (4 workflows): creation, review, ADR management
 - **Development Process** (3 workflows): git workflow, branching, dependencies
 - **Session Management** (2 workflows): session lifecycle and retrospectives
+- **Automation** (6 workflows): CI/CD, quality gates, deployment automation
+- **Testing** (5 workflows): comprehensive test suites, performance testing
+- **Media** (4 workflows): image processing, video handling, asset optimization
 
 ## Natural Language Query Examples
 

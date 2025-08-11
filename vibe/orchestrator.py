@@ -431,6 +431,73 @@ class WorkflowOrchestrator:
                 "message": "Session ended - no parent workflow",
             }
 
+    def back_session(self, session_id: str) -> dict[str, Any]:
+        """Go back to the previous step in the current workflow.
+
+        Args:
+            session_id: ID of the session
+
+        Returns:
+            Dict with previous step info or error
+
+        """
+        session = self.session_manager.load_session(session_id)
+        if not session:
+            return {"success": False, "error": f"Session {session_id} not found"}
+
+        # Try to go back a step
+        went_back = session.back_step()
+
+        if went_back:
+            # Save updated session and return current step
+            self.session_manager.save_session(session)
+            current_step = session.get_current_step()
+
+            return {
+                "success": True,
+                "session_id": session.session_id,
+                "current_step": current_step,
+                "workflow_stack": [
+                    frame.workflow_name for frame in session.workflow_stack
+                ],
+                "message": "Went back to previous step",
+            }
+        else:
+            return {
+                "success": False,
+                "error": "Cannot go back - already at first step",
+                "session_id": session.session_id,
+            }
+
+    def restart_session(self, session_id: str) -> dict[str, Any]:
+        """Restart the session from the beginning.
+
+        Args:
+            session_id: ID of the session to restart
+
+        Returns:
+            Dict with first step info or error
+
+        """
+        session = self.session_manager.load_session(session_id)
+        if not session:
+            return {"success": False, "error": f"Session {session_id} not found"}
+
+        # Restart the session
+        session.restart_session()
+
+        # Save updated session and return first step
+        self.session_manager.save_session(session)
+        current_step = session.get_current_step()
+
+        return {
+            "success": True,
+            "session_id": session.session_id,
+            "current_step": current_step,
+            "workflow_stack": [frame.workflow_name for frame in session.workflow_stack],
+            "message": "Session restarted from beginning",
+        }
+
     def list_sessions(self) -> dict[str, Any]:
         """List all active workflow sessions.
 
