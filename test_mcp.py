@@ -35,7 +35,7 @@ def run_vibe_mcp_command(cmd: list[str]) -> dict[str, Any]:
         return {"success": False, "error": str(e)}
 
 
-def test_mcp_workflow() -> bool:
+def test_mcp_workflow() -> None:
     """Test the complete MCP workflow."""
     print("🧪 Testing MCP Workflow Functionality")
     print("=" * 40)
@@ -46,12 +46,12 @@ def test_mcp_workflow() -> bool:
 
     if not result.get("success"):
         print(f"❌ Failed to start session: {result.get('error')}")
-        return False
+        assert False, f"Failed to start session: {result.get('error')}"
 
     session_id = result.get("session_id")
     if not session_id:
         print("❌ No session ID returned")
-        return False
+        assert False, "No session ID returned"
 
     current_step = result.get("current_step")
 
@@ -66,7 +66,7 @@ def test_mcp_workflow() -> bool:
 
     if not result.get("success"):
         print(f"❌ Failed to get status: {result.get('error')}")
-        return False
+        assert False, f"Failed to get status: {result.get('error')}"
 
     print("✅ Session status retrieved")
     print(f"   Prompt: {result.get('prompt', 'N/A')}")
@@ -78,7 +78,7 @@ def test_mcp_workflow() -> bool:
 
     if not result.get("success"):
         print(f"❌ Failed to advance: {result.get('error')}")
-        return False
+        assert False, f"Failed to advance: {result.get('error')}"
 
     has_next = result.get("has_next", False)
     current_step = result.get("current_step")
@@ -94,7 +94,7 @@ def test_mcp_workflow() -> bool:
 
     if not result.get("success"):
         print(f"❌ Failed to list sessions: {result.get('error')}")
-        return False
+        assert False, f"Failed to list sessions: {result.get('error')}"
 
     sessions = result.get("sessions", [])
     print(f"✅ Found {len(sessions)} active sessions")
@@ -116,9 +116,16 @@ def test_mcp_workflow() -> bool:
             print(f"⚠️  Break command result: {result.get('error', 'Unknown')}")
 
     print("\n🎉 MCP workflow test completed successfully!")
-    return True
 
 
 if __name__ == "__main__":
-    success = test_mcp_workflow()
-    exit(0 if success else 1)
+    try:
+        test_mcp_workflow()
+        print("✅ All tests passed!")
+        exit(0)
+    except AssertionError as e:
+        print(f"❌ Test failed: {e}")
+        exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        exit(1)

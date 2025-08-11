@@ -60,14 +60,14 @@ const session = await startWorkflow("run quality checks on my recent changes");
 
 // Agent receives targeted steps:
 // Step 1: "Run type checking"
-// Step 2: "Run linting validation" 
+// Step 2: "Run linting validation"
 // Step 3: "Execute tests"
 // etc.
 ```
 
 ### Feature Development
 
-```javascript  
+```javascript
 // Start feature enhancement workflow
 const session = await startWorkflow("implement user authentication");
 
@@ -104,7 +104,7 @@ The Vibe MCP server automatically accesses project-relevant workflows:
 - `quality` - Running validation and testing
 - `documentation` - Creating/updating docs
 
-### Frontend Specific  
+### Frontend Specific
 - `component` - Creating UI components
 - `styling` - CSS/styling implementations
 - `responsive` - Mobile-responsive design

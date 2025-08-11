@@ -1,0 +1,31 @@
+name: "CI/CD Pipeline Management"
+description: "🚀 Manage CI/CD pipeline and automate deployment workflows"
+triggers:
+  - "setup ci cd"
+  - "setup github actions"
+  - "configure pipeline"
+  - "setup continuous integration"
+  - "validate ci pipeline"
+
+category: "development"
+
+steps:
+  - step_text: "🔍 Check if GitHub Actions workflow file exists and is valid"
+    command: "find .github/workflows -name '*.yml' -o -name '*.yaml' | head -5"
+    working_dir: "."
+
+  - step_text: "✅ Validate YAML syntax of workflow files"
+    command: "uv run python -c \"import yaml; [yaml.safe_load(open(f).read()) for f in __import__('pathlib').Path('.github/workflows').glob('*.yml')]\""
+    working_dir: "."
+
+  - step_text: "🧪 Run the same quality checks that CI will run"
+    command: "uv run pre-commit run --all-files && uv run pytest -v"
+    working_dir: "."
+
+  - step_text: "🔌 Test MCP server functionality that CI will validate"
+    command: "cd mcp-server && npm test && node test.js"
+    working_dir: "."
+
+  - step_text: "📊 Test coverage reporting functionality"
+    command: "uv run pytest --cov=vibe --cov-report=term"
+    working_dir: "."

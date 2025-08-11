@@ -560,7 +560,7 @@ def workflows() -> None:
 @click.option(
     "--path",
     "path",
-    type=click.Path(exists=True, path_type=Path),
+    type=click.Path(exists=True),
     default=None,
     help="Directory to scan (defaults to built-in workflows directory)",
 )
@@ -586,7 +586,7 @@ def workflows_validate(path: Path | None) -> None:
 @click.option(
     "--path",
     "path",
-    type=click.Path(exists=True, path_type=Path),
+    type=click.Path(exists=True),
     default=None,
     help="Directory to scan (defaults to built-in workflows directory)",
 )

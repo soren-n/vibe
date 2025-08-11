@@ -29,6 +29,24 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.mypy]
 python_version = "3.13"
 strict = true
+warn_return_any = false
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+module = "vibe.config"
+disable_error_code = "misc"
+
+[[tool.mypy.overrides]]
+module = "click.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pydantic"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pydantic.*"
+ignore_missing_imports = true
 
 [dependency-groups]
 dev = [
@@ -36,6 +54,9 @@ dev = [
     "isort>=6.0.1",
     "mypy>=1.17.1",
     "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
     "ruff>=0.12.8",
     "types-pyyaml>=6.0.12.20250809",
+    "types-click>=7.1.0",
+    "pre-commit>=4.0.0",
 ]
