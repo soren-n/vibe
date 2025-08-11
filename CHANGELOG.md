@@ -1,3 +1,9 @@
+## [0.4.1](https://github.com/soren-n/vibe/compare/v0.4.0...v0.4.1) (2025-08-11)
+
+### Bug Fixes
+
+* add TestPyPI publishing step to release workflow ([3e96c38](https://github.com/soren-n/vibe/commit/3e96c38db69c60fc9fdddcc2a4961fbffac873ba))
+
 ## [0.4.0](https://github.com/soren-n/vibe/compare/v0.3.0...v0.4.0) (2025-08-11)
 
 ### Features
