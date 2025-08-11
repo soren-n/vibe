@@ -2,7 +2,7 @@
   "name": "vibe-workflows",
   "displayName": "Vibe AI Workflows",
   "description": "AI-powered workflow orchestration for development tasks",
-  "version": "0.1.2",
+  "version": "0.2.2",
   "publisher": "soren-n",
   "icon": "images/vibe-icon.png",
   "repository": {

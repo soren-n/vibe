@@ -1,3 +1,9 @@
+## [0.2.2](https://github.com/soren-n/vibe/compare/v0.2.1...v0.2.2) (2025-08-11)
+
+### Bug Fixes
+
+* update vsce authentication to use environment variable instead of deprecated --pat flag ([affc328](https://github.com/soren-n/vibe/commit/affc328e647ddcdb89c55d6327961fcf384b3176))
+
 # Changelog
 
 All notable changes to the Vibe project will be documented in this file.
