@@ -11,7 +11,7 @@ cd /path/to/vibe/mcp-server
 node test.js
 ```
 
-You should see: `🎉 All tests completed successfully!`
+You should see: `All tests completed successfully!`
 
 ### 2. Configure VSCode MCP Settings
 

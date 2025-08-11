@@ -78,7 +78,7 @@ Start a new workflow session from a natural language prompt.
   "current_step": {
     "workflow": "python_analysis",
     "step_number": 1,
-    "step_text": "📄 **Discover Python files**: `find . -name '*.py'`",
+    "step_text": "Discover Python files: `find . -name '*.py'`",
     "is_command": true
   },
   "workflow_stack": ["python_analysis", "quality_check"],
@@ -108,7 +108,7 @@ Mark current step complete and advance to next step.
   "current_step": {
     "workflow": "python_analysis",
     "step_number": 2,
-    "step_text": "📈 **Count Python files**: `find . -name '*.py' | wc -l`",
+    "step_text": "Count Python files: `find . -name '*.py' | wc -l`",
     "is_command": true
   },
   "has_next": true

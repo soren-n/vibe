@@ -1,5 +1,5 @@
 name: "Initialize Vibe Project"
-description: "🚀 Initialize vibe project with proper configuration and GitHub AI integration"
+description: "Initialize vibe project with proper configuration and GitHub AI integration"
 triggers:
   - "init"
   - "initialize"
@@ -7,11 +7,11 @@ triggers:
   - "create project"
   - "bootstrap project"
 steps:
-  - "🚀 **Create a basic Vibe configuration file** (`.vibe.yaml`) in your project root:"
+  - "Create a basic Vibe configuration file (`.vibe.yaml`) in your project root:"
   - "```yaml\nprotocol_version: 1\nproject_type: \"auto\"\n\n# Vibe workflow orchestration configuration\n# See https://github.com/vibe-dev/vibe for documentation\n```"
-  - "📁 **Set up GitHub AI integration structure** by creating `.github/chatmodes` directory for custom AI modes"
-  - "📝 **Create `.github/copilot-instructions.md`** using a concise, guidance-first template (see example below)"
-  - "🤖 **Add `.github/chatmodes/vibe-agent.chatmode.md`** to enable a workflow-first chat mode (see example below)"
+  - "Set up GitHub AI integration structure by creating `.github/chatmodes` directory for custom AI modes"
+  - "Create `.github/copilot-instructions.md` using a concise, guidance-first template (see example below)"
+  - "Add `.github/chatmodes/vibe-agent.chatmode.md` to enable a workflow-first chat mode (see example below)"
   - "```markdown
     # Vibe Project — AI Agent Guide (Concise)
 
@@ -80,9 +80,9 @@ steps:
     Output policy: short replies, ≤6 bullets, commands only when executed, delta updates.
     Tools (MCP): start_workflow, get_workflow_status, advance_workflow, back_workflow, restart_workflow, break_workflow, list_workflow_sessions.
     ```"
-  - "✅ **Verify the setup** by running `vibe check` to validate configuration"
-  - "🤖 **Enable VS Code Agent Mode** - Ensure agent mode is enabled in VS Code settings: `\"chat.agent.enabled\": true`"
-  - "🔗 **Connect MCP Tools** - Install Vibe MCP extension and configure it to access workflow tools"
-  - "📋 **Explore available workflows** with `vibe list-workflows` to see what's available"
-  - "🎯 **Next steps**: Try `vibe guide \"setup github ai integration\"` for advanced AI integration"
-  - "💡 **Remember**: Vibe workflows provide guidance for development tasks - use them throughout your development process!"
+  - "Verify the setup by running `vibe check` to validate configuration"
+  - "Enable VS Code Agent Mode - Ensure agent mode is enabled in VS Code settings: `\"chat.agent.enabled\": true`"
+  - "Connect MCP Tools - Install Vibe MCP extension and configure it to access workflow tools"
+  - "Explore available workflows with `vibe list-workflows` to see what's available"
+  - "Next steps: Try `vibe guide \"setup github ai integration\"` for advanced AI integration"
+  - "Remember: Vibe workflows provide guidance for development tasks - use them throughout your development process!"

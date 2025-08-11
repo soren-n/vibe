@@ -23,7 +23,7 @@ steps:
     working_dir: "."
 
   - step_text: "Verify git hooks integration is working"
-    command: "ls -la .git/hooks/ | grep pre-commit || echo 'Setting up hooks...'"
+    command: "Check that pre-commit hooks are installed in .git/hooks/ directory (use platform-appropriate directory listing)"
     working_dir: "."
 
   - step_text: "Execute automated quality checks to validate setup"

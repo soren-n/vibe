@@ -2,7 +2,7 @@
 
 This document provides comprehensive guidance for the Python release pipeline implemented in this project.
 
-## 🚀 Pipeline Overview
+## Pipeline Overview
 
 Our release pipeline implements modern Python packaging best practices with automated quality gates, testing phases, and production deployment.
 

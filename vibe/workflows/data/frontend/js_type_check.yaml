@@ -6,9 +6,9 @@ triggers:
   - "type.*check.*ts"
   - "check.*typescript"
 steps:
-  - "🔍 **Type Check**: Run `npx tsc --noEmit` to check TypeScript types without emitting files"
-  - "📋 **Alternative Methods**: Try `npm run type-check` if project has custom type checking script"
-  - "✅ **Validate Results**: Ensure no type errors are reported before proceeding"
+  - "Type Check: Run `npx tsc --noEmit` to check TypeScript types without emitting files"
+  - "Alternative Methods: Try `npm run type-check` if project has custom type checking script"
+  - "Validate Results: Ensure no type errors are reported before proceeding"
 project_types:
   - "typescript"
 conditions:

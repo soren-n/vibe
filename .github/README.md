@@ -4,7 +4,7 @@ This directory contains GitHub-specific configuration files for the Vibe project
 
 ## Structure
 
-### 📄 copilot-instructions.md
+### copilot-instructions.md
 Comprehensive AI agent collaboration guide for developing Vibe. This file contains:
 
 - **Dogfooding Requirements**: Use Vibe to develop Vibe itself
@@ -15,7 +15,7 @@ Comprehensive AI agent collaboration guide for developing Vibe. This file contai
 
 **Key Principle**: This file enforces the self-improving nature of Vibe by requiring all AI agents to use Vibe workflows for development tasks.
 
-### 📁 chatmodes/
+### chatmodes/
 VSCode Copilot chat mode configurations for project-specific AI assistance.
 
 #### vibe-agent.chatmode.md

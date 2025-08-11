@@ -6,7 +6,7 @@ triggers:
   - "verify setup"
   - "config status"
 steps:
-  - "Check for Vibe configuration file: Look for `.vibe.yaml` in project root with `find . -maxdepth 1 -name '.vibe.yaml'`"
+  - "Check for Vibe configuration file: Look for `.vibe.yaml` in project root"
   - "If configuration found: Review settings to understand your workflow setup"
   - "If configuration missing: Vibe will use default workflows (normal for most projects)"
   - "Create `.vibe.yaml` file to customize workflow behavior for this project (optional)"

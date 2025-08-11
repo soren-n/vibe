@@ -7,9 +7,9 @@ triggers:
   - "setup.*python"
   - "install.*requirements"
 steps:
-  - "📦 **Install Dependencies**: Use `uv install` (modern), `pip install -e .` (editable), or `pip install -r requirements.txt` (traditional)"
-  - "✅ **Verify Installation**: Check that dependencies are properly installed and available for import in Python"
-  - "🔄 **Update as Needed**: Consider upgrading dependencies if installation conflicts occur or newer versions are available"
+  - "Install Dependencies: Use `uv install` (modern), `pip install -e .` (editable), or `pip install -r requirements.txt` (traditional)"
+  - "Verify Installation: Check that dependencies are properly installed and available for import in Python"
+  - "Update as Needed: Consider upgrading dependencies if installation conflicts occur or newer versions are available"
 project_types:
   - "python"
 conditions:

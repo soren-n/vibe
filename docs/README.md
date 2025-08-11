@@ -9,6 +9,7 @@ Vibe is an AI-powered development workflow assistant that provides autonomous ta
 ### Core Philosophy
 - **[Vibe Philosophy](vibe-philosophy.md)**: Core principles of autonomous AI agent operation
 - **[Development Guidelines](development-guidelines.md)**: Project standards and best practices
+- **[Language Standards](language-standards.md)**: Professional language and formatting requirements
 
 ### Architecture
 - **[Workflow Architecture](workflow-architecture.md)**: YAML-based workflow system design

@@ -279,12 +279,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'lint_project': {
-        const { 
-          path: projectPath, 
+        const {
+          path: projectPath,
           format = 'json',  // Default to JSON for MCP compatibility
-          severity, 
-          type: issueType, 
-          working_dir 
+          severity,
+          type: issueType,
+          working_dir
         } = args;
 
         const vibeArgs = ['lint', 'project'];
@@ -307,11 +307,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'lint_text': {
-        const { 
-          text, 
-          context = 'general', 
+        const {
+          text,
+          context = 'general',
           format = 'json',  // Default to JSON for MCP compatibility
-          working_dir 
+          working_dir
         } = args;
 
         if (!text || typeof text !== 'string') {

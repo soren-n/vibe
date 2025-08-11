@@ -1,5 +1,5 @@
 name: cleanup
-description: "🧹 Clean up temporary files and maintain project hygiene"
+description: "Clean up temporary files and maintain project hygiene"
 triggers:
   - "cleanup"
   - "clean up"
@@ -7,9 +7,12 @@ triggers:
   - "project cleanup"
   - "tidy up"
 steps:
-  - "Scan for debug/dev artifacts (examples): `find . -name 'debug-*.html' -o -name 'test-*.html' -o -name 'harness.html' | grep -v node_modules | head -20`"
-  - "Check investigation docs: `find . -name 'DEBUG_*.md' -o -name 'debug-*.md' -o -name 'investigation-*.md' | head -20`"
-  - "Find temp/backup files: `find . -name 'fix-*' -o -name 'temp-*' -o -name 'wip-*' -o -name 'draft-*' -o -name '*.bak' -o -name '*backup*' | head -20`"
-  - "Clean editor temps: `find . -name '*.swp' -o -name '*.swo' -o -name '*~' -o -name '#*#' | head -20`"
+  - "Scan for debug/dev artifacts (examples): Look for debug HTML files (debug-*.html, test-*.html, harness.html), excluding node_modules"
+  - "Check investigation docs: Find debug/investigation markdown files (DEBUG_*.md, debug-*.md, investigation-*.md)"
+  - "Find temp/backup files: Look for temporary and backup files (fix-*, temp-*, wip-*, draft-*, *.bak, *backup*)"
+  - "Clean editor temps: Find editor temporary files (*.swp, *.swo, *~, #*#)"
+  - "Remove session summaries: Look for temporary enhancement/summary documents (*SUMMARY*.md, *UPDATE*.md)"
+  - "Clean build artifacts: Remove old build outputs (*.vsix, dist/old-*, build/temp-*)"
+  - "Check language standards: Scan for emoji usage in documentation and workflow files using project linting tools"
   - "For large results, sample with head and confirm before deletion; add patterns to .gitignore when appropriate."
   - "Use `git status` to ensure important files are tracked before cleanup."

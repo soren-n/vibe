@@ -16,9 +16,9 @@ async function testLintMCP() {
   try {
     // Start MCP server
     console.log('🚀 Starting MCP server...');
-    serverProcess = spawn('node', ['index.js'], { 
+    serverProcess = spawn('node', ['index.js'], {
       cwd: process.cwd(),
-      stdio: ['pipe', 'pipe', 'inherit'] 
+      stdio: ['pipe', 'pipe', 'inherit']
     });
 
     // Connect client
@@ -43,7 +43,7 @@ async function testLintMCP() {
         }
       }
     });
-    
+
     console.log('📞 Called: lint_project');
     const projectResult = JSON.parse(projectLintResult.content[0].text);
     console.log('✅ Success:', projectResult.success);
@@ -66,7 +66,7 @@ async function testLintMCP() {
         }
       }
     });
-    
+
     console.log('📞 Called: lint_text');
     const textResult = JSON.parse(textLintResult.content[0].text);
     console.log('✅ Success:', textResult.success);
@@ -89,7 +89,7 @@ async function testLintMCP() {
         }
       }
     });
-    
+
     console.log('📞 Called: lint_project (naming only)');
     const filteredResult = JSON.parse(filteredLintResult.content[0].text);
     console.log('✅ Success:', filteredResult.success);
@@ -105,7 +105,7 @@ async function testLintMCP() {
     console.log('  ✅ Project linting (summary format)');
     console.log('  ✅ Text content linting');
     console.log('  ✅ Filtered project linting (naming conventions)');
-    
+
   } catch (error) {
     console.error('❌ Test failed:', error.message);
     console.error(error);

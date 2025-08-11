@@ -17,7 +17,7 @@ Each YAML workflow contains:
 
 ## Directory Structure
 
-### 📁 core/ (6 workflows)
+### core/ (6 workflows)
 Core project operations and general functionality:
 - `analysis.yaml` - Project analysis and context understanding
 - `check.yaml` - Validation and quality checks
@@ -26,25 +26,25 @@ Core project operations and general functionality:
 - `next_steps.yaml` - Workflow continuation and suggestions
 - `refactor.yaml` - Code refactoring operations
 
-### 📁 session/ (2 workflows)
+### session/ (2 workflows)
 Session management and workflow orchestration:
 - `session.yaml` - Development session management
 - `session_retrospective.yaml` - Session completion and retrospectives
 
-### 📁 documentation/ (4 workflows)
+### documentation/ (4 workflows)
 Documentation creation, maintenance, and quality:
 - `adr_management.yaml` - Architecture Decision Records
 - `documentation.yaml` - General documentation tasks
 - `documentation_driven_development.yaml` - DDD workflow support
 - `documentation_review.yaml` - Documentation quality and updates
 
-### 📁 development/ (3 workflows)
+### development/ (3 workflows)
 Development process and Git workflow management:
 - `branch_strategy.yaml` - Git branching strategies
 - `dependency_update.yaml` - Dependency management
 - `git_management.yaml` - Git operations and workflow
 
-### 📁 python/ (6 workflows)
+### python/ (6 workflows)
 Python-specific development workflows:
 - `python_build.yaml` - Python project building
 - `python_env.yaml` - Python environment management
@@ -53,7 +53,7 @@ Python-specific development workflows:
 - `python_test.yaml` - Python testing workflows
 - `python_type_check.yaml` - Python type checking
 
-### 📁 frontend/ (8 workflows)
+### frontend/ (8 workflows)
 Frontend development and JavaScript/Node.js workflows:
 - `js_build.yaml` - JavaScript/Node.js building
 - `js_dev.yaml` - JavaScript development server
