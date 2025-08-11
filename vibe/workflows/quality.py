@@ -207,8 +207,7 @@ def _normalize_data(data: dict[str, Any]) -> dict[str, Any]:
 def format_workflow_yamls(
     root: Path | None = None, *, write: bool = False
 ) -> list[str]:
-    """
-    Normalize workflow YAMLs and optionally write back.
+    """Normalize workflow YAMLs and optionally write back.
 
     Returns list of change summaries.
     """

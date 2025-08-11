@@ -1,6 +1,4 @@
-"""
-Basic tests for vibe to enable self-testing.
-"""
+"""Basic tests for vibe to enable self-testing."""
 
 import pytest
 

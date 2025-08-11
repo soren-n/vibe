@@ -1,6 +1,4 @@
-"""
-Configuration management for vibe.
-"""
+"""Configuration management for vibe."""
 
 from pathlib import Path
 

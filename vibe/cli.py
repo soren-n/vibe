@@ -1,6 +1,4 @@
-"""
-CLI interface for vibe.
-"""
+"""CLI interface for vibe."""
 
 import json
 import shutil
@@ -28,8 +26,7 @@ console = Console()
 @click.option("--version", "-v", is_flag=True, help="Show version and exit")
 @click.pass_context
 def cli(ctx: click.Context, version: bool) -> None:
-    """
-    Vibe: Intelligent workflow orchestrator for vibe coding.
+    """Vibe: Intelligent workflow orchestrator for vibe coding.
 
     Analyzes your prompts and executes appropriate development workflows.
     """
@@ -51,13 +48,13 @@ def run(
     quiet: bool,
     prompt: str,
 ) -> None:
-    """
-    Run workflow based on prompt analysis.
+    """Run workflow based on prompt analysis.
 
     Examples:
         vibe run "analyze the codebase structure"
         vibe run "implement user authentication"
         vibe run --workflow testing "validate everything"
+
     """
     run_workflow(prompt, workflow, config, project_type, quiet)
 
@@ -154,8 +151,7 @@ def _get_migration_guide(from_version: int | str, to_version: int) -> str:
 
 @cli.command()
 def check() -> None:
-    """
-    Validate vibe environment and configuration.
+    """Validate vibe environment and configuration.
 
     Checks:
     - Environment compatibility (required tools, dependencies)
@@ -677,8 +673,7 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
 # MCP (Model Context Protocol) commands for step-by-step workflow execution
 @cli.group()
 def mcp() -> None:
-    """
-    MCP server commands for step-by-step workflow execution.
+    """MCP server commands for step-by-step workflow execution.
 
     These commands are designed to be called by MCP servers to provide
     token-efficient workflow orchestration for AI agents.
@@ -691,13 +686,15 @@ def mcp() -> None:
 @click.option("--config", "-c", type=click.Path(exists=True), help="Config file path")
 @click.option("--project-type", "-t", help="Override project type detection")
 def mcp_start(prompt: str, config: str | None, project_type: str | None) -> None:
-    """
-    Start a new workflow session for step-by-step execution.
+    """Start a new workflow session for step-by-step execution.
 
     Args:
         prompt: The original prompt that triggered workflows
+        config: Optional path to configuration file
+        project_type: Optional override for project type detection
 
     Returns JSON with session info and first step.
+
     """
     try:
         # Load configuration
@@ -726,13 +723,13 @@ def mcp_start(prompt: str, config: str | None, project_type: str | None) -> None
 @mcp.command("status")
 @click.argument("session_id")
 def mcp_status(session_id: str) -> None:
-    """
-    Get current status of a workflow session.
+    """Get current status of a workflow session.
 
     Args:
         session_id: ID of the session to check
 
     Returns JSON with session status and current step.
+
     """
     try:
         # Use default config for session operations
@@ -758,13 +755,13 @@ def mcp_status(session_id: str) -> None:
 @mcp.command("next")
 @click.argument("session_id")
 def mcp_next(session_id: str) -> None:
-    """
-    Mark current step as complete and advance to next step.
+    """Mark current step as complete and advance to next step.
 
     Args:
         session_id: ID of the session to advance
 
     Returns JSON with next step info or completion status.
+
     """
     try:
         # Use default config for session operations
@@ -790,13 +787,13 @@ def mcp_next(session_id: str) -> None:
 @mcp.command("break")
 @click.argument("session_id")
 def mcp_break(session_id: str) -> None:
-    """
-    Break out of current workflow and return to parent workflow.
+    """Break out of current workflow and return to parent workflow.
 
     Args:
         session_id: ID of the session
 
     Returns JSON with parent workflow step info.
+
     """
     try:
         # Use default config for session operations
@@ -818,8 +815,7 @@ def mcp_break(session_id: str) -> None:
 
 @mcp.command("list")
 def mcp_list() -> None:
-    """
-    List all active workflow sessions.
+    """List all active workflow sessions.
 
     Returns JSON with list of active sessions.
     """
@@ -909,8 +905,7 @@ def guide(
     config_path: str | None = None,
     project_type: str | None = None,
 ) -> None:
-    """
-    Get plain text guidance for AI agents (no rich formatting).
+    """Get plain text guidance for AI agents (no rich formatting).
 
     This command outputs structured guidance that AI agents can easily
     parse and execute.
@@ -919,6 +914,7 @@ def guide(
         vibe guide "implement authentication"
         vibe guide "prepare for release"
         vibe guide "fix code quality issues"
+
     """
     try:
         # Load configuration

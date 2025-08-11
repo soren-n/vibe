@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Test script for MCP workflow functionality.
+"""Test script for MCP workflow functionality.
 
 This script tests the basic MCP commands to ensure they work correctly.
 """

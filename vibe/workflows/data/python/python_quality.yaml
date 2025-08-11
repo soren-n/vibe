@@ -19,8 +19,8 @@ steps:
   - "🧪 **Run tests after quality fixes**: `uv run pytest` to ensure code quality doesn't break functionality"
   - "📋 **Check imports**: Look for unused imports, missing imports, and import organization"
   - "📚 **Docstring quality**: Ensure all public functions have proper docstrings following standards"
-  - "🔒 **Security scan**: `uv run bandit -r .` for security vulnerability detection (optional but recommended)"
-  - "📦 **Dependency audit**: `uv audit` to check for known security vulnerabilities in dependencies"
+  - "🔒 **Security scan**: `uv run bandit -r .` for security vulnerability detection (install with `uv add --dev bandit` if needed, optional)"
+  - "📦 **Dependency audit**: Check for known security vulnerabilities with `pip-audit` (install with `uv add --dev pip-audit` if needed) or use GitHub security advisories"
   - "✅ **Final validation**: Verify all quality checks pass before considering work complete"
   - "💡 **Consider pre-commit hooks**: Set up automated quality checks with `pre-commit install` for future commits"
 project_types:

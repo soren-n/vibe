@@ -1,6 +1,4 @@
-"""
-Workflow orchestrator that plans and provides execution guidance.
-"""
+"""Workflow orchestrator that plans and provides execution guidance."""
 
 from typing import Any
 
@@ -17,6 +15,7 @@ class WorkflowOrchestrator:
     """Orchestrates workflow planning and provides execution guidance for AI agents."""
 
     def __init__(self, config: VibeConfig):
+        """Initialize the workflow orchestrator with configuration."""
         self.config = config
         self.console = Console()
         self.workflow_registry = get_workflow_registry()
@@ -257,14 +256,14 @@ class WorkflowOrchestrator:
     # Session-based workflow execution methods
 
     def start_session(self, prompt: str) -> dict[str, Any]:
-        """
-        Start a new workflow session for step-by-step execution.
+        """Start a new workflow session for step-by-step execution.
 
         Args:
             prompt: The original prompt that triggered workflows
 
         Returns:
             Dict with session info and first step
+
         """
         try:
             # Analyze prompt to get workflows
@@ -315,14 +314,14 @@ class WorkflowOrchestrator:
             return {"success": False, "error": f"Failed to start session: {str(e)}"}
 
     def get_session_status(self, session_id: str) -> dict[str, Any]:
-        """
-        Get the current status of a workflow session.
+        """Get the current status of a workflow session.
 
         Args:
             session_id: ID of the session
 
         Returns:
             Dict with session status and current step info
+
         """
         session = self.session_manager.load_session(session_id)
         if not session:
@@ -342,14 +341,14 @@ class WorkflowOrchestrator:
         }
 
     def advance_session(self, session_id: str) -> dict[str, Any]:
-        """
-        Mark current step as complete and advance to next step.
+        """Mark current step as complete and advance to next step.
 
         Args:
             session_id: ID of the session
 
         Returns:
             Dict with next step info or completion status
+
         """
         session = self.session_manager.load_session(session_id)
         if not session:
@@ -386,14 +385,14 @@ class WorkflowOrchestrator:
             }
 
     def break_session(self, session_id: str) -> dict[str, Any]:
-        """
-        Break out of current workflow and return to parent workflow.
+        """Break out of current workflow and return to parent workflow.
 
         Args:
             session_id: ID of the session
 
         Returns:
             Dict with parent workflow step info
+
         """
         session = self.session_manager.load_session(session_id)
         if not session:
@@ -429,11 +428,11 @@ class WorkflowOrchestrator:
             }
 
     def list_sessions(self) -> dict[str, Any]:
-        """
-        List all active workflow sessions.
+        """List all active workflow sessions.
 
         Returns:
             Dict with list of active sessions
+
         """
         try:
             session_ids = self.session_manager.list_active_sessions()
@@ -463,14 +462,14 @@ class WorkflowOrchestrator:
             return {"success": False, "error": f"Failed to list sessions: {str(e)}"}
 
     def _get_workflow_steps(self, workflow_name: str) -> list[str] | None:
-        """
-        Get steps for a specific workflow.
+        """Get steps for a specific workflow.
 
         Args:
             workflow_name: Name of the workflow
 
         Returns:
             List of workflow steps or None if not found
+
         """
         # Try built-in workflow first
         built_in_workflow = self.workflow_registry.get_workflow(workflow_name)

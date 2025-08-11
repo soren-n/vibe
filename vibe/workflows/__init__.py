@@ -8,6 +8,7 @@ class WorkflowRegistry:
     """Central registry for all built-in workflows."""
 
     def __init__(self) -> None:
+        """Initialize the workflow registry and load built-in workflows."""
         self.workflows: dict[str, Workflow] = {}
         self._load_built_in_workflows()
 

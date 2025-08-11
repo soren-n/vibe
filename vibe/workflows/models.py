@@ -1,5 +1,4 @@
-"""
-Workflow data structures for vibe CLI.
+"""Workflow data structures for vibe CLI.
 
 This module contains the core dataclass definitions for workflows,
 separated to avoid circular imports between core.py and loader.py.
@@ -10,8 +9,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Workflow:
-    """
-    Represents a complete workflow with triggers, guidance steps, and metadata.
+    """Represents a complete workflow with triggers, guidance steps, and metadata.
 
     A workflow consists of:
     - name: Unique identifier for the workflow

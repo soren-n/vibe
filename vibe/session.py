@@ -1,5 +1,4 @@
-"""
-Session management for step-by-step workflow execution.
+"""Session management for step-by-step workflow execution.
 
 This module provides session-based workflow orchestration that allows
 AI agents to execute workflows step-by-step without token overflow.
@@ -15,8 +14,7 @@ from typing import Any
 
 @dataclass
 class WorkflowFrame:
-    """
-    Represents a single workflow in the execution stack.
+    """Represents a single workflow in the execution stack.
 
     A workflow frame contains:
     - workflow_name: The name of the workflow being executed
@@ -43,11 +41,11 @@ class WorkflowFrame:
         return self.steps[self.current_step]
 
     def advance(self) -> bool:
-        """
-        Advance to the next step.
+        """Advance to the next step.
 
         Returns:
             True if advanced to next step, False if workflow is complete
+
         """
         if not self.is_complete:
             self.current_step += 1
@@ -57,8 +55,7 @@ class WorkflowFrame:
 
 @dataclass
 class WorkflowSession:
-    """
-    Represents a complete workflow execution session.
+    """Represents a complete workflow execution session.
 
     A session maintains:
     - session_id: Unique identifier for this session
@@ -78,8 +75,7 @@ class WorkflowSession:
     def create(
         cls, prompt: str, initial_workflows: list[tuple[str, list[str]]]
     ) -> "WorkflowSession":
-        """
-        Create a new workflow session.
+        """Create a new workflow session.
 
         Args:
             prompt: The original prompt that triggered the workflows
@@ -87,6 +83,7 @@ class WorkflowSession:
 
         Returns:
             New WorkflowSession instance
+
         """
         session_id = str(uuid.uuid4())[:8]  # Short UUID for readability
         now = datetime.now()
@@ -121,11 +118,11 @@ class WorkflowSession:
         )
 
     def get_current_step(self) -> dict[str, Any] | None:
-        """
-        Get information about the current step.
+        """Get information about the current step.
 
         Returns:
             Dict with step information, or None if session is complete
+
         """
         current_frame = self.current_frame
         if not current_frame or current_frame.is_complete:
@@ -141,11 +138,11 @@ class WorkflowSession:
         }
 
     def advance_step(self) -> bool:
-        """
-        Advance to the next step in the current workflow.
+        """Advance to the next step in the current workflow.
 
         Returns:
             True if advanced, False if no more steps
+
         """
         current_frame = self.current_frame
         if not current_frame:
@@ -164,11 +161,11 @@ class WorkflowSession:
         return len(self.workflow_stack) > 0
 
     def break_workflow(self) -> bool:
-        """
-        Break out of the current workflow and return to parent.
+        """Break out of the current workflow and return to parent.
 
         Returns:
             True if broke to parent workflow, False if no parent
+
         """
         if len(self.workflow_stack) <= 1:
             return False
@@ -183,13 +180,13 @@ class WorkflowSession:
         steps: list[str],
         context: dict[str, Any] | None = None,
     ) -> None:
-        """
-        Push a new workflow onto the stack (nested workflow).
+        """Push a new workflow onto the stack (nested workflow).
 
         Args:
             workflow_name: Name of the new workflow
             steps: Steps for the new workflow
             context: Optional context for the new workflow
+
         """
         frame = WorkflowFrame(
             workflow_name=workflow_name,
@@ -201,8 +198,7 @@ class WorkflowSession:
         self.last_accessed = datetime.now()
 
     def _is_command_step(self, step_text: str) -> bool:
-        """
-        Determine if a step contains executable commands.
+        """Determine if a step contains executable commands.
 
         This is a heuristic based on common command patterns.
         """
@@ -262,18 +258,17 @@ class WorkflowSession:
 
 
 class SessionManager:
-    """
-    Manages workflow sessions with persistence to disk.
+    """Manages workflow sessions with persistence to disk.
 
     Sessions are stored in ~/.vibe/sessions/ as JSON files.
     """
 
     def __init__(self, session_dir: Path | None = None):
-        """
-        Initialize session manager.
+        """Initialize session manager.
 
         Args:
             session_dir: Directory to store sessions (defaults to ~/.vibe/sessions/)
+
         """
         if session_dir is None:
             session_dir = Path.home() / ".vibe" / "sessions"
@@ -288,8 +283,7 @@ class SessionManager:
     def create_session(
         self, prompt: str, workflows: list[tuple[str, list[str]]]
     ) -> WorkflowSession:
-        """
-        Create and persist a new workflow session.
+        """Create and persist a new workflow session.
 
         Args:
             prompt: Original prompt that triggered workflows
@@ -297,20 +291,21 @@ class SessionManager:
 
         Returns:
             New WorkflowSession instance
+
         """
         session = WorkflowSession.create(prompt, workflows)
         self._save_session(session)
         return session
 
     def load_session(self, session_id: str) -> WorkflowSession | None:
-        """
-        Load a session from disk.
+        """Load a session from disk.
 
         Args:
             session_id: ID of session to load
 
         Returns:
             WorkflowSession instance or None if not found
+
         """
         session_file = self.session_dir / f"{session_id}.json"
         if not session_file.exists():
@@ -324,23 +319,23 @@ class SessionManager:
             return None
 
     def save_session(self, session: WorkflowSession) -> None:
-        """
-        Save a session to disk.
+        """Save a session to disk.
 
         Args:
             session: Session to save
+
         """
         self._save_session(session)
 
     def archive_session(self, session_id: str) -> bool:
-        """
-        Archive a completed session.
+        """Archive a completed session.
 
         Args:
             session_id: ID of session to archive
 
         Returns:
             True if archived successfully, False if session not found
+
         """
         session_file = self.session_dir / f"{session_id}.json"
         if not session_file.exists():
@@ -351,24 +346,24 @@ class SessionManager:
         return True
 
     def list_active_sessions(self) -> list[str]:
-        """
-        List all active session IDs.
+        """List all active session IDs.
 
         Returns:
             List of session IDs
+
         """
         session_files = self.session_dir.glob("*.json")
         return [f.stem for f in session_files]
 
     def cleanup_old_sessions(self, max_age_days: int = 7) -> int:
-        """
-        Clean up old sessions.
+        """Clean up old sessions.
 
         Args:
             max_age_days: Maximum age in days before archiving
 
         Returns:
             Number of sessions archived
+
         """
         from datetime import timedelta
 

@@ -6,12 +6,12 @@ from typing import Any
 
 
 class ProjectDetector:
-    """
-    Intelligent project type detection based on files, dependencies,
+    """Intelligent project type detection based on files, dependencies,
     and structure.
     """
 
     def __init__(self, project_path: str = "."):
+        """Initialize the project detector with a given path."""
         self.project_path = Path(project_path)
 
     def detect_project_type(self) -> str:

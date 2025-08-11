@@ -8,7 +8,7 @@ triggers:
   - "verify.*tests"
   - "validate.*code"
 steps:
-  - "Execute the test suite: `python -m pytest -v` (or `pytest -v` if globally available)"
+  - "Execute the test suite: `uv run pytest -v` (or `python -m pytest -v` if uv not available)"
   - "If pytest is not available or no tests are found, consider setting up a basic test structure"
   - "Review test results and address any failing tests before proceeding"
 dependencies:

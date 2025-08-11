@@ -1,6 +1,4 @@
-"""
-Vibe: Intelligent workflow orchestrator for vibe coding.
-"""
+"""Vibe: Intelligent workflow orchestrator for vibe coding."""
 
 __version__ = "0.1.0"
 __author__ = "Soren N"

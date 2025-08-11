@@ -1,6 +1,4 @@
-"""
-Prompt analysis engine for determining appropriate workflows.
-"""
+"""Prompt analysis engine for determining appropriate workflows."""
 
 import re
 
@@ -15,6 +13,7 @@ class PromptAnalyzer:
     """Analyzes prompts to determine appropriate workflows."""
 
     def __init__(self, config: VibeConfig):
+        """Initialize the prompt analyzer with configuration."""
         self.config = config
         self.console = Console()
         self.workflow_registry = get_workflow_registry()

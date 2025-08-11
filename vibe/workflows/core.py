@@ -8,14 +8,14 @@ _workflow_loader = WorkflowLoader()
 
 
 def get_core_workflows() -> dict[str, Workflow]:
-    """
-    Get all core workflows from YAML files.
+    """Get all core workflows from YAML files.
 
     This function loads workflows exclusively from YAML files in the data directory.
     All workflows should be defined as YAML files for consistency and maintainability.
 
     Returns:
         dict[str, Workflow]: Dictionary mapping workflow names to Workflow objects
+
     """
     try:
         # Load all workflows from YAML files
