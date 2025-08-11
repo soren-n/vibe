@@ -1,3 +1,9 @@
+## [0.4.2](https://github.com/soren-n/vibe/compare/v0.4.1...v0.4.2) (2025-08-11)
+
+### Bug Fixes
+
+* ensure publishing jobs fetch git tags for proper versioning ([aca42a2](https://github.com/soren-n/vibe/commit/aca42a2e407aeeb9a6f4a664500685da686a34a5))
+
 ## [0.4.1](https://github.com/soren-n/vibe/compare/v0.4.0...v0.4.1) (2025-08-11)
 
 ### Bug Fixes
