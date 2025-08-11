@@ -10,7 +10,7 @@ let workflowProvider: WorkflowProvider;
  * Extension activation function
  */
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Vibe AI Workflows extension is now active!');
+    console.log('Vibe Workflows extension is now active!');
 
     // Initialize MCP server manager
     mcpServerManager = new McpServerManager(context);

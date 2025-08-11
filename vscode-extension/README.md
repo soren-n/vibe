@@ -1,8 +1,8 @@
-# Vibe AI Workflows - VS Code Extension
+# Vibe Workflows - VS Code Extension
 
-🚀 **AI-powered workflow orchestration for development tasks**
+**Workflow orchestration for development tasks**
 
-Vibe brings intelligent workflow automation directly into your VS Code environment through the Model Context Protocol (MCP), enabling natural language queries to discover and execute development workflows.
+Vibe brings workflow automation directly into your VS Code environment through the Model Context Protocol (MCP), enabling natural language queries to discover and execute development workflows.
 
 ## Features
 

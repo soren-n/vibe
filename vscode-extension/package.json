@@ -1,7 +1,7 @@
 {
   "name": "vibe-workflows",
-  "displayName": "Vibe AI Workflows",
-  "description": "AI-powered workflow orchestration for development tasks",
+  "displayName": "Vibe Workflows",
+  "description": "Workflow orchestration for development tasks",
   "version": "0.5.1",
   "publisher": "soren-n",
   "icon": "images/vibe-icon.png",
@@ -18,7 +18,6 @@
     "Snippets"
   ],
   "keywords": [
-    "ai",
     "workflow",
     "automation",
     "productivity",
@@ -87,7 +86,7 @@
     "viewsWelcome": [
       {
         "view": "vibeWorkflows",
-        "contents": "Welcome to Vibe AI Workflows! \ud83d\ude80\n\n[Start Workflow](command:vibe.startWorkflow)\n[Browse Workflows](command:vibe.listWorkflows)\n\nTo get started, open a workspace with a .vibe.yaml file or run a workflow command."
+        "contents": "Welcome to Vibe Workflows!\n\n[Start Workflow](command:vibe.startWorkflow)\n[Browse Workflows](command:vibe.listWorkflows)\n\nTo get started, open a workspace with a .vibe.yaml file or run a workflow command."
       }
     ]
   },
