@@ -1,3 +1,9 @@
+## [0.5.0](https://github.com/soren-n/vibe/compare/v0.4.3...v0.5.0) (2025-08-11)
+
+### Features
+
+* add hot reloading and schema validation ([87adec3](https://github.com/soren-n/vibe/commit/87adec31bf7f50db3e5f40fb24cb6c678115f2c8))
+
 ## [0.4.3](https://github.com/soren-n/vibe/compare/v0.4.2...v0.4.3) (2025-08-11)
 
 ### Bug Fixes
