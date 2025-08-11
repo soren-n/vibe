@@ -104,7 +104,7 @@ jobs:
     - name: Create Azure PAT file for VS Code publishing
       run: |
         echo "${{ secrets.AZURE_DEVOPS_PAT }}" > ~/.vsce-pat
-      if: secrets.AZURE_DEVOPS_PAT
+      if: ${{ secrets.AZURE_DEVOPS_PAT != '' }}
 
     - name: Configure VSCE authentication
       run: |
@@ -112,7 +112,7 @@ jobs:
           cd vscode-extension
           npx @vscode/vsce login soren-n --pat "$(cat ~/.vsce-pat)"
         fi
-      if: secrets.AZURE_DEVOPS_PAT
+      if: ${{ secrets.AZURE_DEVOPS_PAT != '' }}
 
     - name: Run semantic release
       env:
