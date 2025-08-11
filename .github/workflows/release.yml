@@ -101,23 +101,11 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Create Azure PAT file for VS Code publishing
-      run: |
-        if [ -n "${{ secrets.AZURE_DEVOPS_PAT }}" ]; then
-          echo "${{ secrets.AZURE_DEVOPS_PAT }}" > ~/.vsce-pat
-        fi
-
-    - name: Configure VSCE authentication
-      run: |
-        if [ -f ~/.vsce-pat ]; then
-          cd vscode-extension
-          export VSCE_PAT="$(cat ~/.vsce-pat)"
-        fi
-
     - name: Run semantic release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+        VSCE_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
       run: semantic-release
 
     - name: Upload VS Code extension artifact
