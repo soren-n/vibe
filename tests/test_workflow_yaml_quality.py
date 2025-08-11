@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from vibe.workflows.quality import validate_workflow_yamls
 
 

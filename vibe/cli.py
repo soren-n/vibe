@@ -2,6 +2,7 @@
 CLI interface for vibe.
 """
 
+import json
 import shutil
 import subprocess
 import sys
@@ -175,7 +176,7 @@ def check() -> None:
         console.print("❌ .vibe.yaml not found")
         issues_found.append("missing_config")
         console.print(
-            '   💡 [dim]Create .vibe.yaml with: '
+            "   💡 [dim]Create .vibe.yaml with: "
             'protocol_version: 1 and project_type: "auto"[/dim]'
         )
     else:
@@ -673,6 +674,173 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
         sys.exit(1)
 
 
+# MCP (Model Context Protocol) commands for step-by-step workflow execution
+@cli.group()
+def mcp() -> None:
+    """
+    MCP server commands for step-by-step workflow execution.
+
+    These commands are designed to be called by MCP servers to provide
+    token-efficient workflow orchestration for AI agents.
+    """
+    pass
+
+
+@mcp.command("start")
+@click.argument("prompt")
+@click.option("--config", "-c", type=click.Path(exists=True), help="Config file path")
+@click.option("--project-type", "-t", help="Override project type detection")
+def mcp_start(prompt: str, config: str | None, project_type: str | None) -> None:
+    """
+    Start a new workflow session for step-by-step execution.
+
+    Args:
+        prompt: The original prompt that triggered workflows
+
+    Returns JSON with session info and first step.
+    """
+    try:
+        # Load configuration
+        config_obj = VibeConfig.load_from_file(Path(config) if config else None)
+
+        # Override project type if specified
+        if project_type:
+            config_obj.project_type = project_type
+
+        # Start session
+        orchestrator = WorkflowOrchestrator(config_obj)
+        result = orchestrator.start_session(prompt)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {"success": False, "error": f"Failed to start session: {str(e)}"}
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
+@mcp.command("status")
+@click.argument("session_id")
+def mcp_status(session_id: str) -> None:
+    """
+    Get current status of a workflow session.
+
+    Args:
+        session_id: ID of the session to check
+
+    Returns JSON with session status and current step.
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.get_session_status(session_id)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {
+            "success": False,
+            "error": f"Failed to get session status: {str(e)}",
+        }
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
+@mcp.command("next")
+@click.argument("session_id")
+def mcp_next(session_id: str) -> None:
+    """
+    Mark current step as complete and advance to next step.
+
+    Args:
+        session_id: ID of the session to advance
+
+    Returns JSON with next step info or completion status.
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.advance_session(session_id)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {
+            "success": False,
+            "error": f"Failed to advance session: {str(e)}",
+        }
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
+@mcp.command("break")
+@click.argument("session_id")
+def mcp_break(session_id: str) -> None:
+    """
+    Break out of current workflow and return to parent workflow.
+
+    Args:
+        session_id: ID of the session
+
+    Returns JSON with parent workflow step info.
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.break_session(session_id)
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {"success": False, "error": f"Failed to break session: {str(e)}"}
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
+@mcp.command("list")
+def mcp_list() -> None:
+    """
+    List all active workflow sessions.
+
+    Returns JSON with list of active sessions.
+    """
+    try:
+        # Use default config for session operations
+        config = VibeConfig.load_from_file()
+        orchestrator = WorkflowOrchestrator(config)
+        result = orchestrator.list_sessions()
+
+        # Output JSON
+        print(json.dumps(result, indent=2))
+
+        if not result["success"]:
+            sys.exit(1)
+
+    except Exception as e:
+        error_result = {"success": False, "error": f"Failed to list sessions: {str(e)}"}
+        print(json.dumps(error_result, indent=2))
+        sys.exit(1)
+
+
 # For backwards compatibility with simple prompt usage
 def main() -> None:
     """Main entry point with smart command detection."""
@@ -692,6 +860,7 @@ def main() -> None:
         "list-workflows",
         "guide",
         "workflows",
+        "mcp",
     ]
     if args[0] in known_commands or args[0].startswith("-"):
         cli()

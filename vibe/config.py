@@ -117,8 +117,7 @@ class VibeConfig(BaseModel):
                     "study",
                 ],
                 description=(
-                    "🔍 Codebase exploration, pattern identification, "
-                    "and research"
+                    "🔍 Codebase exploration, pattern identification, and research"
                 ),
                 commands=["echo 'Analyzing project structure...'"],
             ),

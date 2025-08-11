@@ -52,7 +52,7 @@ def test_mcp_workflow() -> bool:
     if not session_id:
         print("❌ No session ID returned")
         return False
-        
+
     current_step = result.get("current_step")
 
     print(f"✅ Session started: {session_id}")
