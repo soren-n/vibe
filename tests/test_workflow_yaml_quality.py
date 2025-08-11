@@ -1,16 +1,15 @@
 from pathlib import Path
-
 from vibe.workflows.quality import validate_workflow_yamls
 
 
-def write(tmp: Path, rel: str, content: str) -> Path:
-    p = tmp / rel
+def write(base_path: Path, relative_path: str, content: str) -> Path:
+    p = base_path / relative_path
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding="utf-8")
     return p
 
 
-def test_detect_duplicate_keys(tmp_path):
+def test_detect_duplicate_keys(tmp_path: Path) -> None:
     yaml_content = """
 name: sample
 description: dup keys test
@@ -25,7 +24,7 @@ conditions: ["two"]
     assert any("duplicate keys detected" in m for m in issues)
 
 
-def test_detect_unicode_replacement(tmp_path):
+def test_detect_unicode_replacement(tmp_path: Path) -> None:
     yaml_content = """
 name: sample2
 description: replacement char test
