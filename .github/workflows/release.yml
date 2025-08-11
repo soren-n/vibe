@@ -1,5 +1,42 @@
 name: Release
 
+# 🚀 Python Release Pipeline
+#
+# This workflow implements a comprehensive Python release pipeline with:
+#
+# 📋 Pipeline Stages:
+# 1. Quality Checks - Linting, testing, type checking
+# 2. Semantic Release - Automated versioning and changelog
+# 3. VS Code Extension - Build and publish extension
+# 4. TestPyPI Publish - Test package publishing (validation step)
+# 5. PyPI Publish - Production package publishing
+#
+# 🎯 Best Practices Implemented:
+# - Semantic versioning (MAJOR.MINOR.PATCH)
+# - Test-first publishing (TestPyPI before PyPI)
+# - Fail-safe mechanisms (each step depends on previous)
+# - Quality gates (linting, testing, type checking)
+# - Automated changelog generation
+# - Git tag-based versioning with hatch-vcs
+#
+# 🔧 Version Management:
+# - Uses semantic-release for automated version bumps
+# - Git tags drive package versioning via hatch-vcs
+# - Conventional commits determine version increments
+# - CHANGELOG.md automatically updated
+#
+# 🛡️ Safety Measures:
+# - TestPyPI validation before production PyPI
+# - Quality checks must pass before any publishing
+# - Manual workflow_dispatch for emergency releases
+# - Skip duplicate uploads with --skip-existing
+#
+# 📦 Package Publishing:
+# - Built with `uv build` for fast, reliable builds
+# - Published via gh-action-pypi-publish (recommended)
+# - Supports both PyPI and TestPyPI repositories
+# - Environment variables for secure authentication
+
 on:
   push:
     branches:
@@ -141,9 +178,15 @@ jobs:
       uses: astral-sh/setup-uv@v4
 
     - name: Build package
+      # 📦 Build with uv for fast, reliable builds
+      # Uses hatch-vcs to automatically determine version from git tags
+      # Creates both wheel (.whl) and source distribution (.tar.gz)
       run: uv build
 
     - name: Publish to TestPyPI
+      # 🧪 Test publishing step - validates package before production
+      # Uses trusted publishing (OIDC) for secure authentication
+      # --skip-existing prevents errors on duplicate uploads
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         repository-url: https://test.pypi.org/legacy/
@@ -174,9 +217,15 @@ jobs:
       uses: astral-sh/setup-uv@v4
 
     - name: Build package
+      # 📦 Production build - same package as tested on TestPyPI
+      # Version determined by git tag created in semantic-release step
+      # Reproducible builds ensure consistency with TestPyPI
       run: uv build
 
     - name: Publish to PyPI
+      # 🚀 Production publishing - only runs if TestPyPI succeeded
+      # Uses trusted publishing for secure, token-free authentication
+      # Final step in the release pipeline
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         skip-existing: true
