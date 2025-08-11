@@ -58,6 +58,8 @@ Start a new workflow session from a natural language prompt.
 **Parameters:**
 - `prompt` (required): Natural language description of what you want to accomplish
 - `config` (optional): Path to Vibe configuration file
+- `project_type` (optional): Project type override (python, vue_typescript, generic)
+- `working_dir` (optional): Working directory to run commands in (defaults to current directory)
 - `project_type` (optional): Override project type detection
 
 **Example:**

@@ -19,31 +19,47 @@ import { spawn } from 'child_process';
  * Execute a Vibe CLI command and return parsed JSON result.
  *
  * @param {string[]} args - Command arguments to pass to vibe CLI
+ * @param {string|null} workingDir - Optional working directory for the command
  * @returns {Promise<Object>} Parsed JSON response
  */
-async function executeVibeCommand(args) {
+async function executeVibeCommand(args, workingDir = null) {
   return new Promise((resolve, reject) => {
     // Get the directory of this MCP server (should be in vibe/mcp-server/)
     const mcpServerDir = new URL('.', import.meta.url).pathname;
     const vibeProjectDir = mcpServerDir + '../';
 
-    const process = spawn('uv', ['run', 'vibe', ...args], {
+    // Use caller's working directory if provided, otherwise use vibe project dir
+    const commandWorkingDir = workingDir || vibeProjectDir;
+
+    // Try UV first, then fall back to direct vibe command
+    const useUV = process.env.USE_UV !== 'false';
+    const command = useUV ? 'uv' : 'vibe';
+    const commandArgs = useUV ? ['run', 'vibe', ...args] : args;
+
+    const childProcess = spawn(command, commandArgs, {
       stdio: ['ignore', 'pipe', 'pipe'],
-      cwd: vibeProjectDir // Run from vibe project root
+      cwd: commandWorkingDir,
+      env: {
+        ...process.env,
+        // Set UV_PROJECT_ENVIRONMENT to point to vibe's environment when using UV
+        ...(useUV && { UV_PROJECT_ENVIRONMENT: vibeProjectDir + '.venv' }),
+        // Add vibe project to Python path as fallback
+        PYTHONPATH: vibeProjectDir + ':' + (process.env.PYTHONPATH || '')
+      }
     });
 
     let stdout = '';
     let stderr = '';
 
-    process.stdout.on('data', (data) => {
+    childProcess.stdout.on('data', (data) => {
       stdout += data.toString();
     });
 
-    process.stderr.on('data', (data) => {
+    childProcess.stderr.on('data', (data) => {
       stderr += data.toString();
     });
 
-    process.on('close', (code) => {
+    childProcess.on('close', (code) => {
       if (code !== 0) {
         reject(new Error(`Vibe command failed with code ${code}: ${stderr}`));
         return;
@@ -57,7 +73,7 @@ async function executeVibeCommand(args) {
       }
     });
 
-    process.on('error', (error) => {
+    childProcess.on('error', (error) => {
       reject(new Error(`Failed to spawn Vibe process: ${error.message}`));
     });
   });
@@ -94,7 +110,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'start_workflow': {
-        const { prompt, config, project_type } = args;
+        const { prompt, config, project_type, working_dir } = args;
 
         if (!prompt || typeof prompt !== 'string') {
           throw new Error('prompt is required and must be a string');
@@ -104,7 +120,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (config) vibeArgs.push('--config', config);
         if (project_type) vibeArgs.push('--project-type', project_type);
 
-        const result = await executeVibeCommand(vibeArgs);
+        // Use provided working directory or default to process.cwd()
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
 
         return {
           content: [
@@ -225,12 +243,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'init_vibe_project': {
-        const { project_type } = args;
+        const { project_type, working_dir } = args;
 
         const vibeArgs = ['mcp', 'init'];
         if (project_type) vibeArgs.push('--project-type', project_type);
 
-        const result = await executeVibeCommand(vibeArgs);
+        // Use provided working directory or default to process.cwd()
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
 
         return {
           content: [
@@ -243,7 +263,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'check_vibe_environment': {
-        const result = await executeVibeCommand(['mcp', 'check']);
+        const { working_dir } = args;
+
+        // Use provided working directory or default to process.cwd()
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(['mcp', 'check'], workingDir);
 
         return {
           content: [
@@ -295,6 +319,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             project_type: {
               type: 'string',
               description: 'Optional project type override (e.g., python, vue_typescript, generic)'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
             }
           },
           required: ['prompt']
@@ -387,6 +415,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             project_type: {
               type: 'string',
               description: 'Optional project type (python, vue_typescript, generic)'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
             }
           }
         }
@@ -396,7 +428,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         description: 'Validate vibe environment, configuration, and tool dependencies',
         inputSchema: {
           type: 'object',
-          properties: {}
+          properties: {
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          }
         }
       }
     ]
