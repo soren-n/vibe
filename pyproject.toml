@@ -1,5 +1,5 @@
 [project]
-name = "vibe"
+name = "vibe-soren-n"
 dynamic = ["version"]
 description = "A CLI tool for vibe coding with intelligent workflow orchestration"
 readme = "README.md"
@@ -67,4 +67,5 @@ dev = [
     "types-click>=7.1.0",
     "pre-commit>=4.0.0",
     "hatch-vcs>=0.4.0",
+    "twine>=6.1.0",
 ]
