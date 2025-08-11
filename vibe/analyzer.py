@@ -61,9 +61,9 @@ class PromptAnalyzer:
             if self._matches_triggers(prompt_lower, workflow_config.triggers):
                 matched_workflows.add(workflow_name)
 
-        # Default to analysis if no matches
+        # Default to research guidance if no matches
         if not matched_workflows:
-            matched_workflows.add("analysis")
+            matched_workflows.add("Research Guidance for Agents")
 
         return list(matched_workflows)
 

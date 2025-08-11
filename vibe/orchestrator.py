@@ -116,6 +116,10 @@ class WorkflowOrchestrator:
                 f"To understand the project structure and identify what "
                 f"needs to be done for: '{prompt}'"
             ),
+            "Research Guidance for Agents": (
+                f"No specific workflow found for '{prompt}'. "
+                f"Providing research guidance for online information discovery."
+            ),
             "python_quality": (
                 "To ensure code quality with formatting, linting, and style checks"
             ),
