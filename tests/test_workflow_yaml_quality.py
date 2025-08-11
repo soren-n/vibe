@@ -40,18 +40,19 @@ steps: ["bad � char"]
 
 def test_step_message_conventions(tmp_path: Path) -> None:
     """Test step message convention validation."""
-    yaml_content = """
-name: step_test
-description: Test step message validation
-triggers: ["test"]
-steps:
-  - "🎯 Emoji step should be flagged"
-  - "Short"
-  - "This is a very long step message that definitely exceeds the reasonable limit and should be flagged"
-  - "TOO MANY CAPS WORDS HERE"
-  - "Multiple!!! exclamation!!! marks!!!"
-  - "Proper step without emoji and reasonable length"
-"""
+    yaml_content = (
+        "name: step_test\n"
+        "description: Test step message validation\n"
+        'triggers: ["test"]\n'
+        "steps:\n"
+        '  - "🎯 Emoji step should be flagged"\n'
+        '  - "Short"\n'
+        '  - "This is a very long step message that definitely exceeds the 120 '
+        'character limit and should trigger validation errors properly"\n'
+        '  - "TOO MANY CAPS WORDS HERE"\n'
+        '  - "Multiple!!! exclamation!!! marks!!!"\n'
+        '  - "Proper step without emoji and reasonable length"\n'
+    )
     write(tmp_path, "data/step_test.yaml", yaml_content)
 
     # Test with strict mode for emoji detection

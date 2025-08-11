@@ -14,7 +14,7 @@ try:
     # Cache spaCy pipeline for efficiency
     _nlp_pipeline = None
 
-    def _get_nlp_pipeline():
+    def _get_nlp_pipeline() -> Any | None:
         global _nlp_pipeline
         if _nlp_pipeline is None:
             try:
@@ -38,7 +38,7 @@ try:
 except ImportError:
     HAS_TEXTDESCRIPTIVES = False
 
-    def _get_nlp_pipeline():
+    def _get_nlp_pipeline() -> Any | None:
         return None
 
 
@@ -275,7 +275,8 @@ def _validate_step_messages(
                     if grade_level is not None and grade_level > 12:
                         issues.append(
                             f"{file_path}: step {step_num} may be too complex "
-                            f"(grade level {grade_level:.1f}) - consider simpler language"
+                            f"(grade level {grade_level:.1f}) - "
+                            "consider simpler language"
                         )
                 else:
                     has_emoji = _manual_emoji_detection(message)
@@ -312,8 +313,8 @@ def _validate_step_messages(
                 )
                 if first_word in common_starters:
                     issues.append(
-                        f"{file_path}: step {step_num} consider starting with action word "
-                        "(e.g., 'run', 'create', 'check') for clarity"
+                        f"{file_path}: step {step_num} consider starting with "
+                        "action word (e.g., 'run', 'create', 'check') for clarity"
                     )
 
         except Exception:
@@ -433,7 +434,9 @@ def get_step_message_quality_report(root: Path | None = None) -> dict[str, Any]:
         if err or data is None:
             continue
 
-        report["files_analyzed"] += 1
+        files_analyzed = report["files_analyzed"]
+        assert isinstance(files_analyzed, int)
+        report["files_analyzed"] = files_analyzed + 1
         steps = data.get("steps", [])
 
         for step in steps:
@@ -459,29 +462,36 @@ def get_step_message_quality_report(root: Path | None = None) -> dict[str, Any]:
 
     if step_count > 0:
         report["steps_analyzed"] = step_count
-        report["quality_metrics"]["avg_word_count"] = total_word_count / step_count
-        report["quality_metrics"]["avg_complexity_score"] = (
-            total_complexity / step_count
-        )
-        report["quality_metrics"]["action_word_percentage"] = (
+        quality_metrics = report["quality_metrics"]
+        recommendations = report["recommendations"]
+
+        assert isinstance(quality_metrics, dict)
+        assert isinstance(recommendations, list)
+
+        quality_metrics["avg_word_count"] = total_word_count / step_count
+        quality_metrics["avg_complexity_score"] = total_complexity / step_count
+        quality_metrics["action_word_percentage"] = (
             action_word_count / step_count
         ) * 100
-        report["quality_metrics"]["emoji_count"] = emoji_count
+        quality_metrics["emoji_count"] = emoji_count
 
         # Generate recommendations
-        if report["quality_metrics"]["avg_complexity_score"] > 30:
-            report["recommendations"].append(
-                "Consider simplifying step messages - use shorter sentences and common words"
+        if quality_metrics["avg_complexity_score"] > 30:
+            recommendations.append(
+                "Consider simplifying step messages - use shorter sentences "
+                "and common words"
             )
 
-        if report["quality_metrics"]["action_word_percentage"] < 60:
-            report["recommendations"].append(
-                "Consider starting more steps with action words (run, create, check, etc.)"
+        if quality_metrics["action_word_percentage"] < 60:
+            recommendations.append(
+                "Consider starting more steps with action words "
+                "(run, create, check, etc.)"
             )
 
         if emoji_count > 0:
-            report["recommendations"].append(
-                f"Found {emoji_count} steps with emojis - consider professional text alternatives"
+            recommendations.append(
+                f"Found {emoji_count} steps with emojis - consider "
+                "professional text alternatives"
             )
 
     return report
