@@ -14,6 +14,7 @@ Vibe is an intelligent workflow orchestrator that analyzes your natural language
 - ⚙️ **Configurable**: Customize workflows and commands for your project needs
 - 🎨 **Rich Output**: Beautiful, colored terminal output with progress indicators
 - 🔌 **Extensible**: Plugin architecture for custom workflows and project types
+- 🚀 **Automated Releases**: Full CI/CD pipeline with semantic versioning and marketplace publishing
 
 ## Installation
 
