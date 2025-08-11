@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import click
 import yaml
@@ -301,7 +302,7 @@ def mcp_check() -> None:
     """
     try:
         # Collect results for JSON output
-        check_results = {
+        check_results: dict[str, Any] = {
             "success": True,
             "issues_found": [],
             "checks": {
@@ -312,7 +313,7 @@ def mcp_check() -> None:
             },
         }
 
-        issues_found = []
+        issues_found: list[str] = []
 
         # Check 1: Configuration file validation
         vibe_config_path = Path.cwd() / ".vibe.yaml"

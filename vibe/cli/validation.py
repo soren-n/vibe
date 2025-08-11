@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import click
 import yaml
@@ -53,7 +54,7 @@ def check(output_json: bool = False) -> None:
     - Workflow dependencies and tool availability
     """
     # Collect results for JSON output
-    check_results = {
+    check_results: dict[str, Any] = {
         "success": True,
         "issues_found": [],
         "checks": {
@@ -69,7 +70,7 @@ def check(output_json: bool = False) -> None:
         console.print("=" * 45)
         console.print()
 
-    issues_found = []
+    issues_found: list[str] = []
 
     # Check 1: Configuration file validation
     if not output_json:
