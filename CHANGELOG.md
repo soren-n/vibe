@@ -1,3 +1,9 @@
+## [0.5.1](https://github.com/soren-n/vibe/compare/v0.5.0...v0.5.1) (2025-08-11)
+
+### Bug Fixes
+
+* MCP tools now respect caller's working directory ([e7a54a5](https://github.com/soren-n/vibe/commit/e7a54a58df3504e7dfaed2c2911165bffa10f3b2))
+
 ## [0.5.0](https://github.com/soren-n/vibe/compare/v0.4.3...v0.5.0) (2025-08-11)
 
 ### Features
