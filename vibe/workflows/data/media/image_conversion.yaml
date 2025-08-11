@@ -1,0 +1,20 @@
+name: "Image Conversion with ImageMagick and FFmpeg"
+description: "Convert between various image and video formats using ImageMagick and FFmpeg"
+triggers:
+  - "convert image"
+  - "image conversion"
+  - "svg to png"
+  - "png to jpg"
+  - "resize image"
+  - "video to gif"
+  - "image format conversion"
+project_types:
+  - "any"
+steps:
+  - "🔍 **Check Tool Availability** - Verify ImageMagick and FFmpeg are installed"
+  - "📁 **Identify Source Files** - Locate images/videos to convert"
+  - "⚙️ **Choose Conversion Parameters** - Set output format, resolution, and quality"
+  - "🔄 **Execute Conversion** - Run ImageMagick or FFmpeg commands for conversion"
+  - "🎯 **Optimize Output** - Apply compression and optimization as needed"
+  - "✅ **Verify Results** - Check output files for quality and proper format"
+  - "🧹 **Cleanup** - Remove temporary files and organize converted assets"
