@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/soren-n/vibe/compare/v0.2.3...v0.3.0) (2025-08-11)
+
+### Features
+
+* rename package to vibe-soren-n for PyPI publishing ([d643dee](https://github.com/soren-n/vibe/commit/d643deec88a40c5a8ac9121284847496de4336f7))
+
 ## [0.2.3](https://github.com/soren-n/vibe/compare/v0.2.2...v0.2.3) (2025-08-11)
 
 ### Bug Fixes
