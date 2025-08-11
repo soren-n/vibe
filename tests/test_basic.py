@@ -8,8 +8,17 @@ from vibe.config import VibeConfig
 
 
 def test_version() -> None:
-    """Test that version is defined."""
-    assert __version__ == "0.1.0"
+    """Test that version is defined and follows semantic versioning."""
+    import re
+
+    # Check that version follows semantic versioning pattern
+    # Allows for dev versions or regular versions
+    version_pattern = r"^\d+\.\d+\.\d+(?:\.dev\d+\+[a-f0-9g\.]+)?$"
+    assert re.match(version_pattern, __version__), (
+        f"Version {__version__} doesn't follow expected pattern"
+    )
+    assert __version__ is not None
+    assert isinstance(__version__, str)
 
 
 def test_config_loading() -> None:

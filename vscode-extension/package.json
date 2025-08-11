@@ -64,7 +64,14 @@
           "type": "string",
           "default": "core",
           "description": "Default workflow category to show",
-          "enum": ["core", "python", "frontend", "documentation", "development", "session"]
+          "enum": [
+            "core",
+            "python",
+            "frontend",
+            "documentation",
+            "development",
+            "session"
+          ]
         }
       }
     },
@@ -80,7 +87,7 @@
     "viewsWelcome": [
       {
         "view": "vibeWorkflows",
-        "contents": "Welcome to Vibe AI Workflows! 🚀\n\n[Start Workflow](command:vibe.startWorkflow)\n[Browse Workflows](command:vibe.listWorkflows)\n\nTo get started, open a workspace with a .vibe.yaml file or run a workflow command."
+        "contents": "Welcome to Vibe AI Workflows! \ud83d\ude80\n\n[Start Workflow](command:vibe.startWorkflow)\n[Browse Workflows](command:vibe.listWorkflows)\n\nTo get started, open a workspace with a .vibe.yaml file or run a workflow command."
       }
     ]
   },
@@ -91,10 +98,11 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "package": "npx @vscode/vsce package",
-    "publish": "npx @vscode/vsce publish",
+    "package": "npx @vscode/vsce package --no-git-tag-version",
+    "publish": "npx @vscode/vsce publish --no-git-tag-version",
     "clean": "rm -rf out && rm -f *.vsix",
-    "rebuild": "npm run clean && npm run compile"
+    "rebuild": "npm run clean && npm run compile",
+    "version": "npm version --no-git-tag-version"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
