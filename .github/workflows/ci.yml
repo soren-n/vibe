@@ -160,7 +160,6 @@ jobs:
         from pathlib import Path
         from vibe.workflows.loader import WorkflowLoader
 
-        # Test YAML validation
         loader = WorkflowLoader()
         workflows = loader.load_workflows()
         print(f'✅ Successfully loaded {len(workflows)} workflows')
