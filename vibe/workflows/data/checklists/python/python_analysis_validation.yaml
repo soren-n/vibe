@@ -1,0 +1,23 @@
+name: "Python Project Analysis Validation"
+description: "Checklist to verify Python project analysis is thorough and complete"
+triggers:
+  - "analysis.*complete"
+  - "validate.*python.*analysis"
+  - "verify.*project.*analysis"
+  - "python.*analysis.*done"
+project_types:
+  - "python"
+conditions:
+  - "pattern:*.py"
+dependencies: []
+items:
+  - "All Python files have been discovered and counted"
+  - "Project structure is clearly understood"
+  - "Configuration files are identified and reviewed"
+  - "Dependencies are documented and analyzed"
+  - "Test coverage is assessed and documented"
+  - "Documentation quality is evaluated"
+  - "Improvement opportunities are identified"
+  - "Architecture patterns are understood"
+  - "Code quality issues are noted"
+  - "Analysis findings are clearly summarized"

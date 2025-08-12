@@ -9,14 +9,14 @@ triggers:
   - "examine.*codebase"
   - "project.*overview"
 steps:
-  - "Discover Python files: Use platform tools to list *.py files, exclude .venv/__pycache__, show first 20"
-  - "Count Python files: Count all Python files, excluding virtual environment and cache directories"
-  - "Understand project structure: List directories in the project, excluding .venv and __pycache__. Show first 15 results."
-  - "Check dependency configuration: Look for `pyproject.toml`, `requirements.txt`, or `setup.py` files"
-  - "Review dependencies: If you have `pyproject.toml`, check the `[project.dependencies]` section"
-  - "Locate test files: Find files matching `test_*.py` or `*_test.py` patterns to understand test coverage"
-  - "Review documentation: Find README files and Markdown documentation (*.md files)"
-  - "Consider improvements: Missing tests, outdated dependencies, documentation gaps, or architectural opportunities"
+  - "Find Python files: `find . -name '*.py' | grep -v -E '(.venv|__pycache__)' | head -20`"
+  - "Count Python files: `find . -name '*.py' | grep -v -E '(.venv|__pycache__)' | wc -l`"
+  - "Show project structure: `tree -I '.venv|__pycache__|*.pyc' -L 3`"
+  - "Check configuration files: `ls -la pyproject.toml requirements.txt setup.py 2>/dev/null`"
+  - "List dependencies: `uv tree` or `cat pyproject.toml | grep -A 20 dependencies`"
+  - "Find test files: `find . -name 'test_*.py' -o -name '*_test.py' | grep -v .venv`"
+  - "List documentation: `find . -name '*.md' -o -name '*.rst' | head -10`"
+  - "Generate analysis report: Summarize findings and recommendations"
 project_types:
   - "python"
 conditions:

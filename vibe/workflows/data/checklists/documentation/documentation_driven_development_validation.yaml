@@ -1,0 +1,30 @@
+name: "Documentation-Driven Development Validation"
+description: "Checklist to verify documentation-driven development process is complete and effective"
+triggers:
+  - "documentation.*driven.*complete"
+  - "validate.*doc.*driven.*development"
+  - "verify.*documentation.*first"
+  - "doc.*driven.*done"
+project_types:
+  - "python"
+  - "typescript"
+  - "vue"
+  - "javascript"
+  - "rust"
+  - "go"
+  - "general"
+conditions: []
+dependencies: []
+items:
+  - "Requirements are clearly defined and documented"
+  - "Architecture design is comprehensive and reviewed"
+  - "API specifications are complete with examples"
+  - "Data models are documented with relationships"
+  - "User workflows are mapped and validated"
+  - "Implementation plan is detailed and actionable"
+  - "Tests are derived from documentation specifications"
+  - "Documentation quality meets established standards"
+  - "Implementation follows documented specifications"
+  - "Documentation is updated with implementation learnings"
+  - "All examples and code snippets work correctly"
+  - "Stakeholders have reviewed and approved documentation"

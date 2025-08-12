@@ -8,7 +8,7 @@ triggers:
 steps:
   - "Check your session progress by reviewing git status: `git status --porcelain` to see what's been modified"
   - "Commit your changes if you have work that should be saved: `git add .` and `git commit -m \"your message\"`"
-  - "Look for temporary files: Search for debug files (debug-*.html), temp files (*.tmp), backups (*.bak)"
+  - "Look for temporary files: Search for debug files (debug*.py, debug*.js, debug-*.html), temp files (*.tmp), legacy files (*_new.*, new_*.*), and backups (*.bak)"
   - "Consider what you accomplished this session and what remains to be done"
   - "Use \"session retrospective\" for a detailed analysis of what you learned and next steps"
   - "Use \"cleanup\" for a comprehensive project hygiene check if needed"

@@ -1,0 +1,21 @@
+name: "Documentation Validation"
+description: "Checklist to verify project documentation is comprehensive and high-quality"
+triggers:
+  - "documentation.*complete"
+  - "validate.*docs"
+  - "verify.*documentation"
+  - "docs.*ready"
+project_types: []
+conditions: []
+dependencies: []
+items:
+  - "README clearly explains project purpose and value"
+  - "Installation instructions are accurate and complete"
+  - "Usage examples work correctly"
+  - "API documentation is comprehensive and current"
+  - "Contributing guide explains development setup"
+  - "Architecture documentation exists for complex projects"
+  - "All code examples have been tested"
+  - "Language follows professional standards (no emojis, clear tone)"
+  - "Documentation is well-organized and easy to navigate"
+  - "Recent changes are reflected in documentation"

@@ -15,18 +15,16 @@ triggers:
   - "enhancement"
   - "improvement"
 steps:
-  - "Plan your implementation: Break down the task into manageable steps"
-  - "Analyze existing code: Review similar implementations and current patterns"
-  - "Check documentation: Review project guidelines and architectural decisions"
-  - "Write tests first: Follow TDD by writing failing tests for new functionality"
-  - "Implement incrementally: Make small, focused changes for easy review"
-  - "Add type annotations: Ensure proper typing for new code"
-  - "Document as you go: Add docstrings, comments, and update documentation"
-  - "Follow code style: Use project linting and formatting standards"
-  - "Test integration: Verify changes work with existing functionality"
-  - "Run quality checks: Execute linting, formatting, and tests before committing"
-  - "Commit incrementally: Make focused commits with clear messages"
-  - "Update documentation: Ensure README, docs, and examples reflect changes"
+  - "Create feature branch: `git checkout -b feature/feature-name`"
+  - "Write failing test: Create test case for new functionality"
+  - "Implement minimal code: Write just enough code to make test pass"
+  - "Add type annotations: Include proper typing for new functions/classes"
+  - "Run tests: `uv run pytest tests/` or project-specific test command"
+  - "Run quality checks: `uv run ruff check . --fix && uv run ruff format .`"
+  - "Update documentation: Add docstrings and update relevant docs"
+  - "Commit changes: `git add . && git commit -m 'feat: add [feature description]'`"
+  - "Test integration: Verify changes work with existing codebase"
+  - "Push branch: `git push origin feature/feature-name`"
 dependencies: []
 project_types: []
 conditions: []

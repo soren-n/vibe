@@ -6,7 +6,7 @@ lint:
   # Language and tone settings
   check_emojis: true
   check_professional_language: true
-  exclude_ui_files:
+  allow_informal_language:
     - "*cli*"
     - "*ui*"
     - "*frontend*"

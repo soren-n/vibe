@@ -273,12 +273,11 @@ class LanguageLinter:
                     if fnmatch.fnmatch(parent.name, pattern):
                         return True
 
-        # Check UI file patterns (these can use emojis for UX)
-        for pattern in self.config.exclude_ui_files:
+        # Check patterns for files that can use informal language and emojis
+        for pattern in self.config.allow_informal_language:
             if fnmatch.fnmatch(path_str, pattern):
                 return True
             if fnmatch.fnmatch(str(path.name), pattern):
-                return True
                 return True
 
         return False

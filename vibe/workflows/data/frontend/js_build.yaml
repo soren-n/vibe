@@ -8,11 +8,10 @@ triggers:
   - "webpack.*build"
   - "vite.*build"
 steps:
-  - "Run Build: Execute `npm run build` or `yarn build` to compile/bundle the project"
-  - "Check Output: Verify build artifacts are created in `dist/` or `build/` directory"
-  - "Review Size: Check build output size and verify all expected files are generated"
-  - "Validate Build: Test build output functionality if possible"
-  - "Keep logs concise: prefer brief reporters; sample long outputs with `head`; summarize results in ≤6 bullets."
+  - "Clean previous builds: `rm -rf dist/ build/`"
+  - "Run build command: `npm run build`"
+  - "Show build output: `ls -la dist/ build/ 2>/dev/null || echo 'No build directory found'`"
+  - "Show build size: `du -sh dist/ build/ 2>/dev/null || echo 'No build artifacts'`"
 dependencies:
   - "js_test"
   - "js_quality"

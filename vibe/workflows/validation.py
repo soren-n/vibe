@@ -96,6 +96,13 @@ WORKFLOW_SCHEMA: dict[str, Any] = {
             "type": "string",
             "description": "Optional additional guidance text",
         },
+        # Checklist support
+        "items": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "minItems": 1,
+            "description": "List of validation items for checklists",
+        },
     },
     "additionalProperties": False,
     # Ensure either steps or commands is provided (but prefer steps)

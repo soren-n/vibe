@@ -1,0 +1,21 @@
+name: "Python Environment Validation"
+description: "Checklist to verify Python environment is properly set up and functional"
+triggers:
+  - "python.*env.*complete"
+  - "validate.*python.*environment"
+  - "verify.*env.*setup"
+  - "environment.*ready"
+project_types:
+  - "python"
+conditions: []
+dependencies: []
+items:
+  - "Python version is compatible with project requirements"
+  - "Package manager (uv or pip) is installed and working"
+  - "Virtual environment is created and activated"
+  - "Project dependencies are successfully installed"
+  - "Python interpreter is using the correct environment"
+  - "Package imports work correctly"
+  - "Environment is isolated from system packages"
+  - "Development tools are accessible"
+  - "Environment can be reproduced on other machines"

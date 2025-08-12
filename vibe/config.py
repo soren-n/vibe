@@ -112,7 +112,7 @@ class LintConfig(BaseModel):
     # Language and tone linting
     check_emojis: bool = True
     check_professional_language: bool = True
-    exclude_ui_files: list[str] = Field(
+    allow_informal_language: list[str] = Field(
         default_factory=lambda: ["*cli*", "*ui*", "*frontend*"]
     )
 

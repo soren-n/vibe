@@ -11,10 +11,10 @@ triggers:
   - "check config format"
   - "validate configuration"
 steps:
-  - "Check presence: ensure `.vibe.yaml` exists in the project root. If missing, create minimal config:\n     protocol_version: 1\n     project_type: \"auto\""
-  - "Validate configuration: run `vibe check`."
-  - "Optional YAML syntax check (if Python available): `python -c \"import yaml; yaml.safe_load(open('.vibe.yaml'))\"`."
-  - "For setup/help: `vibe guide \"setup vibe project\"` or `vibe guide \"optimize vibe configuration\"`."
+  - "Create config if missing: `echo 'protocol_version: 1\\nproject_type: \"auto\"' > .vibe.yaml`"
+  - "Run validation: `vibe check`"
+  - "Check YAML syntax: `uv run python -c \"import yaml; yaml.safe_load(open('.vibe.yaml'))\"`"
+  - "Get setup help: `vibe guide \"setup vibe project\"`"
 guidance: |
   Goal: confirm .vibe.yaml exists, passes `vibe check`, and parses as YAML.
 

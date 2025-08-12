@@ -8,14 +8,13 @@ triggers:
   - "development.*setup"
   - "environment.*validation"
 steps:
-  - "Validate Python: Check Python version with `python --version` and ensure it's appropriate for your project"
-  - "Check Package Managers: Verify `uv --version` (preferred) or `pip --version` are available for dependency management"
-  - "Detect Project Type: Look for `pyproject.toml` (modern) or `requirements.txt` (traditional) to determine dependency strategy"
-  - "Install Dependencies: Use `uv sync --upgrade` for pyproject.toml or `pip install -r requirements.txt` for requirements.txt"
-  - "Add Development Tools: Install essential dev dependencies with `uv add --dev pytest ruff mypy` or `pip install pytest ruff mypy`"
-  - "Test Python Setup: Run `python -c 'import sys; print(f\"Python {sys.version} ready\")'` to verify installation"
-  - "Validate Package Import: If package exists, test import with `python -c \"import package_name\"` to ensure proper installation"
-  - "Ready for Development: Environment setup complete - proceed with quality checks, tests, or analysis workflows"
+  - "Check Python version: `python --version`"
+  - "Install/update uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`"
+  - "Install dependencies: `uv sync --upgrade` or `pip install -r requirements.txt`"
+  - "Add development tools: `uv add --dev pytest ruff mypy`"
+  - "Create virtual environment (if needed): `uv venv`"
+  - "Activate environment: `source .venv/bin/activate` (or `uv run` for commands)"
+  - "Test setup: `uv run python -c 'import sys; print(f\"Python {sys.version} ready\")'`"
 project_types:
   - "python"
 conditions:

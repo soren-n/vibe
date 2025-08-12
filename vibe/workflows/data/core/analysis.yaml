@@ -17,16 +17,14 @@ triggers:
   - "examine"
   - "study"
 steps:
-  - "Check dependencies for security patches and outdated packages"
-  - "Examine project structure by finding source files: Locate code files (*.py, *.js, *.ts, *.vue, *.go, *.rs), show first 20 results"
-  - "Identify project configuration files: Find package.json, pyproject.toml, Cargo.toml, go.mod files"
-  - "Locate documentation and test directories: Find README files and locate docs/test directories"
-  - "Review project root structure: List files in the project root directory"
-  - "Research latest best practices for detected technologies using MCP Context7 tools"
-  - "Conduct security review for current vulnerabilities and patches"
-  - "Identify performance optimization opportunities and modern tooling"
-  - "Assess documentation standards and template currency"
-  - "Use efficient research methods: short prompts, batch tool calls, prefer `head` and counts over large outputs, summarize findings in 6 bullets maximum with next steps"
+  - "Scan dependencies: `uv tree` or `npm list` to check current packages"
+  - "Find source files: `find . -name '*.py' -o -name '*.js' -o -name '*.ts' | head -20`"
+  - "Locate config files: `find . -name 'package.json' -o -name 'pyproject.toml' -o -name 'Cargo.toml' -o -name 'go.mod'`"
+  - "Check documentation: `find . -name 'README*' -o -name 'docs' -type d`"
+  - "List project root: `ls -la`"
+  - "Research best practices using Context7 tools for detected technologies"
+  - "Run security scan: `uv run pip-audit` or equivalent for project type"
+  - "Generate analysis report with findings and actionable next steps"
 dependencies: []
 project_types: []
 conditions: []

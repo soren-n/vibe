@@ -1,4 +1,4 @@
-"""Prompt analysis engine for determining appropriate workflows."""
+"""Prompt analysis engine for determining appropriate workflows and checklists."""
 
 import re
 
@@ -7,34 +7,45 @@ from rich.panel import Panel
 
 from .config import VibeConfig
 from .workflows import get_workflow_registry
+from .workflows.loader import get_checklists
 
 
 class PromptAnalyzer:
-    """Analyzes prompts to determine appropriate workflows."""
+    """Analyzes prompts to determine appropriate workflows and checklists."""
 
     def __init__(self, config: VibeConfig):
         """Initialize the prompt analyzer with configuration."""
         self.config = config
         self.console = Console()
         self.workflow_registry = get_workflow_registry()
+        self.checklists = get_checklists()
 
     def analyze(self, prompt: str, show_analysis: bool = True) -> list[str]:
-        """Analyze prompt and return list of relevant workflows."""
+        """Analyze prompt and return list of relevant workflows and checklists."""
         # First try built-in workflows
         built_in_workflows = self._match_built_in_workflows(prompt)
 
         # Then try config-based workflows
         config_workflows = self._match_config_workflows(prompt)
 
+        # Check for relevant checklists
+        matching_checklists = self._match_checklists(prompt)
+
         # Combine and deduplicate
-        all_workflows = list(dict.fromkeys(built_in_workflows + config_workflows))
+        all_items = list(
+            dict.fromkeys(built_in_workflows + config_workflows + matching_checklists)
+        )
 
         if show_analysis:
             self._display_analysis(
-                prompt, all_workflows, built_in_workflows, config_workflows
+                prompt,
+                all_items,
+                built_in_workflows,
+                config_workflows,
+                matching_checklists,
             )
 
-        return all_workflows
+        return all_items
 
     def _match_built_in_workflows(self, prompt: str) -> list[str]:
         """Match prompt against built-in workflows in the registry."""
@@ -67,6 +78,23 @@ class PromptAnalyzer:
 
         return list(matched_workflows)
 
+    def _match_checklists(self, prompt: str) -> list[str]:
+        """Match prompt against checklist trigger patterns."""
+        prompt_lower = prompt.lower()
+        matched_checklists: list[str] = []
+
+        for checklist_name, checklist in self.checklists.items():
+            if self._matches_triggers(prompt_lower, checklist.triggers):
+                # Check if the checklist applies to current project type
+                project_type = self.config.detect_project_type()
+                if (
+                    not checklist.project_types
+                    or project_type in checklist.project_types
+                ):
+                    matched_checklists.append(f"checklist:{checklist_name}")
+
+        return matched_checklists
+
     def _matches_triggers(self, prompt: str, triggers: list[str]) -> bool:
         """Check if prompt matches any of the trigger patterns."""
         for trigger in triggers:
@@ -83,9 +111,10 @@ class PromptAnalyzer:
     def _display_analysis(
         self,
         prompt: str,
-        all_workflows: list[str],
+        all_items: list[str],
         built_in_workflows: list[str],
         config_workflows: list[str],
+        matching_checklists: list[str],
     ) -> None:
         """Display analysis results with rich formatting."""
         self.console.print()
@@ -94,21 +123,21 @@ class PromptAnalyzer:
         self.console.print(
             Panel(
                 f"[bold blue]{prompt}[/bold blue]",
-                title="🤔 Analyzing Prompt",
+                title="Analyzing Prompt",
                 border_style="blue",
             )
         )
 
-        # Show detected workflows
-        if all_workflows:
-            workflow_descriptions = []
+        # Show detected workflows and checklists
+        if all_items:
+            item_descriptions = []
 
             # Add built-in workflows with their descriptions
             for workflow_name in built_in_workflows:
                 workflow = self.workflow_registry.get_workflow(workflow_name)
                 if workflow:
                     description = workflow.description
-                    workflow_descriptions.append(f"  ✓ [built-in] {description}")
+                    item_descriptions.append(f"  [built-in workflow] {description}")
 
             # Add config workflows
             for workflow_name in config_workflows:
@@ -117,13 +146,23 @@ class PromptAnalyzer:
                     if workflow_config and workflow_config.description:
                         description = workflow_config.description
                     else:
-                        description = f"📋 {workflow_name.title()} workflow"
-                    workflow_descriptions.append(f"  ✓ [custom] {description}")
+                        description = f"{workflow_name.title()} workflow"
+                    item_descriptions.append(f"  [custom workflow] {description}")
+
+            # Add checklists
+            for checklist_item in matching_checklists:
+                if checklist_item.startswith("checklist:"):
+                    checklist_name = checklist_item.replace("checklist:", "")
+                    checklist = self.checklists.get(checklist_name)
+                    if checklist:
+                        item_descriptions.append(
+                            f"  [checklist] {checklist.description}"
+                        )
 
             self.console.print(
                 Panel(
-                    "\n".join(workflow_descriptions),
-                    title="🎯 Detected Workflow Needs",
+                    "\n".join(item_descriptions),
+                    title="Detected Workflow and Checklist Needs",
                     border_style="green",
                 )
             )
@@ -131,7 +170,7 @@ class PromptAnalyzer:
             self.console.print(
                 Panel(
                     "  → Defaulting to analysis workflow",
-                    title="⚠️ No Specific Workflows Detected",
+                    title="⚠️ No Specific Workflows or Checklists Detected",
                     border_style="yellow",
                 )
             )

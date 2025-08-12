@@ -1,4 +1,4 @@
-"""Workflow loader for YAML-based workflow definitions."""
+"""Workflow and checklist loader for YAML-based definitions."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from .models import Workflow
+from .models import Checklist, Workflow
 from .validation import WorkflowValidationError, validate_workflow_data
 
 # Try to import watchdog, gracefully handle if not available
@@ -58,11 +58,13 @@ else:
 
 
 class WorkflowLoader:
-    """Loads workflows from YAML files with dynamic discovery and caching."""
+    """Loads workflows and checklists from YAML files with dynamic discovery and caching."""
 
     def __init__(self, *, enable_validation: bool = True) -> None:
         self.data_dir = Path(__file__).parent / "data"
-        self._cache: dict[str, Workflow] = {}
+        self.checklists_dir = self.data_dir / "checklists"
+        self._workflow_cache: dict[str, Workflow] = {}
+        self._checklist_cache: dict[str, Checklist] = {}
         self._file_timestamps: dict[Path, float] = {}
         self._loaded = False
         self.enable_validation = enable_validation
@@ -84,7 +86,15 @@ class WorkflowLoader:
             return False
 
         # Check if any workflow files have been modified, added, or removed
-        current_files = set(self.data_dir.rglob("*.yaml"))
+        current_workflow_files = set(self.data_dir.rglob("*.yaml")) - set(
+            self.checklists_dir.rglob("*.yaml")
+        )
+        current_checklist_files = (
+            set(self.checklists_dir.rglob("*.yaml"))
+            if self.checklists_dir.exists()
+            else set()
+        )
+        current_files = current_workflow_files | current_checklist_files
         cached_files = set(self._file_timestamps.keys())
 
         # If file set changed, cache is invalid
@@ -107,14 +117,22 @@ class WorkflowLoader:
             force_reload: Force reload even if cache appears valid
         """
         if not force_reload and self._is_cache_valid():
-            return self._cache
+            return self._workflow_cache
 
         workflows = {}
+        checklists = {}
         new_timestamps = {}
 
-        # Load YAML workflows from data directory (recursively scan subdirectories)
+        # Load YAML workflows from data directory (excluding checklists directory)
         if self.data_dir.exists():
             for yaml_file in self.data_dir.rglob("*.yaml"):
+                # Skip checklist files
+                if (
+                    self.checklists_dir.exists()
+                    and self.checklists_dir in yaml_file.parents
+                ):
+                    continue
+
                 try:
                     workflow = self._load_workflow_from_yaml(yaml_file)
                     if workflow:
@@ -123,7 +141,19 @@ class WorkflowLoader:
                 except Exception as e:
                     print(f"Warning: Failed to load workflow from {yaml_file}: {e}")
 
-        self._cache = workflows
+        # Load YAML checklists from checklists directory
+        if self.checklists_dir.exists():
+            for yaml_file in self.checklists_dir.rglob("*.yaml"):
+                try:
+                    checklist = self._load_checklist_from_yaml(yaml_file)
+                    if checklist:
+                        checklists[checklist.name] = checklist
+                        new_timestamps[yaml_file] = self._get_file_timestamp(yaml_file)
+                except Exception as e:
+                    print(f"Warning: Failed to load checklist from {yaml_file}: {e}")
+
+        self._workflow_cache = workflows
+        self._checklist_cache = checklists
         self._file_timestamps = new_timestamps
         self._loaded = True
         return workflows
@@ -161,6 +191,43 @@ class WorkflowLoader:
             conditions=data.get("conditions"),
         )
 
+    def _load_checklist_from_yaml(self, yaml_file: Path) -> Checklist | None:
+        """Load a single checklist from a YAML file with schema validation."""
+        with open(yaml_file, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+
+        if not data:
+            return None
+
+        # Note: Using workflow validation for now since checklist schema is similar
+        # Could create separate validation if needed
+        if self.enable_validation:
+            try:
+                # For checklists, validate the basic structure (name, description, triggers)
+                # Items are similar to steps, so workflow validation works
+                checklist_data = data.copy()
+                # Map 'items' to 'steps' for validation
+                if "items" in checklist_data:
+                    checklist_data["steps"] = checklist_data["items"]
+                validate_workflow_data(checklist_data)
+            except WorkflowValidationError as e:
+                print(f"Warning: Schema validation failed for {yaml_file}:")
+                print(f"  {e}")
+                return None
+
+        # Convert YAML data to Checklist instance
+        items = data.get("items", [])
+
+        return Checklist(
+            name=data["name"],
+            description=data["description"],
+            triggers=data.get("triggers", []),
+            items=items,
+            dependencies=data.get("dependencies"),
+            project_types=data.get("project_types"),
+            conditions=data.get("conditions"),
+        )
+
     def get_workflow(self, name: str) -> Workflow | None:
         """Get a specific workflow by name with automatic discovery."""
         workflows = self.load_workflows()
@@ -172,7 +239,8 @@ class WorkflowLoader:
 
     def reload(self) -> dict[str, Workflow]:
         """Force cache clear and reload all workflows."""
-        self._cache.clear()
+        self._workflow_cache.clear()
+        self._checklist_cache.clear()
         self._file_timestamps.clear()
         self._loaded = False
         return self.load_workflows(force_reload=True)
@@ -181,10 +249,33 @@ class WorkflowLoader:
         """Get all available workflows with automatic discovery."""
         return self.load_workflows()
 
+    def load_checklists(self, force_reload: bool = False) -> dict[str, Checklist]:
+        """Load all checklists from YAML files with dynamic discovery.
+
+        Args:
+            force_reload: Force reload even if cache appears valid
+        """
+        if not force_reload and self._is_cache_valid():
+            return self._checklist_cache
+
+        # Load workflows first to ensure cache is populated
+        self.load_workflows(force_reload)
+        return self._checklist_cache
+
+    def get_checklist(self, name: str) -> Checklist | None:
+        """Get a specific checklist by name with automatic discovery."""
+        checklists = self.load_checklists()
+        return checklists.get(name)
+
+    def get_all_checklists(self) -> dict[str, Checklist]:
+        """Get all available checklists with automatic discovery."""
+        return self.load_checklists()
+
     def _on_file_change(self) -> None:
         """Internal callback for file system changes."""
         # Clear cache to force reload on next access
-        self._cache.clear()
+        self._workflow_cache.clear()
+        self._checklist_cache.clear()
         self._file_timestamps.clear()
         self._loaded = False
 
@@ -282,3 +373,19 @@ def set_validation_enabled(enabled: bool) -> None:
 def is_validation_enabled() -> bool:
     """Check if schema validation is currently enabled."""
     return _loader.enable_validation
+
+
+def get_checklists() -> dict[str, Checklist]:
+    """Get all available checklists with automatic discovery."""
+    return _loader.load_checklists()
+
+
+def get_checklist(name: str) -> Checklist | None:
+    """Get a specific checklist by name with automatic discovery."""
+    return _loader.get_checklist(name)
+
+
+def reload_checklists() -> dict[str, Checklist]:
+    """Force reload all checklists from disk."""
+    _loader.reload()
+    return _loader.load_checklists()

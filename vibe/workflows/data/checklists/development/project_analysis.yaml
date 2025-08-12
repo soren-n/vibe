@@ -1,0 +1,22 @@
+name: "Project Analysis Validation"
+description: "Checklist to verify thorough project analysis has been completed"
+triggers:
+  - "analy[sz]e.*complete"
+  - "analysis.*validation"
+  - "project.*review.*done"
+  - "assessment.*check"
+  - "validate.*analysis"
+project_types: []
+conditions: []
+dependencies: []
+items:
+  - "Project structure is well-organized and follows conventions"
+  - "Dependencies are up-to-date and secure"
+  - "Configuration files are properly structured"
+  - "Documentation exists and is accessible"
+  - "Test directories are properly organized"
+  - "Security vulnerabilities have been identified and addressed"
+  - "Performance bottlenecks have been documented"
+  - "Technology stack follows current best practices"
+  - "Code follows established patterns and standards"
+  - "Next steps are clearly defined and actionable"

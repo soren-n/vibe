@@ -1,33 +1,36 @@
 name: "CI/CD Pipeline Management"
-description: "Manage CI/CD pipeline and automate deployment workflows"
+description: "Execute CI/CD pipeline setup and automation tasks"
 triggers:
   - "setup ci cd"
   - "setup github actions"
   - "configure pipeline"
   - "setup continuous integration"
-  - "validate ci pipeline"
+  - "run ci pipeline"
+
+category: "development"
 
 category: "development"
 
 steps:
-  - step_text: "Check if GitHub Actions workflow file exists and is valid"
-    command: "Check for YAML workflow files in .github/workflows directory (show first 5 if many exist)"
+  - step_text: "Create GitHub Actions workflow files if missing"
+    command: "Create .github/workflows directory and basic workflow files for testing and quality checks"
     working_dir: "."
 
-  - step_text: "Validate YAML syntax of workflow files"
-    command: "uv run python -c \"import yaml; [yaml.safe_load(open(f).read()) for f in __import__('pathlib').Path('.github/workflows').glob('*.yml')]\""
-    working_dir: "."
-
-  - step_text: "Run the same quality checks that CI will run"
+  - step_text: "Execute quality checks locally (same as CI)"
     command: "uv run pre-commit run --all-files && uv run pytest -q --maxfail=1"
     working_dir: "."
 
-  - step_text: "Test MCP server functionality that CI will validate"
+  - step_text: "Run MCP server tests"
     command: "cd mcp-server && npm test --silent && node test.js"
     working_dir: "."
 
-  - step_text: "Test coverage reporting functionality (sample output)"
+  - step_text: "Generate coverage report"
     command: "uv run pytest -q --maxfail=1 --cov=vibe --cov-report=term | head -40"
+    working_dir: "."
+
+  - step_text: "Configure pre-commit hooks"
+    command: "uv run pre-commit install && uv run pre-commit autoupdate"
+    working_dir: "."
     working_dir: "."
 
   - step_text: "Keep logs concise: prefer quiet reporters, sample long outputs with `head`, and summarize key results briefly."

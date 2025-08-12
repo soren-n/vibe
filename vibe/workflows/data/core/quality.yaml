@@ -1,5 +1,5 @@
 name: "quality"
-description: "Code quality, linting, formatting, and compliance"
+description: "Code quality, linting, formatting, and compliance execution"
 triggers:
   - "lint"
   - "format"
@@ -13,20 +13,14 @@ triggers:
   - "code quality"
   - "best practices"
 steps:
-  - "Identify project type: Determine which quality tools apply (Python: ruff/mypy, JavaScript: eslint/prettier, etc.)"
-  - "Check configuration: Ensure linting and formatting configuration files exist and are up to date"
-  - "Run linting: Execute appropriate linter for your project type (ruff, eslint, golangci-lint, etc.)"
-  - "Auto-fix issues: Use auto-fix capabilities to resolve formatting and simple style issues"
-  - "Format code: Run code formatter to ensure consistent style (ruff format, prettier, gofmt, etc.)"
-  - "Type checking: Validate type annotations if applicable (mypy, TypeScript compiler, etc.)"
-  - "Language standards: Check for professional language compliance (no emojis, proper formatting, clear descriptions)"
-  - "Run tests: Ensure quality changes don't break functionality"
-  - "Documentation quality: Check that public APIs have proper documentation"
-  - "Security scan: Run security linters to identify potential vulnerabilities"
-  - "Dependency audit: Check for known security issues in dependencies"
-  - "Validate compliance: Ensure all quality checks pass before considering work complete"
-  - "Set up automation: Consider pre-commit hooks or CI/CD integration for ongoing quality"
-  - "Token‑thrifty: prefer quiet reporters and summarize results succinctly; sample long outputs with `head`."
+  - "Run Python linting: `uv run ruff check .` (if Python project)"
+  - "Auto-fix Python issues: `uv run ruff check . --fix` (if Python project)"
+  - "Format Python code: `uv run ruff format .` (if Python project)"
+  - "Type check Python: `uv run mypy . --hide-error-context --no-error-summary` (if Python project)"
+  - "Run JavaScript linting: `npm run lint` (if Node.js project)"
+  - "Format JavaScript code: `npm run format` (if Node.js project)"
+  - "Run tests: `uv run pytest -q` or `npm test`"
+  - "Run security scan: `uv run bandit -r .` or `npm audit`"
 dependencies: []
 project_types: []
 conditions: []

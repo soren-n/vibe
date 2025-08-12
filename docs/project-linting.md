@@ -54,13 +54,13 @@ lint:
   # Language and tone settings
   check_emojis: true
   check_professional_language: true
-  exclude_ui_files:
-    - "**/cli/**"          # CLI interface files
-    - "**/ui/**"           # UI components
-    - "**/frontend/**"     # Frontend files
-    - "docs/**"            # Documentation files
-    - "scripts/**"         # Utility scripts
-    - "README.md"          # Project documentation
+  allow_informal_language:
+    - "**/cli/**"          # CLI interface files can use emojis and informal language
+    - "**/ui/**"           # UI components can use emojis for user experience
+    - "**/frontend/**"     # Frontend files can use emojis
+    - "docs/**"            # Documentation files can use emojis for readability
+    - "scripts/**"         # Utility scripts can contain user-facing emojis
+    - "README.md"          # Project documentation can use emojis for clarity
 
   # File naming conventions by extension
   naming_conventions:

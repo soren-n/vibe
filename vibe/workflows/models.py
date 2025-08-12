@@ -1,6 +1,6 @@
 """Workflow data structures for vibe CLI.
 
-This module contains the core dataclass definitions for workflows,
+This module contains the core dataclass definitions for workflows and checklists,
 separated to avoid circular imports between core.py and loader.py.
 """
 
@@ -30,6 +30,41 @@ class Workflow:
     description: str
     triggers: list[str]
     steps: list[str]
+    dependencies: list[str] | None = None
+    project_types: list[str] | None = None
+    conditions: list[str] | None = None
+
+    def __post_init__(self) -> None:
+        """Initialize default values."""
+        if self.dependencies is None:
+            self.dependencies = []
+        if self.project_types is None:
+            self.project_types = []
+        if self.conditions is None:
+            self.conditions = []
+
+
+@dataclass
+class Checklist:
+    """Represents a checklist with validation items and metadata.
+
+    A checklist consists of:
+    - name: Unique identifier for the checklist
+    - description: Human-readable description of what the checklist validates
+    - triggers: List of patterns that should activate this checklist
+    - items: List of validation items/checks to perform
+    - dependencies: Optional list of required tools/packages
+    - project_types: Optional list of project types this applies to
+    - conditions: Optional list of conditions that must be met
+
+    Note: Items are validation checks, not executable commands. They provide
+    things to verify, validate, or ensure are in place.
+    """
+
+    name: str
+    description: str
+    triggers: list[str]
+    items: list[str]
     dependencies: list[str] | None = None
     project_types: list[str] | None = None
     conditions: list[str] | None = None

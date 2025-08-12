@@ -8,7 +8,7 @@ lint:
   # Language and tone settings
   check_emojis: true
   check_professional_language: true
-  exclude_ui_files:
+  allow_informal_language:
     - "**/cli/**"          # CLI interface files can use emojis for user experience
     - "**/ui/**"           # UI files can use emojis
     - "**/frontend/**"     # Frontend files can use emojis
@@ -48,6 +48,7 @@ lint:
     - "vibe/workflows/data/**"  # Workflow files contain user-facing emojis and informal language
     - "test_mcp.py"        # Test files can contain informal language
     - "debug_*.py"         # Debug scripts can contain informal language
+    - "*_new.*"            # Legacy/new files can contain informal language
     - "tests/**"           # Test files can contain examples with informal language
     - "ENHANCEMENT_SUMMARY.md"  # Working notes
     - "commit_msg.txt"     # Git commit messages

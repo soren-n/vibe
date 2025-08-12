@@ -1,0 +1,22 @@
+name: "Python Development Setup Validation"
+description: "Checklist to verify Python development environment is properly configured"
+triggers:
+  - "python.*setup.*complete"
+  - "validate.*python.*environment"
+  - "verify.*dev.*setup"
+  - "environment.*validation"
+project_types:
+  - "python"
+conditions:
+  - "pattern:*.py"
+dependencies: []
+items:
+  - "Python version is appropriate for the project"
+  - "Package manager (uv or pip) is available and working"
+  - "Project dependencies are successfully installed"
+  - "Development tools (pytest, ruff, mypy) are available"
+  - "Virtual environment is properly configured"
+  - "Python interpreter can import project modules"
+  - "Development tools can be executed without errors"
+  - "Environment is ready for coding and testing"
+  - "Package installation commands work correctly"

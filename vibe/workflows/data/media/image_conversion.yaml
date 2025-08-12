@@ -10,10 +10,10 @@ triggers:
 project_types:
   - "any"
 steps:
-  - "Check Tool Availability - Verify ImageMagick is installed"
-  - "Identify Source Files - Locate images to convert"
-  - "Choose Conversion Parameters - Set output format, resolution, and quality"
-  - "Execute Conversion - Run ImageMagick commands for image conversion"
-  - "Optimize Output - Apply compression and optimization as needed"
-  - "Verify Results - Check output files for quality and proper format"
-  - "Cleanup - Remove temporary files and organize converted assets"
+  - "Install ImageMagick: `brew install imagemagick` (macOS) or `sudo apt install imagemagick` (Linux)"
+  - "Convert image format: `magick input.png output.jpg`"
+  - "Resize image: `magick input.jpg -resize 800x600 output.jpg`"
+  - "Convert with quality setting: `magick input.png -quality 90 output.jpg`"
+  - "Batch convert: `magick mogrify -format png *.jpg`"
+  - "Optimize PNG: `magick input.png -strip -quality 75 output.png`"
+  - "Clean up temporary files: `rm -f *_temp.*`"

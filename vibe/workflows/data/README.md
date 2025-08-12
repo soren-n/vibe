@@ -4,6 +4,8 @@ This directory contains 29 YAML workflow definitions organized into logical cate
 
 **Conceptual Note**: Vibe workflows provide **guidance steps** rather than automated commands. Each workflow step is textual guidance that can include command suggestions, reminders, best practices, or any helpful advice. Users follow the guidance manually, maintaining full control over their development process.
 
+**New in Vibe**: The system now also supports **checklists** for validation and verification tasks. Checklists are stored in the `checklists/` subdirectory and provide structured verification points to ensure work quality and completeness.
+
 ## Workflow Structure
 
 Each YAML workflow contains:
@@ -63,6 +65,15 @@ Frontend development and JavaScript/Node.js workflows:
 - `js_type_check.yaml` - JavaScript/TypeScript type checking
 - `react_dev.yaml` - React development workflow
 - `vue_dev.yaml` - Vue.js development workflow
+
+### checklists/ (4 checklists)
+Validation and verification checklists organized by category:
+- `core/quality_check.yaml` - General code quality verification
+- `python/release_readiness.yaml` - Python project release preparation
+- `development/feature_development.yaml` - New feature implementation verification
+- `development/bug_fix.yaml` - Bug fix completion verification
+
+**Note**: Checklists provide validation items rather than workflow steps, helping ensure work quality and completeness.
 
 ## Loading Architecture
 

@@ -7,9 +7,9 @@ triggers:
   - "setup.*python"
   - "install.*requirements"
 steps:
-  - "Install Dependencies: Use `uv install` (modern), `pip install -e .` (editable), or `pip install -r requirements.txt` (traditional)"
-  - "Verify Installation: Check that dependencies are properly installed and available for import in Python"
-  - "Update as Needed: Consider upgrading dependencies if installation conflicts occur or newer versions are available"
+  - "Install dependencies: `uv sync` (preferred) or `pip install -e .`"
+  - "Install from requirements: `uv pip install -r requirements.txt`"
+  - "Test imports: `uv run python -c 'import sys; print(\"Python ready:\", sys.version)'`"
 project_types:
   - "python"
 conditions:

@@ -1,0 +1,24 @@
+name: "Python Session Completion"
+description: "Checklist to verify Python development session is complete and ready for commit"
+triggers:
+  - "complete.*session"
+  - "finish.*work"
+  - "session.*cleanup"
+  - "ready.*commit"
+  - "validate.*session"
+  - "session.*done"
+project_types:
+  - "python"
+conditions:
+  - "pattern:*.py"
+dependencies: []
+items:
+  - "Python environment is working correctly"
+  - "No style issues remain (ruff check passes)"
+  - "Project configuration files are valid (pyproject.toml syntax)"
+  - "Test discovery works properly (pytest --collect-only succeeds)"
+  - "Python cache files have been cleaned (__pycache__, *.pyc)"
+  - "No temporary or debug files remain (debug*.py, *.tmp, *.bak)"
+  - "Git status shows only intended changes"
+  - "All quality checks pass before committing"
+  - "Session work is documented and ready for review"

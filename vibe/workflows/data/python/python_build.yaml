@@ -7,9 +7,9 @@ triggers:
   - "build.*wheel"
   - "prepare.*release"
 steps:
-  - "Build Package: Use `uv build` (preferred) or `python -m build` to create wheel and source distributions"
-  - "Verify Artifacts: Check `find dist/ -name '*.whl' -o -name '*.tar.gz' 2>/dev/null || echo 'No dist/ directory found'` to confirm build artifacts"
-  - "Validate Build: Ensure package builds successfully and all necessary files are included in distribution"
+  - "Build package: `uv build` or `python -m build`"
+  - "Check artifacts: `ls -la dist/`"
+  - "Test install: `uv pip install dist/*.whl`"
 dependencies:
   - "python_test"
   - "python_quality"

@@ -1,0 +1,22 @@
+name: "Dependency Update Validation"
+description: "Checklist to verify dependency updates were successful and safe"
+triggers:
+  - "dependencies.*updated"
+  - "packages.*updated"
+  - "verify.*update"
+  - "validate.*dependencies"
+  - "dependency.*check"
+project_types: []
+conditions: []
+dependencies: []
+items:
+  - "All package managers are updated to latest versions"
+  - "Project dependencies have been successfully updated"
+  - "Lock files reflect the new dependency versions"
+  - "No security vulnerabilities remain in dependencies"
+  - "Project builds successfully after updates"
+  - "Key functionality works correctly with new dependencies"
+  - "Breaking changes have been identified and addressed"
+  - "Tests pass with updated dependencies"
+  - "Documentation reflects any API changes"
+  - "Lock files have been committed to version control"

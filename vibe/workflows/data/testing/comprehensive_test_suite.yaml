@@ -1,5 +1,5 @@
-name: "Comprehensive Test Suite"
-description: "Run comprehensive test suite including unit, integration, and MCP tests"
+name: "comprehensive_test_suite"
+description: "Execute complete test suite including unit, integration, and MCP tests"
 triggers:
   - "run all tests"
   - "comprehensive testing"

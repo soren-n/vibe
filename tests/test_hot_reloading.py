@@ -52,14 +52,14 @@ def test_hot_reloading_cache_invalidation() -> None:
     assert len(initial_workflows) > 0
 
     # Cache should be populated
-    assert loader._cache
+    assert loader._workflow_cache
     assert loader._loaded
 
     # Trigger cache invalidation
     loader._on_file_change()
 
     # Cache should be cleared
-    assert not loader._cache
+    assert not loader._workflow_cache
     assert not loader._loaded
 
 
@@ -92,7 +92,7 @@ def test_hot_reloading_with_temporary_directory() -> None:
         loader._on_file_change()
 
         # Cache should be cleared
-        assert not loader._cache
+        assert not loader._workflow_cache
         assert not loader._loaded
 
         # Reload should work

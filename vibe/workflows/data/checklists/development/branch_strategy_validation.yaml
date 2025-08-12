@@ -1,0 +1,21 @@
+name: "Branch Strategy Validation"
+description: "Checklist to verify branching and version strategy is properly executed"
+triggers:
+  - "branch.*created"
+  - "validate.*branch.*strategy"
+  - "verify.*versioning"
+  - "branch.*strategy.*complete"
+project_types: []
+conditions: []
+dependencies: []
+items:
+  - "Branch name follows convention (patch/minor/major + version)"
+  - "Change type correctly matches impact (patch/minor/major)"
+  - "Conventional commit format is used consistently"
+  - "All tests pass on the feature branch"
+  - "No breaking changes in patch or minor branches"
+  - "Version numbering follows semantic versioning"
+  - "Pull request includes proper description"
+  - "For major changes: migration guide is prepared"
+  - "Merge timing is appropriate for change type"
+  - "Branch is up to date with main before merge"

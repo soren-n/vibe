@@ -1,4 +1,4 @@
-"""Workflow orchestrator that plans and provides execution guidance."""
+"""Workflow orchestrator that plans and provides execution guidance for workflows and checklists."""
 
 from typing import Any
 
@@ -9,10 +9,11 @@ from rich.table import Table
 from .config import VibeConfig
 from .session import SessionManager
 from .workflows import get_workflow_registry
+from .workflows.loader import get_checklist
 
 
 class WorkflowOrchestrator:
-    """Orchestrates workflow planning and provides execution guidance for AI agents."""
+    """Orchestrates workflow and checklist planning and provides execution guidance for AI agents."""
 
     def __init__(self, config: VibeConfig):
         """Initialize the workflow orchestrator with configuration."""
@@ -22,21 +23,31 @@ class WorkflowOrchestrator:
         self.session_manager = SessionManager()
 
     def plan_workflows(
-        self, workflows: list[str], prompt: str, show_display: bool = True
+        self, items: list[str], prompt: str, show_display: bool = True
     ) -> dict[str, Any]:
-        """Plan workflows and return execution guidance."""
-        if not workflows:
+        """Plan workflows and checklists and return execution guidance."""
+        if not items:
             return {
                 "success": True,
                 "workflows": [],
                 "guidance": "No workflows needed.",
             }
 
-        # Plan execution order
+        # Separate workflows from checklists
+        workflows = [item for item in items if not item.startswith("checklist:")]
+        checklists = [
+            item.replace("checklist:", "")
+            for item in items
+            if item.startswith("checklist:")
+        ]
+
+        # Plan execution order for workflows only
         execution_order = self._plan_execution_order(workflows)
 
-        # Generate execution plan
-        execution_plan = self._generate_execution_plan(execution_order, prompt)
+        # Generate execution plan including both workflows and checklists
+        execution_plan = self._generate_execution_plan(
+            execution_order, checklists, prompt
+        )
 
         # Display the plan only if requested
         if show_display:
@@ -45,20 +56,28 @@ class WorkflowOrchestrator:
         return {
             "success": True,
             "workflows": execution_order,
+            "checklists": checklists,
             "execution_plan": execution_plan,
             "guidance": self._format_guidance_for_agent(execution_plan),
         }
 
     def _generate_execution_plan(
-        self, workflows: list[str], prompt: str
+        self, workflows: list[str], checklists: list[str], prompt: str
     ) -> list[dict[str, Any]]:
-        """Generate detailed execution plan for each workflow."""
+        """Generate detailed execution plan for workflows and checklists."""
         plan = []
 
+        # Add workflows first
         for workflow_name in workflows:
             workflow_step = self._plan_workflow_step(workflow_name, prompt)
             if workflow_step:
                 plan.append(workflow_step)
+
+        # Add checklists after workflows
+        for checklist_name in checklists:
+            checklist_step = self._plan_checklist_step(checklist_name, prompt)
+            if checklist_step:
+                plan.append(checklist_step)
 
         return plan
 
@@ -109,6 +128,23 @@ class WorkflowOrchestrator:
             "reasoning": self._get_workflow_reasoning(workflow_name, prompt),
         }
 
+    def _plan_checklist_step(
+        self, checklist_name: str, prompt: str
+    ) -> dict[str, Any] | None:
+        """Plan a single checklist step."""
+        checklist = get_checklist(checklist_name)
+
+        if not checklist:
+            return None
+
+        return {
+            "name": checklist_name,
+            "description": checklist.description,
+            "steps": checklist.items,
+            "source": "checklist",
+            "reasoning": self._get_checklist_reasoning(checklist_name, prompt),
+        }
+
     def _get_workflow_reasoning(self, workflow_name: str, prompt: str) -> str:
         """Generate reasoning for why this workflow is needed."""
         reasoning_map = {
@@ -137,6 +173,19 @@ class WorkflowOrchestrator:
             workflow_name, f"To complete the {workflow_name} workflow as requested"
         )
 
+    def _get_checklist_reasoning(self, checklist_name: str, prompt: str) -> str:
+        """Generate reasoning for why this checklist is needed."""
+        reasoning_map = {
+            "Quality Check": "To verify code quality and project standards are met",
+            "Python Release Readiness": "To ensure the Python project is ready for release",
+            "Feature Development": "To ensure new features are properly implemented",
+            "Bug Fix Verification": "To verify bug fixes are complete and safe",
+        }
+
+        return reasoning_map.get(
+            checklist_name, f"To verify requirements for: {prompt}"
+        )
+
     def _display_execution_guidance(
         self, execution_plan: list[dict[str, Any]], prompt: str
     ) -> None:
@@ -147,7 +196,7 @@ class WorkflowOrchestrator:
         self.console.print(
             Panel(
                 f"[bold blue]{prompt}[/bold blue]",
-                title="🎯 User Request",
+                title="User Request",
                 border_style="blue",
             )
         )
@@ -156,7 +205,7 @@ class WorkflowOrchestrator:
         self.console.print(
             Panel(
                 self._format_guidance_text(execution_plan),
-                title="🤖 AI Agent Execution Guidance",
+                title="AI Agent Execution Guidance",
                 border_style="green",
             )
         )
@@ -167,21 +216,22 @@ class WorkflowOrchestrator:
     def _format_guidance_text(self, execution_plan: list[dict[str, Any]]) -> str:
         """Format guidance text for AI agents."""
         if not execution_plan:
-            return (
-                "No specific workflows needed. Proceed with general project analysis."
-            )
+            return "No specific workflows or checklists needed. Proceed with general project analysis."
 
         guidance_parts = [
-            "Based on the request, I recommend the following workflow execution:",
+            "Based on the request, I recommend the following execution plan:",
             "",
         ]
 
         for i, step in enumerate(execution_plan, 1):
-            guidance_parts.append(f"{i}. **{step['description']}**")
+            step_type = "Checklist" if step.get("source") == "checklist" else "Workflow"
+            guidance_parts.append(f"{i}. {step_type}: **{step['description']}**")
             guidance_parts.append(f"   Reasoning: {step['reasoning']}")
             guidance_parts.append("")
 
-        guidance_parts.append("Execute these workflows in order for best results.")
+        guidance_parts.append(
+            "Execute workflows first, then use checklists to verify completion."
+        )
         return "\n".join(guidance_parts)
 
     def _display_steps_table(self, execution_plan: list[dict[str, Any]]) -> None:
@@ -189,18 +239,20 @@ class WorkflowOrchestrator:
         if not execution_plan:
             return
 
-        table = Table(title="📋 Detailed Execution Steps")
+        table = Table(title="Detailed Execution Plan")
         table.add_column("Step", style="cyan", no_wrap=True)
-        table.add_column("Workflow", style="magenta")
+        table.add_column("Type", style="blue")
+        table.add_column("Name", style="magenta")
         table.add_column("Source", style="yellow")
-        table.add_column("Steps", style="green")
+        table.add_column("Items", style="green")
 
         for i, step in enumerate(execution_plan, 1):
+            step_type = "Checklist" if step.get("source") == "checklist" else "Workflow"
             steps_text = "\n".join(step["steps"][:3])  # Show first 3 steps
             if len(step["steps"]) > 3:
                 steps_text += f"\n... and {len(step['steps']) - 3} more"
 
-            table.add_row(str(i), step["description"], step["source"], steps_text)
+            table.add_row(str(i), step_type, step["name"], step["source"], steps_text)
 
         self.console.print(table)
 
@@ -217,8 +269,15 @@ class WorkflowOrchestrator:
         )
 
         for i, step in enumerate(execution_plan, 1):
-            # One-liner per workflow
-            lines.append(f"{i}. {step['name']}: {step['description']}")
+            # Determine step type and add appropriate prefix
+            if step.get("source") == "checklist":
+                step_prefix = "CHECKLIST"
+                step_type = "checklist"
+            else:
+                step_prefix = "WORKFLOW"
+
+            # One-liner per item
+            lines.append(f"{i}. {step_prefix} {step['name']}: {step['description']}")
 
             # Include only the first few actionable steps to reduce tokens
             max_steps = 5
@@ -573,11 +632,11 @@ class WorkflowOrchestrator:
             if workflow_config and workflow_config.description:
                 description = workflow_config.description
             else:
-                description = f"📋 {workflow_name.title()} workflow"
+                description = f"{workflow_name.title()} workflow"
 
             plan_items.append(f"  {i}. {description}")
 
         self.console.print(
-            Panel("\n".join(plan_items), title="📋 Execution Plan", border_style="cyan")
+            Panel("\n".join(plan_items), title="Execution Plan", border_style="cyan")
         )
         self.console.print()

@@ -1,0 +1,22 @@
+name: "Quality Validation"
+description: "Checklist to verify code quality and project standards are met"
+triggers:
+  - "quality check"
+  - "validate quality"
+  - "check standards"
+  - "verify compliance"
+  - "quality validation"
+project_types: []
+conditions: []
+dependencies: []
+items:
+  - "Type annotations are valid (mypy passes without errors)"
+  - "Code follows professional language standards (no emojis, proper formatting, clear descriptions)"
+  - "Public APIs have appropriate documentation"
+  - "Dependencies have no known security vulnerabilities"
+  - "All quality checks pass before considering work complete"
+  - "Pre-commit hooks or CI/CD integration considered for ongoing quality"
+  - "Documentation reflects current code behavior"
+  - "Tests cover new functionality adequately"
+  - "Security scans show no critical vulnerabilities"
+  - "Code follows consistent formatting standards"

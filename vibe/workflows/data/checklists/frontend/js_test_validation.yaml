@@ -1,0 +1,24 @@
+name: "JavaScript Test Validation"
+description: "Checklist to verify JavaScript/TypeScript testing is comprehensive and passing"
+triggers:
+  - "tests.*complete"
+  - "validate.*js.*tests"
+  - "verify.*javascript.*tests"
+  - "test.*validation"
+project_types:
+  - "javascript"
+  - "typescript"
+  - "node"
+conditions:
+  - "file:package.json"
+dependencies: []
+items:
+  - "All test suites pass without failures"
+  - "Test coverage meets project requirements"
+  - "Critical functionality is adequately tested"
+  - "Edge cases and error conditions are covered"
+  - "Tests run efficiently without timeouts"
+  - "No flaky or intermittent test failures"
+  - "Test configuration is properly set up in package.json"
+  - "Continuous integration includes test execution"
+  - "Test results are clearly reported and actionable"
