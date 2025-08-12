@@ -246,40 +246,71 @@ class LanguageLinter:
 
     def _should_exclude(self, path: Path) -> bool:
         """Check if path should be excluded from language linting."""
-        import fnmatch
-
-        # Convert path to string relative to current directory for pattern matching
-        try:
-            relative_path = path.relative_to(Path.cwd())
-            path_str = str(relative_path)
-        except ValueError:
-            path_str = str(path)
+        path_str = self._get_relative_path_string(path)
 
         # Check general exclude patterns
-        for pattern in self.config.exclude_patterns:
-            if fnmatch.fnmatch(path_str, pattern):
-                return True
-            if fnmatch.fnmatch(str(path.name), pattern):
-                return True
-            # Check if any parent directory matches
-            for parent in path.parents:
-                try:
-                    parent_relative = parent.relative_to(Path.cwd())
-                    if fnmatch.fnmatch(str(parent_relative), pattern):
-                        return True
-                    if fnmatch.fnmatch(parent.name, pattern):
-                        return True
-                except ValueError:
-                    if fnmatch.fnmatch(parent.name, pattern):
-                        return True
+        if self._matches_exclude_patterns(path, path_str):
+            return True
 
         # Check patterns for files that can use informal language and emojis
-        for pattern in self.config.allow_informal_language:
-            if fnmatch.fnmatch(path_str, pattern):
-                return True
-            if fnmatch.fnmatch(str(path.name), pattern):
-                return True
+        if self._matches_informal_patterns(path, path_str):
+            return True
 
+        return False
+
+    def _get_relative_path_string(self, path: Path) -> str:
+        """Get the relative path string for pattern matching."""
+        try:
+            relative_path = path.relative_to(Path.cwd())
+            return str(relative_path)
+        except ValueError:
+            return str(path)
+
+    def _matches_exclude_patterns(self, path: Path, path_str: str) -> bool:
+        """Check if path matches any general exclude patterns."""
+        import fnmatch
+
+        for pattern in self.config.exclude_patterns:
+            if self._path_matches_pattern(path, path_str, pattern, fnmatch):
+                return True
+        return False
+
+    def _matches_informal_patterns(self, path: Path, path_str: str) -> bool:
+        """Check if path matches patterns allowing informal language."""
+        import fnmatch
+
+        for pattern in self.config.allow_informal_language:
+            if self._path_matches_pattern(path, path_str, pattern, fnmatch):
+                return True
+        return False
+
+    def _path_matches_pattern(
+        self, path: Path, path_str: str, pattern: str, fnmatch: Any
+    ) -> bool:
+        """Check if a path matches a specific pattern."""
+        # Check full path
+        if fnmatch.fnmatch(path_str, pattern):
+            return True
+
+        # Check filename only
+        if fnmatch.fnmatch(str(path.name), pattern):
+            return True
+
+        # Check parent directories
+        return self._parent_matches_pattern(path, pattern, fnmatch)
+
+    def _parent_matches_pattern(self, path: Path, pattern: str, fnmatch: Any) -> bool:
+        """Check if any parent directory matches the pattern."""
+        for parent in path.parents:
+            try:
+                parent_relative = parent.relative_to(Path.cwd())
+                if fnmatch.fnmatch(str(parent_relative), pattern):
+                    return True
+                if fnmatch.fnmatch(parent.name, pattern):
+                    return True
+            except ValueError:
+                if fnmatch.fnmatch(parent.name, pattern):
+                    return True
         return False
 
 
@@ -422,7 +453,7 @@ class ProjectLinter:
             if any(parent in excluded_dirs for parent in item.parents):
                 continue
 
-            # Skip if excluded by patterns - use language linter for most comprehensive exclusions
+            # Skip if excluded by patterns - use language linter for exclusions
             if self.language_linter._should_exclude(item):
                 continue
 
