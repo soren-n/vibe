@@ -11,98 +11,131 @@ from .project_types import ProjectDetector
 
 def _read_gitignore_patterns(project_root: Path) -> list[str]:
     """Read patterns from all .gitignore files in the project tree."""
+    gitignore_files = _find_gitignore_files(project_root)
     all_patterns = []
 
-    # Find all .gitignore files in the project
+    for gitignore_path, relative_dir in gitignore_files:
+        patterns = _process_gitignore_file(gitignore_path, relative_dir)
+        all_patterns.extend(patterns)
+
+    return _remove_duplicate_patterns(all_patterns)
+
+
+def _find_gitignore_files(project_root: Path) -> list[tuple[Path, str]]:
+    """Find all .gitignore files in the project, excluding cache directories."""
     gitignore_files = []
+
     try:
         # Add root .gitignore
         root_gitignore = project_root / ".gitignore"
         if root_gitignore.exists():
             gitignore_files.append((root_gitignore, ""))
 
-        # Find subdirectory .gitignore files, but exclude cache directories
+        # Find subdirectory .gitignore files
         for gitignore_path in project_root.rglob(".gitignore"):
-            if gitignore_path != root_gitignore:
-                # Skip .gitignore files in cache/build directories that might
-                # contain overly broad patterns
-                rel_path = gitignore_path.relative_to(project_root)
-                path_parts = rel_path.parts[:-1]  # exclude .gitignore filename
-
-                # Skip if in cache/build directories
-                skip_dirs = {
-                    "__pycache__",
-                    ".pytest_cache",
-                    ".mypy_cache",
-                    ".ruff_cache",
-                    "node_modules",
-                    "dist",
-                    "build",
-                    ".venv",
-                    "venv",
-                    "coverage",
-                    ".git",
-                    ".github",
-                }
-                if any(part in skip_dirs for part in path_parts):
-                    continue
-
-                # Calculate relative path from project root
+            if gitignore_path != root_gitignore and _should_include_gitignore(
+                gitignore_path, project_root
+            ):
                 rel_dir = gitignore_path.parent.relative_to(project_root)
                 gitignore_files.append((gitignore_path, str(rel_dir)))
     except (OSError, ValueError):
         pass
 
-    # Process each .gitignore file
-    for gitignore_path, relative_dir in gitignore_files:
-        try:
-            content = gitignore_path.read_text(encoding="utf-8")
-            for line in content.split("\n"):
-                line = line.strip()
-                # Skip empty lines and comments
-                if not line or line.startswith("#"):
-                    continue
+    return gitignore_files
 
-                # Skip overly broad patterns that would exclude everything
-                if line in ["*", "**", "*/**"]:
-                    continue
 
-                # Apply patterns relative to their .gitignore location
-                if relative_dir:
-                    # For subdirectory .gitignore, prefix patterns with the
-                    # directory path
-                    if line.startswith("/"):
-                        # Absolute pattern (relative to .gitignore location)
-                        pattern = f"{relative_dir}/{line[1:]}"
-                    else:
-                        # Relative pattern applies within that subdirectory
-                        pattern = f"{relative_dir}/{line}"
-                else:
-                    # Root .gitignore patterns
-                    pattern = line[1:] if line.startswith("/") else line
+def _should_include_gitignore(gitignore_path: Path, project_root: Path) -> bool:
+    """Check if a .gitignore file should be included (not in cache directories)."""
+    rel_path = gitignore_path.relative_to(project_root)
+    path_parts = rel_path.parts[:-1]  # exclude .gitignore filename
 
-                # Convert gitignore patterns to our format
-                if pattern.endswith("/"):
-                    # Directory patterns
-                    dir_pattern = pattern[:-1]
-                    all_patterns.extend([dir_pattern, f"{dir_pattern}/**"])
-                else:
-                    all_patterns.append(pattern)
-                    # For potential directories, also exclude contents
-                    if "." not in pattern.split("/")[-1] and "*" not in pattern:
-                        all_patterns.append(f"{pattern}/**")
+    skip_dirs = {
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+        "node_modules",
+        "dist",
+        "build",
+        ".venv",
+        "venv",
+        "coverage",
+        ".git",
+        ".github",
+    }
+    return not any(part in skip_dirs for part in path_parts)
 
-        except (OSError, UnicodeDecodeError):
-            continue  # Skip unreadable .gitignore files
 
-    # Remove duplicates while preserving order
+def _process_gitignore_file(gitignore_path: Path, relative_dir: str) -> list[str]:
+    """Process a single .gitignore file and return its patterns."""
+    patterns = []
+
+    try:
+        content = gitignore_path.read_text(encoding="utf-8")
+        for line in content.split("\n"):
+            line = line.strip()
+
+            if _should_skip_line(line):
+                continue
+
+            pattern = _normalize_pattern(line, relative_dir)
+            patterns.extend(_expand_pattern(pattern))
+
+    except (OSError, UnicodeDecodeError):
+        pass  # Skip unreadable .gitignore files
+
+    return patterns
+
+
+def _should_skip_line(line: str) -> bool:
+    """Check if a gitignore line should be skipped."""
+    if not line or line.startswith("#"):
+        return True
+
+    # Skip overly broad patterns that would exclude everything
+    return line in ["*", "**", "*/**"]
+
+
+def _normalize_pattern(line: str, relative_dir: str) -> str:
+    """Normalize a gitignore pattern based on its location."""
+    if relative_dir:
+        # For subdirectory .gitignore, prefix patterns with the directory path
+        if line.startswith("/"):
+            # Absolute pattern (relative to .gitignore location)
+            return f"{relative_dir}/{line[1:]}"
+        else:
+            # Relative pattern applies within that subdirectory
+            return f"{relative_dir}/{line}"
+    else:
+        # Root .gitignore patterns
+        return line[1:] if line.startswith("/") else line
+
+
+def _expand_pattern(pattern: str) -> list[str]:
+    """Expand a gitignore pattern to include directory variants."""
+    patterns = []
+
+    if pattern.endswith("/"):
+        # Directory patterns
+        dir_pattern = pattern[:-1]
+        patterns.extend([dir_pattern, f"{dir_pattern}/**"])
+    else:
+        patterns.append(pattern)
+        # For potential directories, also exclude contents
+        if "." not in pattern.split("/")[-1] and "*" not in pattern:
+            patterns.append(f"{pattern}/**")
+
+    return patterns
+
+
+def _remove_duplicate_patterns(all_patterns: list[str]) -> list[str]:
+    """Remove duplicates while preserving order."""
     seen = set()
     unique_patterns = []
     for pattern in all_patterns:
         if pattern not in seen:
             seen.add(pattern)
             unique_patterns.append(pattern)
-
     return unique_patterns
 
 
@@ -158,7 +191,8 @@ class LintConfig(BaseModel):
     # Professional language patterns to flag
     unprofessional_patterns: list[str] = Field(
         default_factory=lambda: [
-            r"\b(awesome|cool|amazing|epic)\b",  # Removed 'super' to avoid Python super()
+            # Removed 'super' to avoid conflicts with Python super()
+            r"\b(awesome|cool|amazing|epic)\b",
             r"\b(gonna|wanna|gotta)\b",
             r"\b(omg|lol|btw|fyi)\b",
             r"!!+",  # Multiple exclamation marks
