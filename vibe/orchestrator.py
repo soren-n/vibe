@@ -674,7 +674,10 @@ class WorkflowOrchestrator:
     def analyze_agent_response(
         self, session_id: str, response_text: str
     ) -> dict[str, Any]:
-        """Analyze an agent response for patterns indicating forgotten workflow completion."""
+        """
+        Analyze an agent response for patterns indicating
+        forgotten workflow completion.
+        """
         from .session_monitor import SessionMonitor
 
         monitor = SessionMonitor(self)

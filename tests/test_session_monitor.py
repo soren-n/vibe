@@ -72,7 +72,10 @@ class TestSessionMonitor:
     def test_detect_completion_patterns(self, session_monitor):
         """Test detection of completion patterns in agent responses."""
         completion_responses = [
-            "That completes the implementation. We have successfully set up the authentication system.",
+            (
+                "That completes the implementation. We have successfully "
+                "set up the authentication system."
+            ),
             "In summary, the project is now ready for deployment.",
             "Final step: the tests are passing and everything looks good.",
             "This concludes our work on the feature.",
@@ -116,7 +119,10 @@ class TestSessionMonitor:
     def test_no_alert_for_proper_workflow_management(self, session_monitor):
         """Test that proper workflow management doesn't trigger alerts."""
         # Response with both completion pattern and workflow management
-        response = "That completes the task. I'll use advance_workflow to move to the next step."
+        response = (
+            "That completes the task. I'll use advance_workflow to move "
+            "to the next step."
+        )
         alert = session_monitor.analyze_agent_response("test1234", response)
 
         assert alert is None

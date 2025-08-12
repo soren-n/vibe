@@ -68,7 +68,8 @@ def test_cli_checklists():
     assert result["success"], "Run command failed"
     assert len(result["checklist"]["items"]) > 0, "No checklist items found"
     print(
-        f"   ✅ Successfully ran '{first_checklist}' with {len(result['checklist']['items'])} items"
+        f"   ✅ Successfully ran '{first_checklist}' with "
+        f"{len(result['checklist']['items'])} items"
     )
 
 
@@ -111,7 +112,8 @@ def test_mcp_checklists():
     assert result["success"], "MCP run-checklist failed"
     assert len(result["checklist"]["items"]) > 0, "No checklist items found"
     print(
-        f"   ✅ Successfully ran '{first_checklist}' via MCP with {len(result['checklist']['items'])} items"
+        f"   ✅ Successfully ran '{first_checklist}' via MCP with "
+        f"{len(result['checklist']['items'])} items"
     )
 
     # Test run-checklist with simple format

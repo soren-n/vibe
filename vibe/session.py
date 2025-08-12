@@ -288,7 +288,10 @@ class WorkflowSession:
         # Add prefix if enabled
         if self.session_config.ai_agent_prefix:
             if is_command:
-                prefix = "AUTO-VIBE: Execute without interaction. Use quiet/yes flags. Report outcome concisely."
+                prefix = (
+                    "AUTO-VIBE: Execute without interaction. "
+                    "Use quiet/yes flags. Report outcome concisely."
+                )
             else:
                 # For guidance/checklist items, use shorter prefix
                 prefix = "AUTO-VIBE: Verify and report status briefly."

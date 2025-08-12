@@ -292,7 +292,10 @@ class SessionMonitor:
         return SessionAlert(
             session_id=session.session_id,
             alert_type="stale_session",
-            message=f"Session has been inactive for {minutes_inactive:.1f} minutes and may be abandoned",
+            message=(
+                f"Session has been inactive for {minutes_inactive:.1f} "
+                "minutes and may be abandoned"
+            ),
             severity="high",
             timestamp=datetime.now(),
             suggested_actions=[
@@ -341,12 +344,17 @@ class SessionMonitor:
         """Format a reminder message for forgotten completion."""
         step_info = ""
         if current_step:
-            step_info = f"You are currently on step {current_step['step_number']} of {len(session.current_frame.steps)} in the '{current_step['workflow']}' workflow."
+            step_info = (
+                f"You are currently on step {current_step['step_number']} of "
+                f"{len(session.current_frame.steps)} in the "
+                f"'{current_step['workflow']}' workflow."
+            )
 
         return f"""
 ⚠️ **Workflow Management Reminder**
 
-I notice you may have completed a task, but there's an active workflow session that needs attention.
+I notice you may have completed a task, but there's an active workflow
+session that needs attention.
 
 {step_info}
 
@@ -374,7 +382,9 @@ This ensures proper workflow completion and prevents orphaned sessions.
 You have a workflow session that's been inactive.
 
 **Session:** `{session.session_id}`
-**Workflow:** `{session.current_frame.workflow_name if session.current_frame else "Unknown"}`
+**Workflow:** `{
+    session.current_frame.workflow_name if session.current_frame else "Unknown"
+}`
 {step_info}
 
 **Consider:**
@@ -396,5 +406,6 @@ Session `{session.session_id}` has been inactive for a significant time.
 - `break_workflow` - Clean up if workflow is complete/abandoned
 - `list_workflow_sessions` - Review all active sessions
 
-**Note:** Sessions inactive for {self.max_session_age_hours} hours will be auto-archived.
+**Note:** Sessions inactive for {self.max_session_age_hours} hours will be
+auto-archived.
 """

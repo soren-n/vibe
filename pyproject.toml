@@ -32,7 +32,12 @@ version-file = "vibe/_version.py"
 [tool.ruff]
 line-length = 88
 target-version = "py313"
-extend-exclude = ["vibe/_version.py"]
+extend-exclude = [
+    "vibe/_version.py",
+    "scripts/",
+    "examples/",
+    "test_*.py"
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
@@ -64,7 +69,6 @@ dev = [
     "black>=25.1.0",
     "isort>=6.0.1",
     "mypy>=1.17.1",
-    "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
     "ruff>=0.12.8",
     "types-pyyaml>=6.0.12.20250809",
@@ -73,4 +77,5 @@ dev = [
     "hatch-vcs>=0.4.0",
     "twine>=6.1.0",
     "types-jsonschema>=4.25.0.20250809",
+    "pytest>=8.4.1",
 ]

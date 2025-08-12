@@ -11,7 +11,7 @@
 
 # Anti-patterns to avoid:
 # - SUMMARY.md files
-# - REPORT.md files  
+# - REPORT.md files
 # - OVERVIEW.md files
 # - Implementation documentation that just describes what was done
 # - Status reports
