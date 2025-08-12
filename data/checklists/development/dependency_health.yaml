@@ -1,0 +1,23 @@
+name: 'Dependency Health Validation Checklist'
+description: 'Checklist to validate the health and quality of project dependencies'
+triggers:
+  - 'dependency validation'
+  - 'package health check'
+  - 'dependency audit checklist'
+project_types:
+  - 'python'
+conditions: []
+dependencies: []
+items:
+  - 'All dependencies are actively maintained (commits within last 6 months)'
+  - 'No known security vulnerabilities exist (run pip-audit or safety check)'
+  - 'All dependencies support target Python versions'
+  - 'Package sizes are reasonable for their functionality'
+  - 'Dependencies have compatible licenses for your project'
+  - 'No circular or conflicting dependency requirements'
+  - 'Transitive dependencies are reviewed and acceptable'
+  - 'Critical dependencies are pinned to specific versions'
+  - 'Development dependencies are separated from production requirements'
+  - 'Optional dependencies are properly documented and implemented'
+  - 'Dependency installation is tested in clean environment'
+  - 'Alternative packages have been considered for heavy dependencies'

@@ -20,11 +20,15 @@ Vibe is an intelligent workflow orchestrator that analyzes your natural language
 ## Installation
 
 ```bash
-# Install with uv (recommended)
-uv add vibe
+# Install with npm (recommended)
+npm install -g vibe-workflow
 
-# Or with pip
-pip install vibe
+# Or build from source
+git clone https://github.com/user/vibe
+cd vibe
+npm install
+npm run build
+npm link
 ```
 
 ## Quick Start
@@ -78,6 +82,7 @@ vibe lint text "Long workflow step message..." --context=step_message
 ```
 
 **Features:**
+
 - **Naming Conventions**: File and directory naming consistency
 - **Language Quality**: Professional language detection and emoji analysis
 - **Smart Filtering**: Gitignore integration and context-aware exclusions
@@ -102,6 +107,7 @@ For comprehensive documentation including philosophy, architecture, and guidelin
 **[Full Documentation](docs/README.md)**
 
 Key documents:
+
 - **[Vibe Philosophy](docs/vibe-philosophy.md)**: Core principles of autonomous AI agent operation
 - **[Workflow Architecture](docs/workflow-architecture.md)**: YAML-based workflow system design
 - **[Development Guidelines](docs/development-guidelines.md)**: Project standards and best practices
@@ -117,7 +123,7 @@ This project uses Vibe to develop itself (dogfooding). AI agents working on Vibe
 
 - **Follow [copilot-instructions.md](.github/copilot-instructions.md)**: Comprehensive development guidelines
 - **Use [vibe-agent.chatmode.md](.github/chatmodes/vibe-agent.chatmode.md)**: VSCode Copilot chat mode
-- **Query Vibe workflows first**: Always use `python main.py "what should I do for [task]?"` before manual operations
+- **Query Vibe workflows first**: Always use `npx vibe "what should I do for [task]?"` before manual operations
 - **Demonstrate capabilities**: Show Vibe's natural language interface by using it
 - **Create new workflows**: Document successful patterns as YAML workflows
 
@@ -138,14 +144,14 @@ Downstream projects can keep their workflows token-thrifty by mirroring these pa
 Create a `.vibe.yaml` file in your project root to customize workflows:
 
 ```yaml
-project_type: "python"  # or "auto" for detection
+project_type: 'typescript' # or "auto" for detection
 workflows:
   testing:
     commands:
-      - "uv run pytest"
-      - "uv run ruff check"
+      - 'npm test'
+      - 'npm run lint'
   quality:
     commands:
-      - "uv run mypy ."
-      - "uv run ruff format"
+      - 'npm run type-check'
+      - 'npm run format'
 ```

@@ -1,0 +1,10 @@
+dist/
+coverage/
+node_modules/
+*.pyc
+__pycache__/
+.pytest_cache/
+*.egg-info/
+vscode-extension/
+mcp-server/
+python-legacy/

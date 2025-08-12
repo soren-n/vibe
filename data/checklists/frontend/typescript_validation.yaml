@@ -1,0 +1,21 @@
+name: 'TypeScript Type Check Validation'
+description: 'Checklist to verify TypeScript type checking is complete and successful'
+triggers:
+  - 'typescript.*checked'
+  - 'type.*check.*complete'
+  - 'validate.*typescript'
+  - 'verify.*types'
+project_types:
+  - 'typescript'
+conditions:
+  - 'file:tsconfig.json'
+  - 'pattern:*.ts'
+dependencies: []
+items:
+  - 'TypeScript compiler runs without errors'
+  - 'No type errors reported in console output'
+  - 'All custom type definitions are properly resolved'
+  - 'Third-party library types are correctly imported'
+  - 'Type coverage is adequate for project requirements'
+  - 'Type checking is integrated into build process'
+  - 'CI/CD pipeline includes type checking step'

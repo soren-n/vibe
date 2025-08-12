@@ -1,0 +1,40 @@
+name: 'Setup GitHub AI Integration'
+description: 'Set up GitHub AI integration with copilot-instructions and VS Code chatmode'
+triggers:
+  - 'setup github ai integration'
+  - 'setup ai integration'
+  - 'setup copilot'
+  - 'setup vs code integration'
+  - 'setup chatmode'
+  - 'github ai'
+steps:
+  - 'Create directory structure: Run `mkdir -p .github/chatmodes`'
+  - 'Generate Copilot Instructions: Create `.github/copilot-instructions.md` with Vibe-first guide'
+  - 'Configure Chat Mode: Create `.github/chatmodes/vibe-agent.chatmode.md` with workflow template'
+  - '```markdown
+    # Vibe Project — AI Agent Guide (Concise)
+    - Core loop: ask Vibe MCP tool "what workflow for [task]?" → act → validate → capture.
+    - Output: 150–250 words, ≤6 bullets, commands only when executed; delta updates.
+    - MCP tools: start_workflow, get_workflow_status, advance_workflow, back_workflow, restart_workflow, break_workflow, list_workflow_sessions.
+    - When uncertain: ask Vibe (e.g., quality checks, Python env, ADR, session).
+    - Validation: ask "what quality checks should I run?"; print PASS/FAIL + next step.
+    ```'
+  - "```markdown
+    ---
+    description: Vibe workflow-first mode (concise, rate-limit aware)
+    tools: ['codebase','fetch','findTestFiles','githubRepo','search','usages','terminal','str_replace_editor','bash']
+    model: Claude Sonnet 4
+    supportsAgentMode: true
+    ---
+
+    # Vibe Development Mode (Always Concise)
+    Core loop, output policy, and MCP tools as above.
+    ```"
+  - 'Add documentation: Create `.github/README.md` with integration guide'
+  - 'Configure chatmode tool permissions for development tasks'
+  - 'Document project workflow organization (49 YAML workflows in 9 categories)'
+  - 'Document Vibe integration instructions for primary development interface'
+  - 'Configure MCP server in VS Code settings for workflow integration'
+  - 'Document available MCP tools and their usage'
+  - 'Validate setup: Run `vibe check` to verify configuration'
+  - 'Test AI integration: Restart VS Code and test with `@vibe-agent` or `vibe guide`'

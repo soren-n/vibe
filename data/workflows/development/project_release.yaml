@@ -1,0 +1,43 @@
+name: Universal Project Release Execution
+description: Project release process
+triggers:
+  - deploy release
+  - execute release
+  - pre-release checklist
+  - publish project
+  - release readiness checklist
+  - release validation
+  - run release process
+project_types:
+  - python
+  - javascript
+  - typescript
+  - vscode_extension
+steps:
+  - "Project type detection: Analyze project structure using `find . -name 'package.json'
+    -o -name 'pyproject.toml' -o -name 'Cargo.toml'`"
+  - 'Quality validation: Execute `uv run pytest -q && uv run ruff check .` for Python
+    or `npm test && npm run lint` for Node.js'
+  - 'Version management: Update version numbers using appropriate tools for detected
+    project type'
+  - 'Build process: Run `uv build` for Python, `npm run build` for Node.js, or equivalent
+    for other project types'
+  - 'Marketplace publishing: Deploy to target platforms using project-specific publishing
+    commands'
+  - 'Create GitHub release: Execute `gh release create` with changelog and built assets'
+items:
+  - 'Project type identified: Release strategy has been determined based on project
+    structure analysis'
+  - 'Pre-release requirements met: All necessary prerequisites for release have been
+    verified and satisfied'
+  - 'Quality validation passed: Comprehensive tests and quality checks execute successfully
+    without errors'
+  - 'Version management verified: Version numbers are consistent across all relevant
+    files and configurations'
+  - 'Build process functional: Production builds and packages are created successfully
+    without errors'
+  - 'Marketplace compatibility confirmed: Project meets requirements for target platforms
+    (npm, PyPI, VS Code Marketplace)'
+  - 'GitHub release prepared: Release notes and assets are ready for publication'
+  - 'Post-release verification planned: Installation and deployment verification procedures
+    are established'

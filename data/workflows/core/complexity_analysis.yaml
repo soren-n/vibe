@@ -1,0 +1,36 @@
+name: Complexity Analysis and Reduction Execution
+description: complexity analysis
+triggers:
+  - apply complexity tools
+  - complexity analysis checklist
+  - complexity validation checklist
+  - execute complexity reduction
+  - pre-complexity validation
+  - reduce complexity
+  - run complexity analysis
+steps:
+  - 'McCabe complexity check: Execute `uv run ruff check --select=C901 .` to identify
+    functions exceeding threshold'
+  - 'Apply function extraction: Split complex functions into focused helper functions
+    with single responsibilities'
+  - 'Validation tests: Execute `uv run pytest` after each refactoring step to ensure
+    no regressions'
+  - 'Re-run complexity analysis: Execute `uv run ruff check --select=C901 .` to confirm
+    measurable improvement'
+  - 'Update documentation: Revise function docstrings to reflect new structure and purpose'
+dependencies:
+  - ruff
+  - pytest
+items:
+  - 'High-complexity functions identified: Functions exceeding McCabe complexity threshold
+    have been found using ruff analysis'
+  - 'Complexity metrics generated: AST-based analysis has identified functions with
+    concerning complexity scores based on branches, loops, and line counts'
+  - 'Refactoring targets prioritized: Highest complexity functions with clear separation
+    of concerns have been identified for focused improvement'
+  - 'Functionality preservation verified: Full test suite passes before any complexity
+    reduction work begins'
+  - 'Complexity reduction confirmed: Re-analysis shows measurable improvement in complexity
+    metrics after refactoring'
+  - 'Documentation accuracy verified: Function docstrings accurately reflect new structure
+    and purpose after refactoring'

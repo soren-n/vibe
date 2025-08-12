@@ -1,108 +1,83 @@
 # Vibe Coding Philosophy
 
-## Core Principle: Autonomous AI Agent Operation
+## Autonomous Operation Principle
 
-**Vibe coding is about autonomous interaction between the AI agent and its tools/project, requiring no additional user input beyond the initial prompt.**
+**Vibe enforces autonomous AI agent operation requiring zero user input beyond the initial prompt.**
 
-This philosophy ensures that:
-- AI agents can operate independently once given a task
-- Workflows are self-contained and executable
-- No interactive prompts interrupt the flow
-- Users get results without micro-management
+### Requirements
 
-## Philosophy in Practice
+- AI agents operate independently after task assignment
+- Workflows execute without user confirmation
+- No interactive prompts or manual interventions
+- Complete task autonomy with automated validation
 
-### ✅ Autonomous Operations
-- Commands execute without user confirmation
-- Decision logic is built into workflows
-- Information is provided as guidance, not questions
-- Validation happens automatically
+## Implementation Standards
 
-### ❌ Interactive Violations
-- Rhetorical questions requiring responses
-- Commands that wait for user input
-- Decision trees that need user selection
-- Prompts asking for manual actions
+### Autonomous Patterns
 
-## Workflow Design Principles
+```
+# ✅ Autonomous: Informational output
+output("🔍 ANALYZING PROJECT STRUCTURE")
+output("📊 VALIDATING DEPENDENCIES AUTOMATICALLY")
 
-### 1. Informational Echo Statements
-```bash
-# ✅ Good: Informational guidance
-echo "🔍 ANALYZING CHANGE TYPE FOR SEMANTIC VERSIONING"
-echo "📊 Automated dependency validation in progress"
-
-# ❌ Bad: Interactive prompts
-echo "❓ WHAT TYPE OF CHANGE ARE YOU MAKING?"
-echo "Do you want to proceed? (y/n)"
+# ❌ Interactive: User-dependent prompts
+output("❓ WHICH BRANCH SHOULD BE USED?")
+input("Do you want to continue? (y/n)")
 ```
 
-### 2. Autonomous Decision Logic
-```bash
-# ✅ Good: Built-in decision logic
-echo "🎯 AI AGENT DECISION LOGIC"
-echo "• Automated branch selection based on change analysis"
+### Decision Logic
 
-# ❌ Bad: User-dependent decisions
-echo "🎯 AI AGENT DECISION PROMPTS"
-echo "• Which branch should we use?"
+```
+# ✅ Built-in logic
+output("🎯 AUTOMATED BRANCH SELECTION")
+output("• Branch determined by change analysis")
+
+# ❌ User-dependent
+output("🎯 MANUAL BRANCH SELECTION REQUIRED")
+output("• Please specify target branch")
 ```
 
-### 3. Self-Executing Commands
-```bash
-# ✅ Good: Direct execution
-git status
-pip install -U pip
-uv sync
+### Command Execution
 
-# ❌ Bad: Manual action requests
-echo "Run: vibe guide"
-echo "Please update your dependencies"
+```
+# ✅ Direct execution
+execute_command("check project status")
+execute_command("install dependencies")
+execute_command("synchronize project state")
+
+# ❌ Manual requests
+output("Run: check project status")
+output("Please install dependencies manually")
 ```
 
-## Implementation Guidelines
+## Design Requirements
 
-### Workflow YAML Design
-- Use informational headers instead of questions
-- Provide automated validation instead of manual checks
-- Include decision logic rather than decision prompts
-- Ensure all commands can execute without user interaction
+### Workflow Design
 
-### Command Patterns
-- Prefer `echo` for information, not interaction
-- Use automated tools for validation
-- Build logic into the workflow, not user choices
-- Provide clear status updates during execution
+- Informational headers replace questions
+- Automated validation replaces manual checks
+- Built-in decision logic replaces user prompts
+- Commands execute without user interaction
 
 ### Error Handling
-- Workflows should handle errors gracefully
-- Provide clear diagnostic information
-- Suggest automatic fixes when possible
-- Continue operation or fail cleanly
 
-## Benefits of Autonomous Design
+- Graceful error handling with diagnostics
+- Automatic fixes when possible
+- Clean continuation or termination
+- No user intervention required
 
-1. **Scalability**: AI agents can handle multiple tasks without bottlenecks
-2. **Consistency**: Same workflow produces same results regardless of operator
-3. **Efficiency**: No waiting for user responses or clarifications
-4. **Reliability**: Fewer opportunities for human error or inconsistency
-5. **Flow State**: Uninterrupted development sessions
+## Benefits
 
-## Historical Context
+**Scalability**: Multi-task AI agent operation without bottlenecks
+**Consistency**: Deterministic workflow outcomes
+**Efficiency**: Zero wait time for user responses
+**Reliability**: Reduced human error surface area
 
-The vibe project evolved from interactive Python workflows to autonomous YAML-based workflows specifically to support this philosophy. This change enables:
+## Validation Criteria
 
-- Better separation of workflow data from code
-- Independent workflow updates without code changes
-- Consistent autonomous operation across all workflows
-- Scalable AI agent collaboration patterns
+Workflows must satisfy:
 
-## Validation
-
-All workflows must pass the autonomous operation test:
-- Can the workflow execute from start to finish without user input?
-- Are all echo statements informational rather than interactive?
-- Do all commands run without waiting for responses?
-- Is decision logic built-in rather than user-dependent?
-
-When these criteria are met, the workflow properly embodies vibe coding philosophy.
+- ✅ Complete execution without user input
+- ✅ Informational output only (no interactive prompts)
+- ✅ Commands run without user confirmation
+- ✅ Decision logic integrated within workflow

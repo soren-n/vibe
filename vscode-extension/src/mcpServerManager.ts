@@ -28,23 +28,20 @@ export class McpServerManager implements vscode.Disposable {
 
         try {
             const serverPath = this.getMcpServerPath();
-            if (!serverPath) {
-                vscode.window.showErrorMessage('Vibe MCP server path not configured');
-                return false;
-            }
 
             if (!fs.existsSync(serverPath)) {
-                vscode.window.showErrorMessage(`Vibe MCP server not found at: ${serverPath}`);
+                vscode.window.showErrorMessage(`Bundled Vibe MCP server not found at: ${serverPath}`);
                 return false;
             }
 
-            this.outputChannel.appendLine(`Starting Vibe MCP server: ${serverPath}`);
+            this.outputChannel.appendLine(`Starting bundled Vibe MCP server: ${serverPath}`);
             this.outputChannel.show(true);
 
             this.mcpProcess = spawn('node', [serverPath], {
                 stdio: ['pipe', 'pipe', 'pipe'],
                 env: {
                     ...process.env,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
                     VIBE_PROJECT_ROOT: this.getVibeProjectRoot()
                 }
             });
@@ -106,46 +103,19 @@ export class McpServerManager implements vscode.Disposable {
     }
 
     /**
-     * Get MCP server path from configuration or detect automatically
+     * Get MCP server path from bundled server
      */
-    private getMcpServerPath(): string | undefined {
-        const config = vscode.workspace.getConfiguration('vibe');
-        let serverPath = config.get<string>('mcpServerPath');
-
-        if (!serverPath) {
-            // Try to auto-detect based on workspace
-            const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-            if (workspaceRoot) {
-                // Check for Vibe project structure
-                const potentialPaths = [
-                    path.join(workspaceRoot, 'mcp-server', 'index.js'),
-                    path.join(workspaceRoot, 'vibe', 'mcp-server', 'index.js'),
-                    path.join(workspaceRoot, '..', 'vibe', 'mcp-server', 'index.js')
-                ];
-
-                for (const potentialPath of potentialPaths) {
-                    if (fs.existsSync(potentialPath)) {
-                        serverPath = potentialPath;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return serverPath;
+    private getMcpServerPath(): string {
+        // Use bundled MCP server instead of external configuration
+        const bundledServerPath = path.join(this.context.extensionPath, 'bundled', 'mcp-server.js');
+        return bundledServerPath;
     }
 
     /**
      * Get Vibe project root directory
      */
     private getVibeProjectRoot(): string {
-        const serverPath = this.getMcpServerPath();
-        if (serverPath) {
-            // Assume project root is two levels up from mcp-server/index.js
-            return path.dirname(path.dirname(serverPath));
-        }
-
-        // Fallback to workspace root
+        // For bundled server, use current workspace as project root
         return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
     }
 

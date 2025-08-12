@@ -113,11 +113,6 @@ export class WorkflowProvider implements vscode.TreeDataProvider<WorkflowTreeIte
                 category: 'frontend'
             },
             {
-                name: 'vue_dev',
-                description: 'Set up Vue.js development environment',
-                category: 'frontend'
-            },
-            {
                 name: 'docs_create',
                 description: 'Create project documentation',
                 category: 'documentation'

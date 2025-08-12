@@ -123,4 +123,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-Made with ❤️ by the Vibe development team
+Made by the Vibe development team

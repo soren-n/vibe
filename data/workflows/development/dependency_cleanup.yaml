@@ -1,0 +1,24 @@
+name: 'Dependency Cleanup and Minimization'
+description: 'Systematically reduce and clean up project dependencies'
+triggers:
+  - 'clean dependencies'
+  - 'minimize dependencies'
+  - 'reduce dependencies'
+  - 'dependency cleanup'
+  - 'remove unused packages'
+steps:
+  - 'Create dependency backup: Document current dependencies in requirements.txt or similar before changes'
+  - 'Identify unused imports: Use `vulture`, `unimport`, or `autoflake` to find unused imports'
+  - "Remove unused packages: Uninstall packages that aren't imported anywhere in your codebase"
+  - 'Consolidate similar packages: Replace multiple packages with single alternatives (e.g., `requests` instead of `urllib3` + `certifi`)'
+  - 'Make dependencies optional: Convert non-critical dependencies to optional with try/except imports'
+  - 'Replace heavy packages: Substitute heavyweight dependencies with lighter alternatives'
+  - "Remove development dependencies: Ensure dev/test dependencies aren't in production requirements"
+  - 'Use built-in alternatives: Replace packages with Python standard library equivalents where possible'
+  - 'Pin important versions: Pin critical dependencies to avoid breaking changes'
+  - 'Test thoroughly: Run full test suite after each dependency removal'
+  - 'Update documentation: Update installation instructions and dependency documentation'
+  - 'Monitor impact: Track package size, startup time, and installation time improvements'
+dependencies: []
+project_types: ['python']
+conditions: []

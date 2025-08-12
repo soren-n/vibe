@@ -1,0 +1,16 @@
+name: 'Guidance Approach Validation Checklist'
+description: 'Validation checklist for guidance-oriented development approach'
+triggers:
+  - 'guidance validation'
+  - 'guidance approach checklist'
+  - 'demo validation'
+
+items:
+  - 'Guidance-first approach followed: Steps provide clear explanations of what to do and when to run commands'
+  - 'Context discovery completed: Project structure and active tasks have been reviewed before taking action'
+  - 'Testing strategy appropriate: Relevant tests are executed based on project type and requirements'
+  - 'Change management proper: Small, focused changes are committed with frequent validation'
+  - 'Task breakdown effective: Complex tasks are divided into manageable steps with clear progress tracking'
+  - 'Token efficiency maintained: Communication remains concise with batched operations and minimal verbosity'
+
+dependencies: []

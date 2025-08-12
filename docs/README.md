@@ -1,67 +1,105 @@
-# Vibe Project Documentation
+# Vibe: AI Workflow Orchestrator
 
 ## Overview
 
-Vibe is an AI-powered development workflow assistant that provides autonomous task execution through customizable YAML-based workflows. The project follows the "vibe coding" philosophy of autonomous AI agent operation without requiring user input beyond the initial prompt.
+Vibe is an autonomous AI workflow orchestrator that analyzes natural language prompts and executes development workflows without user intervention. The system enforces the "vibe coding" philosophy of complete autonomous operation.
 
-## Documentation Structure
+## Architecture
 
-### Core Philosophy
-- **[Vibe Philosophy](vibe-philosophy.md)**: Core principles of autonomous AI agent operation
-- **[Development Guidelines](development-guidelines.md)**: Project standards and best practices
-- **[Language Standards](language-standards.md)**: Professional language and formatting requirements
+### Core Components
 
-### Architecture
-- **[Workflow Architecture](workflow-architecture.md)**: YAML-based workflow system design
-- **[ADR-001: YAML Workflow System](adr/adr-001-yaml-workflow-system.md)**: Key architectural decision
+**PromptAnalyzer**: Analyzes prompts, matches workflow triggers, supports project-specific selection
+**WorkflowOrchestrator**: Plans execution order, generates step guidance, integrates validation
+**SessionManager**: Manages incremental execution, prevents token overflow, maintains state persistence
+**Configuration**: Detects project types, loads YAML workflows with Python fallback
 
-### Workflow Documentation
-Individual workflows are documented within their YAML files:
-- `vibe/workflows/data/analysis.yaml`: Project structure analysis
-- `vibe/workflows/data/branch_strategy.yaml`: Branch selection and merge timing
-- `vibe/workflows/data/dependency_update.yaml`: Dependency and tooling updates
-- `vibe/workflows/data/git_management.yaml`: Git repository management
+### Execution Pipeline
 
-## Key Concepts
+```
+Prompt → Analysis → Planning → Session Management → Autonomous Execution
+```
 
-### Vibe Coding Philosophy
-Autonomous interaction between AI agent and tools/project, requiring no additional user input beyond the initial prompt. All workflows must be self-contained and executable without user interaction.
+**Process**: Prompt triggers → Workflow selection → Step generation → Incremental execution → Autonomous completion
 
-### YAML Workflow System
-External workflow definitions separated from Python code, enabling independent updates and better maintainability. Includes graceful fallback to Python workflows for reliability.
+## Design Principles
 
-### Architecture Decision Records (ADRs)
-Significant architectural decisions are documented in the `adr/` directory using a standard template to capture context, rationale, and consequences.
+**Autonomous Operation**: Zero user interaction after initial prompt
+**Session-Based Execution**: Discrete steps prevent token overflow in AI agents
+**YAML Workflow System**: External definitions enable code-independent updates
 
-## Quick Reference
+## Implementation Components
 
-### Adding New Workflows
-1. Create YAML file in `vibe/workflows/data/`
-2. Follow the standard YAML workflow format
-3. Ensure autonomous operation (no user input required)
-4. Test workflow loading and execution
-5. Document any architectural decisions in ADRs
+**Core Components**:
 
-### Updating Existing Workflows
-1. Edit YAML files directly (no code changes needed)
-2. Validate autonomous operation principles
-3. Test changes before committing
-4. Update documentation if workflow behavior changes significantly
+- **Analyzer**: Prompt analysis and workflow matching
+- **Orchestrator**: Planning and execution guidance
+- **Session Manager**: State management and persistence
+- **Configuration**: Project detection and settings management
 
-### Contributing Guidelines
-1. Follow vibe coding philosophy (autonomous operation)
-2. Document significant decisions in ADRs
-3. Update relevant documentation with changes
-4. Ensure comprehensive error handling
-5. Test both success and failure scenarios
+## Core Data Structures
 
-## Project Evolution
+### Workflow Definition Schema
 
-The vibe project has evolved from hardcoded Python workflows to a flexible YAML-based system that supports:
-- Independent workflow updates without code changes
-- Better separation of concerns between data and logic
-- Enhanced maintainability and accessibility
-- Robust error handling with graceful fallback
-- Full compliance with vibe coding philosophy
+```yaml
+# Workflow Definition
+name: string # Unique identifier for the workflow
+description: string # Human-readable description
+triggers: [string] # Regex patterns that activate this workflow
+steps: [string] # Textual guidance steps for execution
+project_types: [string] # Applicable project types (optional)
+dependencies: [string] # Required tools/packages (optional)
+```
 
-This documentation serves as a knowledge base to maintain consistency and accumulate wisdom across development sessions.
+### Session State Interface
+
+```
+WorkflowFrame:
+  workflow_name: string        # Name of the current workflow
+  steps: list<string>         # List of guidance steps
+  current_step: integer       # Index of the current step
+  context: map<string, any>   # Contextual data for the session
+```
+
+## Documentation
+
+### Architecture and Philosophy
+
+- [Autonomous Operation Philosophy](architecture/vibe-philosophy.md)
+- [Workflow System Architecture](architecture/workflow-architecture.md)
+- [Architectural Decision Records](adr/)
+
+### API Reference
+
+- [**Complete API Documentation**](api/) - **Complete implementation reference with sufficient detail to recreate the entire system**
+- [Data Models and Schemas](schemas/) - YAML and configuration schemas with validation rules
+- [Implementation Guide](implementation/) - Component integration patterns and development guidelines
+
+### Key Implementation Interfaces
+
+The API documentation provides complete interface specifications including:
+
+- **[PromptAnalyzer](api/prompt-analyzer.md)** - Pattern matching and workflow selection algorithms
+- **[WorkflowOrchestrator](api/workflow-orchestrator.md)** - Execution planning and dependency resolution
+- **[SessionManager](api/session-manager.md)** - State persistence and step-by-step execution
+- **[Configuration](api/configuration.md)** - Project detection and configuration management
+- **[Core Data Models](api/models.md)** - Complete data structure specifications
+- **[Workflow Registry](api/workflow-registry.md)** - YAML loading with hot reloading support
+- **[Project Detection](api/project-detection.md)** - Intelligent framework and language detection
+- **[CLI Interface](api/cli.md)** - Command routing and user interaction patterns
+- **[Session Monitoring](api/session-monitoring.md)** - AI agent completion tracking and intervention
+- **[Lint System](api/lint.md)** - Code quality and professional language validation
+
+### Documentation Completeness Statement
+
+**The documentation in `/docs` contains sufficient detail to implement Vibe in any programming language.** Each API document includes:
+
+- Complete interface definitions with all methods and properties
+- Detailed implementation algorithms and logic flows
+- Error handling patterns and recovery strategies
+- Integration examples and usage patterns
+- Data structure relationships and serialization formats
+- Performance considerations and optimization techniques
+- Configuration options and default values
+- File format specifications and validation rules
+
+No additional context beyond what is provided in `/docs` should be needed to implement a fully functional Vibe system in any language.

@@ -1,0 +1,18 @@
+name: 'VS Code Agent Mode Setup'
+description: 'Complete setup for VS Code Agent Mode with Vibe integration'
+triggers:
+  - 'setup agent mode'
+  - 'configure vscode agent'
+  - 'enable agent mode'
+  - 'mcp agent setup'
+  - 'vs code ai setup'
+
+category: 'development'
+
+steps:
+  - 'Add VS Code settings: Add `{"chat.agent.enabled": true, "chat.mcp.enabled": true}` to settings.json'
+  - 'Create chatmodes directory: `mkdir -p .github/chatmodes`'
+  - 'Install vibe-agent chatmode: Create `.github/chatmodes/vibe-agent.chatmode.md` with Vibe agent configuration'
+  - 'Verify MCP server: `ls -la mcp-server/index.js`'
+  - 'Test MCP tools: `uv run vibe mcp --help`'
+  - 'Restart VS Code to load new settings and test agent mode'

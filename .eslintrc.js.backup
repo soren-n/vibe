@@ -1,0 +1,62 @@
+module.exports = {
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaVersion: 2022,
+    sourceType: 'module',
+  },
+  plugins: ['@typescript-eslint', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+  ],
+  root: true,
+  env: {
+    node: true,
+    es6: true,
+    jest: true,
+  },
+  ignorePatterns: [
+    'dist/',
+    'coverage/',
+    'node_modules/',
+    '*.js',
+    'vscode-extension/',
+    'mcp-server/',
+    'python-legacy/',
+  ],
+  rules: {
+    // Code quality rules similar to Python Ruff
+    'prefer-const': 'error',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/explicit-function-return-type': 'warn',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
+
+    // Import organization (similar to Python isort)
+    'sort-imports': ['error', { ignoreDeclarationSort: true }],
+
+    // Naming conventions (similar to Python naming rules)
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'variableLike',
+        format: ['camelCase', 'UPPER_CASE'],
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase'],
+      },
+      {
+        selector: 'memberLike',
+        modifiers: ['private'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require',
+      },
+    ],
+
+    // Prettier integration
+    'prettier/prettier': 'error',
+  },
+};

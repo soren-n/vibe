@@ -1,0 +1,39 @@
+name: VS Code Extension Publishing with Azure PAT
+description: VS Code extension publishing
+triggers:
+  - azure pat
+  - check.*extension.*quality
+  - extension marketplace
+  - personal access token
+  - validate.*vscode.*publish
+  - verify.*marketplace.*ready
+  - vsce login
+  - vscode publish
+project_types:
+  - vscode_extension
+  - javascript
+  - typescript
+steps:
+  - 'Install VSCE: `npm install -g @vscode/vsce`'
+  - 'Login with PAT: `vsce login <publisher-name>` (enter Azure DevOps PAT when prompted)'
+  - 'Package extension: `vsce package`'
+  - 'Publish extension: `vsce publish`'
+  - 'Show package info: `vsce show <publisher>.<extension-name>`'
+  - 'Update version: `vsce publish patch` (or minor/major)'
+  - 'List published extensions: `vsce ls <publisher-name>`'
+items:
+  - Azure DevOps Personal Access Token has Marketplace (Publish) permissions
+  - VS Code Marketplace publisher account is properly set up
+  - package.json contains all required fields (name, version, publisher, etc.)
+  - README.md provides clear extension description and usage instructions
+  - Extension icon meets size and format requirements (128x128 PNG)
+  - CHANGELOG.md documents version changes and new features
+  - Extension has been tested in VS Code development environment
+  - All commands and features work as documented
+  - Extension respects VS Code API guidelines and best practices
+  - No sensitive information (API keys, tokens) exposed in code
+  - Version number follows semantic versioning (semver)
+  - Extension activates properly in target VS Code environments
+  - Published extension is installable from marketplace
+  - Extension listing appears correctly in marketplace search
+  - Documentation reflects current version capabilities

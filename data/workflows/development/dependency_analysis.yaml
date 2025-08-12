@@ -1,0 +1,23 @@
+name: 'Dependency Analysis and Optimization'
+description: 'Analyze project dependencies to identify optimization opportunities, security issues, and unnecessary packages'
+triggers:
+  - 'analyze dependencies'
+  - 'dependency audit'
+  - 'optimize dependencies'
+  - 'reduce package size'
+  - 'dependency security'
+  - 'package bloat'
+steps:
+  - 'Inventory current dependencies: List all direct and transitive dependencies using `pip list`, `uv tree`, or `poetry show --tree`'
+  - 'Analyze dependency usage: Use tools like `pipdeptree` or `pydeps` to visualize dependency relationships'
+  - 'Check for unused dependencies: Run `pip-autoremove --list` or manually review imports vs dependencies'
+  - 'Identify heavy dependencies: Look for packages >10MB using `pip show <package>` or check wheel sizes'
+  - 'Security audit: Run `pip-audit` or `safety check` to identify known vulnerabilities'
+  - 'Version compatibility check: Ensure all dependencies support your target Python version'
+  - 'License compliance: Check license compatibility using `pip-licenses` for commercial projects'
+  - 'Alternative evaluation: Research lighter alternatives for heavy dependencies (e.g., `rich` vs `colorama`)'
+  - 'Test optional dependencies: Identify which dependencies could be made optional with graceful fallbacks'
+  - 'Document findings: Create a dependency analysis report with recommendations'
+dependencies: []
+project_types: ['python']
+conditions: []

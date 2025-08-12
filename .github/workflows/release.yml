@@ -1,257 +1,170 @@
-name: Release
-
-# 🚀 Python Release Pipeline
-#
-# This workflow implements a comprehensive Python release pipeline with:
-#
-# 📋 Pipeline Stages:
-# 1. Quality Checks - Linting, testing, type checking
-# 2. Semantic Release - Automated versioning and changelog
-# 3. VS Code Extension - Build and publish extension
-# 4. TestPyPI Publish - Test package publishing (validation step)
-# 5. PyPI Publish - Production package publishing
-#
-# 🎯 Best Practices Implemented:
-# - Semantic versioning (MAJOR.MINOR.PATCH)
-# - Test-first publishing (TestPyPI before PyPI)
-# - Fail-safe mechanisms (each step depends on previous)
-# - Quality gates (linting, testing, type checking)
-# - Automated changelog generation
-# - Git tag-based versioning with hatch-vcs
-#
-# 🔧 Version Management:
-# - Uses semantic-release for automated version bumps
-# - Git tags drive package versioning via hatch-vcs
-# - Conventional commits determine version increments
-# - CHANGELOG.md automatically updated
-#
-# 🛡️ Safety Measures:
-# - TestPyPI validation before production PyPI
-# - Quality checks must pass before any publishing
-# - Manual workflow_dispatch for emergency releases
-# - Skip duplicate uploads with --skip-existing
-#
-# 📦 Package Publishing:
-# - Built with `uv build` for fast, reliable builds
-# - Published via gh-action-pypi-publish (recommended)
-# - Supports both PyPI and TestPyPI repositories
-# - Environment variables for secure authentication
+name: Release Pipeline
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+    inputs:
+      version:
+        description: 'Version to release (e.g. 0.6.1)'
+        required: true
+        type: string
+      pre-release:
+        description: 'Create a pre-release'
+        required: false
+        type: boolean
+        default: false
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  quality-checks:
-    name: Quality Checks
+  validate:
+    name: Validate Release
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.13
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install dependencies
-      run: uv sync --dev
+      - name: Run quality checks (release-grade)
+        run: npm run quality:release
 
-    - name: Run pre-commit hooks
-      run: |
-        uv run pre-commit install
-        uv run pre-commit run --all-files
+      - name: Build project
+        run: npm run build
 
-    - name: Run tests
-      run: uv run pytest -v --cov=vibe --cov-report=xml
+      - name: Validate CLI functionality
+        run: |
+          node dist/src/cli.js --help
+          node dist/src/cli.js checklists list --format json
+          node dist/src/cli.js workflows list --format json
 
-    - name: Validate workflows
-      run: |
-        uv run python -c "
-        from vibe.guidance.loader import WorkflowLoader
-        loader = WorkflowLoader()
-        workflows = loader.load_workflows()
-        print(f'✅ Successfully loaded {len(workflows)} workflows')
-        "
+  build-extension:
+    name: Build VS Code Extension
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install main dependencies
+        run: npm ci
+
+      - name: Build main project
+        run: npm run build
+
+      - name: Install extension dependencies
+        run: |
+          cd vscode-extension
+          npm ci
+
+      - name: Copy bundled MCP servers to extension
+        run: |
+          mkdir -p vscode-extension/bundled
+          cp dist/src/cli.js vscode-extension/bundled/mcp-server.js
+
+      - name: Update extension data
+        run: |
+          cp -r data vscode-extension/data
+
+      - name: Build extension
+        run: |
+          cd vscode-extension
+          npm run compile
+
+      - name: Package extension
+        run: |
+          cd vscode-extension
+          npm run package
+
+      - name: Upload extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension
+          path: vscode-extension/*.vsix
 
   release:
-    name: Semantic Release
+    name: Create Release
     runs-on: ubuntu-latest
-    needs: quality-checks
-    if: github.ref == 'refs/heads/main'
+    needs: [validate, build-extension]
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') }}
 
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.13
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Install Python dependencies
-      run: uv sync --dev
-
-    - name: Install VS Code extension dependencies
-      run: |
-        cd vscode-extension
-        npm ci
-
-    - name: Make scripts executable
-      run: chmod +x scripts/sync_versions.py
-
-    - name: Install semantic-release
-      run: |
-        npm install -g semantic-release
-        npm install -g @semantic-release/changelog
-        npm install -g @semantic-release/exec
-        npm install -g @semantic-release/git
-        npm install -g @semantic-release/github
-        npm install -g @semantic-release/commit-analyzer
-        npm install -g @semantic-release/release-notes-generator
-        npm install -g conventional-changelog-conventionalcommits
-
-    - name: Configure Git
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-    - name: Run semantic release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
-        VSCE_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
-      run: semantic-release
-
-    - name: Upload VS Code extension artifact
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: vscode-extension
-        path: vscode-extension/*.vsix
-        retention-days: 30
-
-  testpypi-publish:
-    name: Publish to TestPyPI
-    runs-on: ubuntu-latest
-    needs: release
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: testpypi
-      url: https://test.pypi.org/p/vibe-soren-n
     permissions:
-      id-token: write
+      contents: write
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
+      - uses: actions/checkout@v4
 
-    - name: Get latest tag
-      id: get_tag
-      run: |
-        latest_tag=$(git describe --tags --abbrev=0)
-        echo "tag=$latest_tag" >> $GITHUB_OUTPUT
-        echo "Latest tag: $latest_tag"
+      - name: Download extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: vscode-extension
+          path: ./
 
-    - name: Checkout latest tag
-      run: |
-        git checkout ${{ steps.get_tag.outputs.tag }}
-        echo "Checked out tag: ${{ steps.get_tag.outputs.tag }}"
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: Release ${{ github.event.inputs.version || github.ref_name }}
+          prerelease: ${{ github.event.inputs.pre-release || false }}
+          files: |
+            *.vsix
+          generate_release_notes: true
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.13
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-
-    - name: Build package
-      # 📦 Test build - validates package before production PyPI
-      # Version determined by git tag created in semantic-release step
-      # Same build process as production for consistency
-      run: uv build
-
-    - name: Publish to TestPyPI
-      # 🧪 Test publishing - validates upload process and package
-      # Uses trusted publishing for secure authentication
-      # --skip-existing prevents duplicate upload errors
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
-        skip-existing: true
-
-  pypi-publish:
-    name: Publish to PyPI
+  publish-extension:
+    name: Publish to VS Code Marketplace
     runs-on: ubuntu-latest
-    needs: testpypi-publish
-    if: github.ref == 'refs/heads/main'
-    environment:
-      name: pypi
-      url: https://pypi.org/p/vibe-soren-n
-    permissions:
-      id-token: write
+    needs: [validate, build-extension]
+    if: ${{ github.event_name == 'workflow_dispatch' && !github.event.inputs.pre-release }}
+    environment: marketplace
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
+      - uses: actions/checkout@v4
 
-    - name: Get latest tag
-      id: get_tag
-      run: |
-        latest_tag=$(git describe --tags --abbrev=0)
-        echo "tag=$latest_tag" >> $GITHUB_OUTPUT
-        echo "Latest tag: $latest_tag"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Checkout latest tag
-      run: |
-        git checkout ${{ steps.get_tag.outputs.tag }}
-        echo "Checked out tag: ${{ steps.get_tag.outputs.tag }}"
+      - name: Install main dependencies
+        run: npm ci
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.13
+      - name: Build main project
+        run: npm run build
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
+      - name: Install extension dependencies
+        run: |
+          cd vscode-extension
+          npm ci
 
-    - name: Build package
-      # 📦 Production build - same package as tested on TestPyPI
-      # Version determined by git tag created in semantic-release step
-      # Reproducible builds ensure consistency with TestPyPI
-      run: uv build
+      - name: Copy bundled MCP servers to extension
+        run: |
+          mkdir -p vscode-extension/bundled
+          cp dist/src/cli.js vscode-extension/bundled/mcp-server.js
 
-    - name: Publish to PyPI
-      # 🚀 Production publishing - uses trusted publishing for secure authentication
-      # Only runs after successful semantic release step
-      # Final step in the release pipeline
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        skip-existing: true
+      - name: Update extension data
+        run: |
+          cp -r data vscode-extension/data
+
+      - name: Build and publish extension
+        run: |
+          cd vscode-extension
+          npm run compile
+          npm run publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

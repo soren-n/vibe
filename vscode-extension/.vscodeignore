@@ -16,6 +16,9 @@ tsconfig.json
 # Source maps and debug files
 **/*.map
 
+# Include bundled MCP server
+!bundled/**
+
 # Test and coverage files
 .nyc_output
 coverage

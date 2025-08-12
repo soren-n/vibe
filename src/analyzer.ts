@@ -1,0 +1,306 @@
+/**
+ * Prompt analysis engine for determining appropriate workflows and checklists
+ * TypeScript translation of vibe/analyzer.py
+ */
+
+import type { VibeConfigImpl } from './config';
+import { loadAllChecklists, loadAllWorkflows } from './workflows';
+import type { Checklist, Workflow } from './models';
+
+export interface AnalysisOptions {
+  showAnalysis?: boolean;
+}
+
+export class PromptAnalyzer {
+  private config: VibeConfigImpl;
+  private allWorkflows: Record<string, Workflow>;
+  private allChecklists: Record<string, Checklist>;
+
+  constructor(config: VibeConfigImpl) {
+    this.config = config;
+    this.allWorkflows = this.loadWorkflows();
+    this.allChecklists = this.loadChecklists();
+  }
+
+  private loadWorkflows(): Record<string, Workflow> {
+    try {
+      // Load from YAML files using the workflow loader
+      return loadAllWorkflows();
+    } catch (error) {
+      console.error('Error loading workflows:', error);
+      return {};
+    }
+  }
+
+  private loadChecklists(): Record<string, Checklist> {
+    try {
+      return loadAllChecklists();
+    } catch (error) {
+      console.error('Error loading checklists:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Analyze a prompt and return matching workflow names
+   */
+  async analyze(prompt: string, showAnalysis = true): Promise<string[]> {
+    const promptLower = prompt.toLowerCase();
+
+    // First try built-in workflows (loaded from YAML files)
+    const builtInWorkflows = await this._matchBuiltInWorkflows(promptLower);
+
+    // Then try config-based workflows
+    const configWorkflows = await this._matchConfigWorkflows(promptLower);
+
+    // Check for relevant checklists
+    const matchingChecklists = await this._matchChecklists(promptLower);
+
+    // Combine and deduplicate
+    const allItems = [
+      ...new Set([...builtInWorkflows, ...configWorkflows, ...matchingChecklists]),
+    ];
+
+    if (showAnalysis) {
+      this._displayAnalysis(
+        prompt,
+        allItems,
+        builtInWorkflows,
+        configWorkflows,
+        matchingChecklists
+      );
+    }
+
+    return allItems;
+  }
+
+  /**
+   * Match prompt against built-in workflows from YAML files and workflow registry
+   */
+  private async _matchBuiltInWorkflows(prompt: string): Promise<string[]> {
+    const matchedWorkflows: string[] = [];
+
+    for (const [workflowName, workflow] of Object.entries(this.allWorkflows)) {
+      if (this._matchesTriggers(prompt, workflow.triggers || [])) {
+        // Check if workflow applies to current project type
+        const projectType = await this.config.detectProjectType();
+        if (
+          !workflow.projectTypes ||
+          workflow.projectTypes.length === 0 ||
+          workflow.projectTypes.includes('generic') ||
+          workflow.projectTypes.includes(projectType)
+        ) {
+          matchedWorkflows.push(workflowName);
+        }
+      }
+    }
+
+    return matchedWorkflows;
+  }
+
+  /**
+   * Match prompt against config-defined workflows
+   */
+  private async _matchConfigWorkflows(prompt: string): Promise<string[]> {
+    const promptLower = prompt.toLowerCase();
+    const matchedWorkflows = new Set<string>();
+
+    // Get project-specific workflows first
+    const projectType = await this.config.detectProjectType();
+    const projectConfig = this.config.projectTypes?.[projectType];
+
+    // Check project-specific workflows
+    if (projectConfig?.workflows) {
+      for (const workflowName of projectConfig.workflows) {
+        // Check if the workflow name or related keywords match the prompt
+        if (this.basicKeywordMatch(promptLower, workflowName)) {
+          matchedWorkflows.add(workflowName);
+        }
+      }
+    }
+
+    // Check global workflow configurations
+    if (this.config.workflows) {
+      for (const [workflowName, workflowConfig] of Object.entries(
+        this.config.workflows
+      )) {
+        if (
+          workflowConfig.triggers &&
+          this._matchesTriggers(promptLower, workflowConfig.triggers)
+        ) {
+          matchedWorkflows.add(workflowName);
+        } else if (this.basicKeywordMatch(promptLower, workflowName)) {
+          matchedWorkflows.add(workflowName);
+        }
+      }
+    }
+
+    // Default to research guidance if no matches found
+    if (matchedWorkflows.size === 0) {
+      matchedWorkflows.add('Research Guidance for Agents');
+    }
+
+    return Array.from(matchedWorkflows);
+  }
+
+  /**
+   * Match prompt against available checklists
+   */
+  private async _matchChecklists(prompt: string): Promise<string[]> {
+    const promptLower = prompt.toLowerCase();
+    const matchedChecklists: string[] = [];
+
+    for (const [checklistName, checklist] of Object.entries(this.allChecklists)) {
+      if (this._matchesTriggers(promptLower, checklist.triggers || [])) {
+        // Check if the checklist applies to current project type
+        const projectType = await this.config.detectProjectType();
+        if (
+          !checklist.projectTypes ||
+          checklist.projectTypes.length === 0 ||
+          checklist.projectTypes.includes(projectType) ||
+          checklist.projectTypes.includes('generic')
+        ) {
+          matchedChecklists.push(`checklist:${checklistName}`);
+        }
+      }
+    }
+
+    return matchedChecklists;
+  }
+
+  /**
+   * Match prompt against trigger patterns (supports regex and word boundaries)
+   */
+  private _matchesTriggers(prompt: string, triggers: string[]): boolean {
+    for (const trigger of triggers) {
+      // Support both simple word matching and regex patterns
+      try {
+        // Convert trigger to regex with word boundaries
+        const pattern = trigger.replace(/\*/g, '\\w*');
+        const regex = new RegExp(`\\b${pattern}\\b`, 'i');
+
+        if (regex.test(prompt)) {
+          return true;
+        }
+      } catch (_error) {
+        // Fallback to simple substring matching
+        if (prompt.toLowerCase().includes(trigger.toLowerCase())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Basic keyword matching for workflow names
+   */
+  private basicKeywordMatch(prompt: string, workflowName: string): boolean {
+    const workflowKeywords = workflowName.toLowerCase().split(/[_\s-]+/);
+    return workflowKeywords.some(
+      keyword => keyword.length > 2 && prompt.includes(keyword)
+    );
+  }
+
+  /**
+   * Build item descriptions for workflows and checklists (matching Python version)
+   */
+  private _buildItemDescriptions(
+    builtInWorkflows: string[],
+    configWorkflows: string[],
+    matchingChecklists: string[]
+  ): string[] {
+    const descriptions: string[] = [];
+
+    // Add built-in workflow descriptions
+    for (const workflow of builtInWorkflows) {
+      descriptions.push(`  → Built-in workflow: ${workflow}`);
+    }
+
+    // Add config workflow descriptions
+    for (const workflow of configWorkflows) {
+      descriptions.push(`  → Config workflow: ${workflow}`);
+    }
+
+    // Add checklist descriptions
+    for (const checklist of matchingChecklists) {
+      descriptions.push(`  → Checklist: ${checklist}`);
+    }
+
+    return descriptions;
+  }
+
+  /**
+   * Display analysis results (simplified version for MCP server)
+   */
+  private _displayAnalysis(
+    prompt: string,
+    allItems: string[],
+    builtInWorkflows: string[],
+    configWorkflows: string[],
+    matchingChecklists: string[]
+  ): void {
+    // Show sections of the analysis
+    this._displayPromptPanel(prompt);
+    this._displayWorkflowResults(
+      allItems,
+      builtInWorkflows,
+      configWorkflows,
+      matchingChecklists
+    );
+  }
+
+  /**
+   * Display the prompt being analyzed
+   */
+  private _displayPromptPanel(prompt: string): void {
+    if (process.env.VIBE_DEBUG === 'true') {
+      console.log('\n=== Analyzing Prompt ===');
+      console.log(`"${prompt}"`);
+      console.log('========================');
+    }
+  }
+
+  /**
+   * Display detected workflows and checklists
+   */
+  private _displayWorkflowResults(
+    allItems: string[],
+    builtInWorkflows: string[],
+    configWorkflows: string[],
+    matchingChecklists: string[]
+  ): void {
+    if (allItems.length > 0) {
+      const itemDescriptions = this._buildItemDescriptions(
+        builtInWorkflows,
+        configWorkflows,
+        matchingChecklists
+      );
+      this._displayDetectedItemsPanel(itemDescriptions);
+    } else {
+      this._displayNoDetectionPanel();
+    }
+  }
+
+  /**
+   * Display panel with detected workflows and checklists
+   */
+  private _displayDetectedItemsPanel(itemDescriptions: string[]): void {
+    if (process.env.VIBE_DEBUG === 'true') {
+      console.log('\n=== Detected Workflow and Checklist Needs ===');
+      itemDescriptions.forEach(desc => console.log(desc));
+      console.log('==============================================');
+    }
+  }
+
+  /**
+   * Display panel when no workflows are detected
+   */
+  private _displayNoDetectionPanel(): void {
+    if (process.env.VIBE_DEBUG === 'true') {
+      console.log('\n=== No Specific Workflows or Checklists Detected ===');
+      console.log('  → Defaulting to analysis workflow');
+      console.log('====================================================');
+    }
+  }
+}

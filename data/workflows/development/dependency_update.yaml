@@ -1,0 +1,40 @@
+name: dependency_update
+description: Dependency updates
+triggers:
+  - dependencies
+  - dependencies.*updated
+  - dependency.*check
+  - latest.*dependencies
+  - packages.*updated
+  - refresh.*dependencies
+  - update.*dependencies
+  - update.*environment
+  - update.*packages
+  - update.*tooling
+  - upgrade.*dependencies
+  - upgrade.*packages
+  - upgrade.*tooling
+  - validate.*dependencies
+  - verify.*update
+steps:
+  - 'Update uv package manager: `curl -LsSf https://astral.sh/uv/install.sh | sh`'
+  - 'Update Python dependencies: `uv sync --upgrade`'
+  - 'Update Node.js dependencies: `npm update` (if package.json exists)'
+  - 'Security audit: `npm audit` or `uv audit`'
+  - "Test build: `uv run python -c 'import sys; print(sys.version)'`"
+  - 'Tests: `uv run pytest -q` (if tests exist)'
+  - "Commit changes: `git add -A && git commit -m 'Update dependencies'`"
+dependencies: []
+project_types: []
+conditions: []
+items:
+  - All package managers are updated to latest versions
+  - Project dependencies have been successfully updated
+  - Lock files reflect the new dependency versions
+  - No security vulnerabilities remain in dependencies
+  - Project builds successfully after updates
+  - Key functionality works correctly with new dependencies
+  - Breaking changes have been identified and addressed
+  - Tests pass with updated dependencies
+  - Documentation reflects any API changes
+  - Lock files have been committed to version control

@@ -1,0 +1,29 @@
+name: 'New Dependency Evaluation Checklist'
+description: 'Checklist for evaluating new dependencies before adding them to a project'
+triggers:
+  - 'new dependency'
+  - 'add package'
+  - 'dependency evaluation'
+  - 'package assessment'
+project_types:
+  - 'python'
+conditions: []
+dependencies: []
+items:
+  - 'Clear functional requirement has been defined for this dependency'
+  - 'Standard library alternatives have been thoroughly explored'
+  - 'Package is actively maintained with recent commits and releases'
+  - 'Package has good documentation with examples and API reference'
+  - 'Package supports all target Python versions for the project'
+  - 'Package has reasonable test coverage and CI setup'
+  - 'Package size and transitive dependencies are acceptable'
+  - 'Package license is compatible with project requirements'
+  - 'Package has good community support and issue response time'
+  - 'Breaking change history and versioning practices are acceptable'
+  - 'Security track record has been reviewed (no major vulnerabilities)'
+  - 'Package maintainer reputation and backup maintainers exist'
+  - 'Integration test has been performed in project environment'
+  - 'Impact on build/startup time has been measured'
+  - 'Fallback plan exists if package becomes unavailable'
+  - "Package can be made optional if it's not core functionality"
+  - 'Team agreement on adding this dependency has been reached'

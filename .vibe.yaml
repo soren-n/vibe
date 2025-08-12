@@ -1,183 +1,53 @@
-name: "Vibe Self-Hosting Workflows"
-description: "Vibe's self-hosting workflows for dogfooding approach"
+name: 'Vibe Self-Hosting Workflow'
+description: "Vibe's self-hosting workflows for TypeScript/Node.js development"
 protocol_version: 1
-project_type: "python"
+project_type: 'typescript'
 
 # Project linting configuration for Vibe
 lint:
-  # Language and tone settings
-  check_emojis: true
-  check_professional_language: true
-  allow_informal_language:
-    - "**/cli/**"          # CLI interface files can use emojis for user experience
-    - "**/ui/**"           # UI files can use emojis
-    - "**/frontend/**"     # Frontend files can use emojis
-    - "**/console/**"      # Console output files can use emojis
-    - "README.md"          # Project documentation can use emojis for clarity
-    - "CHANGELOG.md"       # Changelog formatting often uses emojis
-    - "docs/**"            # Documentation files can use emojis for readability
-    - "*.example.*"        # Example files can demonstrate emoji usage
-    - "vibe/config.py"     # Contains user-facing workflow descriptions with emojis
-    - "vibe/workflows/data/**"  # Workflow definitions with user-facing content
-    - "vibe/analyzer.py"   # Contains user-facing analysis output with emojis
-    - "vibe/lint.py"       # Contains emoji detection patterns and examples
-    - "scripts/**"         # Utility scripts can contain user-facing emojis
-    - "vibe/orchestrator.py"  # Contains user-facing output with emojis
-
-  # File naming conventions by extension (Python project focus)
+  # Naming convention patterns
   naming_conventions:
-    ".py": "snake_case"
-    ".yaml": "snake_case"  # Workflow files use snake_case internally
-    ".yml": "snake_case"   # Keep consistency with yaml
-    ".md": "kebab-case"
-    ".json": "snake_case"  # API/data files: api_response.json
-    ".toml": "kebab-case"  # Config files: pyproject.toml, cargo.toml
-    ".js": "camelCase"
-    ".ts": "camelCase"
+    - pattern: '^[a-z][a-zA-Z0-9]*$'
+      applies_to: ['functions', 'variables']
+      description: 'Use camelCase for functions and variables'
+    - pattern: '^[A-Z][a-zA-Z0-9]*$'
+      applies_to: ['classes', 'interfaces', 'types']
+      description: 'Use PascalCase for classes, interfaces, and types'
+    - pattern: '^[A-Z][A-Z0-9_]*$'
+      applies_to: ['constants']
+      description: 'Use CONSTANT_CASE for constants'
 
-  # Directory naming convention
-  directory_naming: "snake_case"
-
-  # Files and directories to exclude from linting (in addition to .gitignore)
-  exclude_patterns:
-    - "mcp-server"         # JavaScript/Node.js project - different naming conventions
-    - "mcp-server/**"
-    - "vscode-extension"   # TypeScript project - different naming conventions
-    - "vscode-extension/**"
-    - ".vibe.yaml"         # Our own config file (dotfile convention)
-    - "vibe/workflows/data/**"  # Workflow files contain user-facing emojis and informal language
-    - "test_mcp.py"        # Test files can contain informal language
-    - "debug_*.py"         # Debug scripts can contain informal language
-    - "*_new.*"            # Legacy/new files can contain informal language
-    - "tests/**"           # Test files can contain examples with informal language
-    - "ENHANCEMENT_SUMMARY.md"  # Working notes
-    - "commit_msg.txt"     # Git commit messages
-    - "*.example.*"        # Example files contain test patterns
-    - ".releaserc.*"       # Standard config file name
-    - ".pre-commit-*"      # Standard config file name
-    - "CHANGELOG.*"        # Standard changelog name
-    - "README.*"           # Standard readme name
-    - "LICENSE*"           # Standard license name
-    - "__init__.py"        # Python package files
-    - "__main__.py"        # Python module entry points
-    - "_version.py"        # Python version files
-    - "docs/project-linting.md"  # Contains linting examples with "bad" patterns
-    - "vibe/lint.py"       # Contains linting logic with pattern definitions
-    - "ENHANCEMENT_SUMMARY.md"  # Project documentation with emojis for readability
-    - "LINTING_CONFIG_UPDATE.md"  # Temporary documentation
-    - "vibe/workflows/data/**"  # Workflow files use underscore naming
-    - "*.toml"             # TOML files often have standardized names
-
-  # Text quality thresholds
-  max_step_message_length: 120  # Slightly longer for workflow descriptions
-  min_action_word_percentage: 5.0
-
-  # Professional language patterns (customized for development context)
+  # Professional language patterns that are flagged
   unprofessional_patterns:
-    - "\\b(awesome|cool|amazing|epic)\\b"  # Removed 'super' to avoid Python super()
     - "\\b(gonna|wanna|gotta)\\b"
-    - "\\b(omg|lol|btw|fyi)\\b"
-    - "!!+"
-    - "\\?\\?+"
+    - '!!+' # Multiple exclamation marks
+    - "\\b(awesome|cool|amazing|epic)\\b" # Overly enthusiastic language
 
-workflows:
-  lint:
-    name: "Project linting and code quality"
-    description: "Run comprehensive project linting for naming conventions and professional language"
-    triggers:
-      - "lint project"
-      - "check naming"
-      - "code style"
-      - "professional language"
-    commands:
-      - "uv run vibe lint project --format=summary"
-      - "uv run vibe lint project --severity=warning"
-    guidance: |
-      This workflow runs Vibe's built-in project linting system to check:
-      - File naming conventions (snake_case for Python files)
-      - Professional language usage
-      - Emoji usage in non-UI code
-      Use 'vibe lint text "content"' for quick text quality checks.
+  # Emoji usage patterns
+  emoji_patterns:
+    documentation:
+      allowed_contexts: ['headers', 'lists', 'status_indicators']
+      max_per_section: 3
+    code:
+      allowed: false
+      exceptions: ['test_files']
 
-  testing:
-    name: "Test execution, validation, and quality verification"
-    description: "Test and validate Vibe CLI implementation"
-    triggers:
-      - "test vibe"
-      - "validate code"
-      - "run tests"
-      - "check quality"
-    commands:
-      - "python -m pytest"
-      - "ruff check"
-    guidance: |
-      This workflow validates Vibe's core functionality. Use built-in 'python_test'
-      workflow for general Python testing. For comprehensive testing across projects,
-      query: 'test python code' to access the built-in testing workflows.
+# TypeScript-specific file patterns
+file_patterns:
+  source: ['src/**/*.ts', 'src/**/*.js']
+  tests: ['tests/**/*.test.ts', '**/*.spec.ts']
+  config: ['*.config.ts', '*.config.js', 'tsconfig.json', 'package.json']
+  documentation: ['README.md', 'docs/**/*.md', '*.md']
 
-  documentation:
-    name: "Generate and update Vibe-specific documentation"
-    description: "Create documentation focused on Vibe's unique workflow architecture"
-    triggers:
-      - "document workflows"
-      - "create vibe docs"
-      - "update documentation"
-      - "workflow docs"
-    commands:
-      - "find vibe/workflows/data -name '*.yaml' -exec echo 'Workflow: {}' \\;"
-      - "python -c \"import vibe.workflows.loader; loader = vibe.workflows.loader.WorkflowLoader(); workflows = loader.load_workflows(); print(f'Loaded {len(workflows)} workflows')\""
-      - "ls -la docs/"
-    guidance: |
-      This workflow generates Vibe-specific documentation. For general documentation
-      tasks, use built-in 'documentation' workflow. For architectural decisions,
-      create ADRs in docs/adr/ following the template.
+# Build and development settings
+build:
+  output_dir: 'dist'
+  include_patterns: ['src/**/*']
+  exclude_patterns: ['**/*.test.ts', '**/*.spec.ts']
 
-  mcp:
-    name: "MCP tools integration and AI-enhanced workflows"
-    description: "Model Context Protocol tools integration for AI-enhanced development"
-    triggers:
-      - "mcp tools"
-      - "ai tools"
-      - "model context protocol"
-      - "ai integration"
-    commands:
-      - "echo 'MCP tools integration guidance available'"
-    guidance: |
-      This workflow provides guidance for MCP tools integration. Vibe is designed to work
-      with AI agents and MCP tools for enhanced development workflows. Use this for AI
-      integration patterns and MCP tool configurations.
-
-  self_test:
-    name: "Vibe dogfooding and self-validation"
-    description: "Test Vibe using Vibe itself - the ultimate dogfooding approach"
-    triggers:
-      - "dogfood test"
-      - "self test"
-      - "vibe test vibe"
-      - "dogfooding"
-    commands:
-      - "uv run vibe guide 'analyze project'"
-      - "uv run vibe guide 'test python code'"
-      - "uv run vibe guide 'check quality'"
-    guidance: |
-      This workflow demonstrates Vibe's dogfooding approach - using Vibe to develop and
-      test Vibe itself. This showcases the power of workflow orchestration and natural
-      language guidance.
-
-  bootstrap:
-    name: "Vibe development environment bootstrap"
-    description: "Set up and configure Vibe development environment"
-    triggers:
-      - "setup vibe"
-      - "bootstrap environment"
-      - "configure development"
-      - "vibe setup"
-    commands:
-      - "uv --version || echo 'Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh'"
-      - "uv sync"
-      - "uv run python -c \"import vibe; print('Vibe imported successfully')\""
-      - "uv run vibe guide 'help'"
-    guidance: |
-      This workflow sets up the Vibe development environment. Ensures uv is installed,
-      dependencies are synced, and Vibe is working correctly. For general Python
-      environment setup, use built-in workflows via: 'setup python environment'.
+# Development workflow preferences
+development:
+  auto_format: true
+  strict_typing: true
+  test_framework: 'jest'
+  package_manager: 'npm'

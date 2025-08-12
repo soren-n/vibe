@@ -1,0 +1,24 @@
+name: Test Suite Execution
+description: Execute complete test suite including unit, integration, and MCP tests
+triggers:
+  - run all tests
+  - execute tests
+  - run full test suite
+  - execute all testing
+category: testing
+steps:
+  - step_text: Unit tests with coverage
+    command: uv run pytest tests/ -q --maxfail=1 --cov=vibe --cov-report=term --cov-report=html
+    working_dir: .
+  - step_text: MCP workflow tests
+    command: uv run python test_mcp.py
+    working_dir: .
+  - step_text: Workflow YAML validation
+    command: uv run pytest tests/test_workflow_yaml_quality.py -q --maxfail=1
+    working_dir: .
+  - step_text: MCP server tests
+    command: cd mcp-server && npm test --silent
+    working_dir: .
+  - step_text: CLI functionality test
+    command: uv run vibe guide "run quality checks" | head -20
+    working_dir: .

@@ -1,0 +1,31 @@
+name: JavaScript Development Server
+description: JavaScript development setup
+triggers:
+  - dev server validation
+  - javascript dev checklist
+  - js dev validation
+  - launch dev
+  - run dev server
+  - start dev server
+  - start javascript dev
+steps:
+  - 'Start development server: Execute `npm run dev`, `yarn dev`, or `npm start` to
+    launch development server'
+  - 'Open application: Navigate to `http://localhost:3000` (or displayed port) in browser'
+  - 'Monitor output: Watch terminal for compilation status, keeping output concise with
+    sampling for long logs'
+project_types:
+  - javascript
+  - typescript
+  - node
+conditions:
+  - file:package.json
+items:
+  - 'Development server running: Server starts successfully on expected port without
+    errors'
+  - 'Hot reload functional: Source code changes trigger automatic browser refresh'
+  - 'Console monitoring active: Terminal output displays compilation status and error
+    information clearly'
+  - 'Application accessible: Browser can successfully navigate to and display the application'
+  - 'Error handling working: Compilation errors and warnings are properly displayed
+    and actionable'

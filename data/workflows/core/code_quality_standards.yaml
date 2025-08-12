@@ -1,0 +1,31 @@
+name: Code Quality Standards Enforcement
+description: code
+triggers:
+  - code quality checklist
+  - enforce standards
+  - quality tools
+  - quality validation checklist
+  - run code quality
+  - run linting
+  - run validation
+  - standards checklist
+steps:
+  - 'Code formatting: Execute `uv run ruff check .` to validate consistent code style'
+  - 'Type checking: Execute `uv run mypy .` to validate type safety and documentation'
+  - 'Test suite: Execute `uv run pytest` to ensure all functionality works correctly'
+dependencies:
+  - ruff
+  - mypy
+  - pytest
+items:
+  - 'Professional language: Workflow files use formal language without emojis or decorative
+    formatting'
+  - 'Code formatting: All code follows consistent style guidelines without formatting
+    violations'
+  - 'Type annotations: All functions have proper type hints and documentation'
+  - 'Test coverage: All functionality is covered by passing unit tests'
+  - 'Complexity compliance: No functions exceed acceptable McCabe complexity thresholds'
+  - 'Documentation quality: Technical writing is clear, professional, and accessible
+    to enterprise audiences'
+  - 'Commit messages: All commits follow conventional format with professional tone'
+  - 'Maintainability: Code structure supports long-term maintenance and understanding'

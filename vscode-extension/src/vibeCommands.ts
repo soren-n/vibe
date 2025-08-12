@@ -191,15 +191,17 @@ export class VibeCommands {
     }
 
     /**
-     * Get available workflows
+     * Get available workflows by delegating to the main Vibe CLI
      */
     private getAvailableWorkflows(): WorkflowItem[] {
+        // TODO: This should eventually call the main Vibe CLI to get real workflows
+        // For now, return a basic set that matches common workflow categories
         return [
-            { name: 'analyze', description: 'Analyze project structure', category: 'core' },
+            { name: 'analysis', description: 'Analyze project structure', category: 'core' },
             { name: 'quality', description: 'Run quality checks', category: 'core' },
-            { name: 'python_test', description: 'Run Python tests', category: 'python' },
-            { name: 'js_build', description: 'Build JavaScript project', category: 'frontend' },
-            { name: 'docs_create', description: 'Create documentation', category: 'documentation' }
+            { name: 'init', description: 'Initialize Vibe project', category: 'core' },
+            { name: 'implementation', description: 'Implementation guidance', category: 'development' },
+            { name: 'documentation', description: 'Create documentation', category: 'documentation' }
         ];
     }
 
@@ -243,7 +245,7 @@ export class VibeCommands {
             </style>
         </head>
         <body>
-            <h1>🚀 Vibe AI Workflows Guide</h1>
+            <h1>Vibe AI Workflows Guide</h1>
 
             <p>Welcome to Vibe AI Workflows! This extension provides intelligent workflow orchestration for development tasks.</p>
 
@@ -258,7 +260,7 @@ export class VibeCommands {
             <h2>Available Workflow Categories</h2>
 
             <div class="workflow-category">
-                <h3>🔧 Core Workflows</h3>
+                <h3>Core Workflows</h3>
                 <div class="workflow">
                     <strong>analyze</strong> - Analyze project structure and provide insights
                 </div>
@@ -290,9 +292,6 @@ export class VibeCommands {
                 </div>
                 <div class="workflow">
                     <strong>react_dev</strong> - Set up React development environment
-                </div>
-                <div class="workflow">
-                    <strong>vue_dev</strong> - Set up Vue.js development environment
                 </div>
             </div>
 
