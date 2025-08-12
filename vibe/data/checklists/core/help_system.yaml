@@ -1,0 +1,16 @@
+name: "Help System Validation Checklist"
+description: "Help system functionality and completeness validation checklist"
+triggers:
+  - "help validation"
+  - "help system checklist"
+  - "command guidance validation"
+
+items:
+  - "Natural language guidance functional: Help system responds appropriately to conversational requests"
+  - "Project analysis guidance available: Commands for project structure analysis are accessible and functional"
+  - "Development workflows accessible: Common development tasks like testing, formatting, and refactoring have clear guidance"
+  - "Documentation workflows available: Documentation creation and maintenance workflows are discoverable"
+  - "Agent integration functional: VS Code AI integration setup guidance works correctly"
+  - "Fallback guidance operational: Generic \"what next\" guidance provides helpful direction when users are uncertain"
+
+dependencies: []

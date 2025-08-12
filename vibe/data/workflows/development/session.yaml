@@ -1,0 +1,14 @@
+name: "Session Management and Cleanup"
+description: "Execute session completion and cleanup procedures"
+triggers:
+  - "complete session"
+  - "finish session"
+  - "execute session cleanup"
+  - "run session closure"
+steps:
+  - "Execute progress review: Run `git status --porcelain` to check session modifications"
+  - "Execute change commitment: Run `git add .` and `git commit -m \"Session completion: [description]\"` if changes should be saved"
+  - "Execute temporary file search: Run `find . -name 'debug*' -o -name '*.tmp' -o -name '*_new.*' -o -name '*.bak'` to locate cleanup targets"
+  - "Execute session analysis: Use \"session retrospective\" workflow for detailed progress analysis if needed"
+  - "Execute comprehensive cleanup: Use \"cleanup\" workflow for project hygiene check if required"
+  - "Execute working tree cleanup: Ensure clean state with `git status` showing no uncommitted changes"

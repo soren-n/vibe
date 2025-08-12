@@ -1,0 +1,35 @@
+name: Refactoring Validation
+description: Comprehensive refactoring guidance
+triggers:
+- pre-refactor validation
+- refactor quality checklist
+- refactor.*complete
+- refactoring checklist
+- refactoring.*done
+- validate.*refactor
+- verify.*refactoring
+project_types: []
+conditions: []
+dependencies: []
+items:
+- All tests pass after refactoring changes
+- Code complexity has been measurably reduced
+- Extracted functions provide meaningful semantic value
+- No trivial wrapper functions or over-abstractions created
+- Documentation accurately reflects current code structure
+- No new linting or type checking issues introduced
+- Performance is maintained or improved
+- Refactored code follows established design patterns
+- Changes use professional language without emojis or decorative formatting
+- Function and class names clearly indicate their purpose
+- Code is more maintainable than before refactoring
+- No functionality was broken during refactoring process
+- 'Baseline established: Full test suite passes before any refactoring begins'
+- 'Complexity identified: High-complexity functions requiring attention have been
+  identified using analysis tools'
+- 'Meaningful abstractions: Extracted functions provide semantic value, not trivial
+  wrappers or eta reductions'
+- 'Standards compliance: Code passes linting and type checking without violations'
+- 'Documentation updated: Docstrings and comments accurately reflect refactored structure'
+- 'Incremental validation: Each refactoring step was immediately validated with test
+  execution'

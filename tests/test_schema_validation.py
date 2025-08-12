@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from vibe.workflows.loader import WorkflowLoader
-from vibe.workflows.validation import (
+from vibe.guidance.loader import WorkflowLoader
+from vibe.guidance.validation import (
     WorkflowValidationError,
     create_example_workflow,
     get_validation_errors,
@@ -80,7 +80,7 @@ def test_schema_validation_complex_steps() -> None:
 
 
 def test_schema_validation_legacy_commands() -> None:
-    """Test validation supports legacy 'commands' field."""
+    """Test validation rejects legacy 'commands' field (no longer supported)."""
     workflow_with_commands = {
         "name": "test_legacy",
         "description": "Test workflow with legacy commands field",
@@ -88,8 +88,12 @@ def test_schema_validation_legacy_commands() -> None:
         "commands": ["echo test", "ls"],
     }
 
-    validate_workflow_data(workflow_with_commands)
-    assert validate_workflow_structure(workflow_with_commands)
+    # Should raise validation error since commands field is no longer supported
+    with pytest.raises(WorkflowValidationError):
+        validate_workflow_data(workflow_with_commands)
+
+    # Structure validation should also fail
+    assert not validate_workflow_structure(workflow_with_commands)
 
 
 def test_schema_validation_optional_fields() -> None:
@@ -116,38 +120,43 @@ def test_schema_validation_in_loader() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
-        # Create loader with validation enabled
-        loader = WorkflowLoader(enable_validation=True)
-        loader.data_dir = temp_path
+    # Create loader with validation enabled
+    loader = WorkflowLoader(enable_validation=True)
+    loader.data_dir = temp_path
+    loader.workflows_dir = temp_path / "workflows"
+    loader.checklists_dir = temp_path / "checklists"
 
-        # Create valid workflow file
-        valid_workflow = {
-            "name": "test_valid",
-            "description": "Valid test workflow",
-            "triggers": ["test"],
-            "steps": ["echo test"],
-        }
+    # Create the workflows directory
+    loader.workflows_dir.mkdir(parents=True, exist_ok=True)
 
-        valid_file = temp_path / "valid.yaml"
-        with open(valid_file, "w") as f:
-            yaml.dump(valid_workflow, f)
+    # Create valid workflow file
+    valid_workflow = {
+        "name": "test_valid",
+        "description": "Valid test workflow",
+        "triggers": ["test"],
+        "steps": ["echo test"],
+    }
 
-        # Create invalid workflow file
-        invalid_workflow = {
-            "name": "",  # Invalid empty name
-            "description": "Invalid test workflow",
-        }
+    valid_file = loader.workflows_dir / "valid.yaml"
+    with open(valid_file, "w") as f:
+        yaml.dump(valid_workflow, f)
 
-        invalid_file = temp_path / "invalid.yaml"
-        with open(invalid_file, "w") as f:
-            yaml.dump(invalid_workflow, f)
+    # Create invalid workflow file
+    invalid_workflow = {
+        "name": "",  # Invalid empty name
+        "description": "Invalid test workflow",
+    }
 
-        # Load workflows
-        workflows = loader.get_all_workflows()
+    invalid_file = loader.workflows_dir / "invalid.yaml"
+    with open(invalid_file, "w") as f:
+        yaml.dump(invalid_workflow, f)
 
-        # Only valid workflow should be loaded
-        assert "test_valid" in workflows
-        assert len(workflows) == 1  # Invalid workflow should be rejected
+    # Load workflows
+    workflows = loader.load_workflows()
+
+    # Only valid workflow should be loaded
+    assert "test_valid" in workflows
+    assert len(workflows) == 1  # Invalid workflow should be rejected
 
 
 def test_schema_validation_can_be_disabled() -> None:
@@ -158,6 +167,11 @@ def test_schema_validation_can_be_disabled() -> None:
         # Create loader with validation disabled
         loader = WorkflowLoader(enable_validation=False)
         loader.data_dir = temp_path
+        loader.workflows_dir = temp_path / "workflows"
+        loader.checklists_dir = temp_path / "checklists"
+
+        # Create the workflows directory
+        loader.workflows_dir.mkdir(parents=True, exist_ok=True)
 
         # Create invalid workflow file (empty name)
         invalid_workflow = {
@@ -167,14 +181,14 @@ def test_schema_validation_can_be_disabled() -> None:
             "steps": ["echo test"],
         }
 
-        invalid_file = temp_path / "invalid.yaml"
+        invalid_file = loader.workflows_dir / "invalid.yaml"
         with open(invalid_file, "w") as f:
             yaml.dump(invalid_workflow, f)
 
         # Should still load when validation is disabled
         # (though it may fail when creating the Workflow object)
         # This tests that validation check is skipped
-        loader.get_all_workflows()
+        loader.load_workflows()
         # The workflow might not be loaded due to other issues, but
         # validation error shouldn't be printed
 

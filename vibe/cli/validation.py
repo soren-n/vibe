@@ -643,7 +643,7 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
 
 def validate_workflow_schemas() -> None:
     """Validate all workflow YAML files against the JSON schema."""
-    from ..workflows.loader import WorkflowLoader
+    from ..guidance.loader import WorkflowLoader
 
     console.print("🔍 [bold blue]Validating Workflow Schemas[/bold blue]")
     console.print()
@@ -689,7 +689,7 @@ def _validate_data_directory_workflows(loader: Any) -> tuple[int, int]:
 
 def _validate_single_workflow_file(yaml_file: Path, data_dir: Path) -> tuple[int, int]:
     """Validate a single workflow YAML file."""
-    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
+    from ..guidance.validation import WorkflowValidationError, validate_workflow_data
 
     relative_path = yaml_file.relative_to(data_dir)
 
@@ -755,16 +755,13 @@ def _validate_single_config_workflow(
     workflow_name: str, workflow_config: Any
 ) -> tuple[int, int]:
     """Validate a single workflow from .vibe.yaml configuration."""
-    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
+    from ..guidance.validation import WorkflowValidationError, validate_workflow_data
 
     try:
         # Convert WorkflowConfig to dict for validation
-        # Use commands as steps if steps is empty (legacy support)
-        steps = (
-            workflow_config.steps if workflow_config.steps else workflow_config.commands
-        )
+        steps = workflow_config.steps
 
-        # If both steps and commands are empty, provide default guidance
+        # If steps is empty, provide default guidance
         if not steps:
             steps = [f"Provide guidance for {workflow_name} workflow"]
 

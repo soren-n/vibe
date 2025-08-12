@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from vibe.workflows.loader import WorkflowLoader
+from vibe.guidance.loader import WorkflowLoader
 
 
 def test_hot_reloading_basic_functionality() -> None:
@@ -68,23 +68,26 @@ def test_hot_reloading_with_temporary_directory() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
-        # Create a temporary workflow loader with custom directory
-        loader = WorkflowLoader()
-        loader.data_dir = temp_path
+    # Create a temporary workflow loader with custom directory
+    loader = WorkflowLoader()
+    loader.data_dir = temp_path
+    loader.workflows_dir = temp_path / "workflows"
+    loader.checklists_dir = temp_path / "checklists"
 
-        # Create a test workflow file
-        test_workflow = {
-            "name": "test_workflow",
-            "description": "Test workflow for hot reloading",
-            "triggers": ["test"],
-            "steps": ["echo 'test'"],
-        }
+    # Create the workflows directory
+    loader.workflows_dir.mkdir(parents=True, exist_ok=True)
 
-        workflow_file = temp_path / "test.yaml"
-        with open(workflow_file, "w") as f:
-            yaml.dump(test_workflow, f)
+    # Create a test workflow file
+    test_workflow = {
+        "name": "test_workflow",
+        "description": "Test workflow for hot reloading",
+        "triggers": ["test"],
+        "steps": ["echo 'test'"],
+    }
 
-        # Load initial workflows
+    workflow_file = loader.workflows_dir / "test.yaml"
+    with open(workflow_file, "w") as f:
+        yaml.dump(test_workflow, f)  # Load initial workflows
         workflows = loader.get_all_workflows()
         assert "test_workflow" in workflows
 

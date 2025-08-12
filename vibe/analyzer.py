@@ -6,8 +6,8 @@ from rich.console import Console
 from rich.panel import Panel
 
 from .config import VibeConfig
-from .workflows import get_workflow_registry
-from .workflows.loader import get_checklists
+from .guidance import get_workflow_registry
+from .guidance.loader import get_checklists
 
 
 class PromptAnalyzer:

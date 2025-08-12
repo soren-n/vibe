@@ -1,0 +1,34 @@
+name: python_dev_setup
+description: Comprehensive python dev setup guidance
+triggers:
+- dependency.*management
+- dev.*environment
+- development.*setup
+- environment.*validation
+- python.*setup.*complete
+- setup.*dev.*environment
+- update.*dependencies
+- validate.*python.*environment
+- verify.*dev.*setup
+steps:
+- 'Check Python version: `python --version`'
+- 'Install/update uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`'
+- 'Install dependencies: `uv sync --upgrade` or `pip install -r requirements.txt`'
+- 'Add development tools: `uv add --dev pytest ruff mypy`'
+- 'Create virtual environment (if needed): `uv venv`'
+- 'Activate environment: `source .venv/bin/activate` (or `uv run` for commands)'
+- 'Test setup: `uv run python -c ''import sys; print(f"Python {sys.version} ready")''`'
+project_types:
+- python
+conditions:
+- pattern:*.py
+items:
+- Python version is appropriate for the project
+- Package manager (uv or pip) is available and working
+- Project dependencies are successfully installed
+- Development tools (pytest, ruff, mypy) are available
+- Virtual environment is properly configured
+- Python interpreter can import project modules
+- Development tools can be executed without errors
+- Environment is ready for coding and testing
+- Package installation commands work correctly

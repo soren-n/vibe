@@ -1,0 +1,18 @@
+name: "Research Execution for Agents"
+description: "Execute systematic research process for AI agents when no specific workflow matches"
+triggers:
+  - "conduct research"
+  - "execute research"
+  - "perform investigation"
+  - "run research process"
+project_types:
+  - "any"
+steps:
+  - "Execute Context7 documentation research: Use mcp_context7_resolve-library-id → mcp_context7_get-library-docs for technical documentation"
+  - "Perform web research: Use browser automation tools to search for current best practices, tutorials, and examples"
+  - "Search GitHub repositories: Use github_repo MCP tools to find relevant code examples and implementation patterns"
+  - "Review official documentation: Search documentation, release notes, and migration guides for accurate information"
+  - "Apply sequential analysis: Use mcp_sequentialthi_sequentialthinking for complex research requiring structured problem-solving"
+  - "Synthesize findings: Combine research results into actionable recommendations and specific implementation steps"
+  - "Create documentation: Generate clear guidance based on research findings with specific commands and examples"
+  - "Provide implementation steps: Give concrete actions based on research results with token-efficient output"

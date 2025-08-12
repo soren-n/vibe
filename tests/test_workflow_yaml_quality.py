@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from vibe.workflows.quality import validate_workflow_yamls
+from vibe.guidance.quality import validate_workflow_yamls
 
 
 def write(base_path: Path, relative_path: str, content: str) -> Path:

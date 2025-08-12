@@ -1,0 +1,32 @@
+name: "Architecture Decision Record (ADR) Creation and Management"
+description: "Execute ADR creation and maintenance processes for architectural decisions"
+triggers:
+  - "create adr"
+  - "write adr"
+  - "execute adr creation"
+  - "create decision record"
+project_types:
+  - "python"
+  - "typescript"
+  - "vue"
+  - "javascript"
+  - "rust"
+  - "go"
+  - "general"
+dependencies:
+  - "docs directory structure"
+  - "ADR template"
+conditions:
+  - "When significant architectural decisions are made"
+  - "When design patterns are established"
+  - "When technology choices need documentation"
+  - "When reviewing past decisions"
+steps:
+  - "Execute ADR structure creation: Run `mkdir -p docs/adr` and copy template to establish framework"
+  - "Execute ADR listing: Run `ls docs/adr/` to determine next sequential number and review decision history"
+  - "Create new ADR file: Copy template to `docs/adr/adr-XXX-decision-title.md` using appropriate numbering"
+  - "Execute context documentation: Write explanation of problem, constraints, and circumstances"
+  - "Execute decision recording: Document chosen approach and provide reasoning"
+  - "Execute implementation planning: Write actionable next steps and execution references"
+  - "Execute status setting: Mark as Proposed, Accepted, Deprecated, or Superseded"
+  - "Execute commit with changes: Include ADR in same commit as related code for traceability"

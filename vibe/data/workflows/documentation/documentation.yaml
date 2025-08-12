@@ -1,0 +1,51 @@
+name: Documentation Generation and Updates
+description: Comprehensive documentation guidance
+triggers:
+- build documentation
+- create docs
+- doc quality checklist
+- docs.*ready
+- documentation standards checklist
+- documentation validation checklist
+- documentation.*complete
+- generate documentation
+- update docs
+- validate.*docs
+- verify.*documentation
+steps:
+- 'Execute documentation discovery: Run `find . -name ''README*'' -o -name ''docs''
+  -type d` to locate current documentation'
+- 'Create documentation structure: Execute `mkdir -p docs && touch docs/README.md`
+  to establish framework'
+- 'Update main README: Add project description, installation, and usage sections with
+  current information'
+- 'Generate API documentation: Execute `pydoc` for Python or `typedoc` for TypeScript
+  projects'
+- 'Create contributing guide: Generate `CONTRIBUTING.md` with development setup instructions'
+- 'Add architecture documentation: Document key design decisions and patterns in structured
+  format'
+- 'Update changelog: Add recent changes to `CHANGELOG.md` with proper versioning'
+- 'Build documentation site: Execute documentation build tools if applicable'
+items:
+- README clearly explains project purpose and value
+- Installation instructions are accurate and complete
+- Usage examples work correctly
+- API documentation is comprehensive and current
+- Contributing guide explains development setup
+- Architecture documentation exists for complex projects
+- All code examples have been tested
+- Language follows professional standards (no emojis, clear tone)
+- Documentation is well-organized and easy to navigate
+- Recent changes are reflected in documentation
+- 'Documentation examples tested: All code examples in documentation execute correctly
+  and produce expected results'
+- 'Language standards verified: Documentation uses professional tone and formatting
+  consistent with enterprise standards'
+- 'API documentation complete: All public functions and classes have clear, professional
+  documentation'
+- 'Architecture documentation current: Design decisions and patterns are accurately
+  documented and up-to-date'
+- 'Contributing guide accurate: Development setup instructions work correctly for
+  new contributors'
+- 'Changelog current: Recent changes are properly documented with appropriate version
+  information'

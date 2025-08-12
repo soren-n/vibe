@@ -47,12 +47,21 @@ def main() -> None:
     """Main entry point with smart command detection."""
     args = sys.argv[1:]
 
-    # If no args, show help
+    # Handle different argument scenarios
     if not args:
         cli(["--help"])
         return
 
-    # If first arg is a known command, use normal CLI
+    if _is_known_command_or_option(args[0]):
+        cli()
+        return
+
+    # Treat as prompt for run command
+    _handle_prompt_command(args)
+
+
+def _is_known_command_or_option(first_arg: str) -> bool:
+    """Check if the first argument is a known command or option."""
     known_commands = [
         "run",
         "init",
@@ -65,17 +74,28 @@ def main() -> None:
         "mcp",
         "lint",
     ]
-    if args[0] in known_commands or args[0].startswith("-"):
-        cli()
-        return
+    return first_arg in known_commands or first_arg.startswith("-")
 
-    # Otherwise, treat as a prompt for run command
-    # Extract options first
-    prompt_args = []
-    options = []
+
+def _handle_prompt_command(args: list[str]) -> None:
+    """Handle arguments as a prompt for the run command."""
+    prompt_args, options = _parse_prompt_and_options(args)
+    prompt = " ".join(prompt_args)
+
+    # Run the command with parsed arguments
+    sys.argv = ["vibe", "run"] + options + [prompt]
+    cli()
+
+
+def _parse_prompt_and_options(args: list[str]) -> tuple[list[str], list[str]]:
+    """Parse arguments into prompt words and options."""
+    prompt_args: list[str] = []
+    options: list[str] = []
     i = 0
+
     while i < len(args):
         if args[i].startswith("--"):
+            # Long option
             options.append(args[i])
             if i + 1 < len(args) and not args[i + 1].startswith("--"):
                 options.append(args[i + 1])
@@ -83,6 +103,7 @@ def main() -> None:
             else:
                 i += 1
         elif args[i].startswith("-") and args[i] != "-":
+            # Short option (but not single dash)
             options.append(args[i])
             if i + 1 < len(args) and not args[i + 1].startswith("-"):
                 options.append(args[i + 1])
@@ -93,12 +114,7 @@ def main() -> None:
             prompt_args.append(args[i])
             i += 1
 
-    # Join all non-option args as prompt
-    prompt = " ".join(prompt_args)
-
-    # Run the command
-    sys.argv = ["vibe", "run"] + options + [prompt]
-    cli()
+    return prompt_args, options
 
 
 if __name__ == "__main__":

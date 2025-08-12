@@ -1,0 +1,16 @@
+name: "Research Quality Validation Checklist"
+description: "Research process quality and completeness validation checklist"
+triggers:
+  - "research validation"
+  - "research quality checklist"
+  - "research completeness checklist"
+
+items:
+  - "Query analysis complete: User request has been broken down into specific, searchable research topics and keywords"
+  - "Multiple sources consulted: Research includes technical documentation, official sources, and current best practices from diverse channels"
+  - "Information currency verified: All findings have been cross-referenced and confirmed to be current and accurate"
+  - "Actionable recommendations provided: Research results are synthesized into specific, implementable guidance"
+  - "Documentation quality maintained: Insights are clearly documented with concrete examples and next steps"
+  - "Token efficiency achieved: Research process uses efficient lookup methods and avoids excessive output"
+
+dependencies: []

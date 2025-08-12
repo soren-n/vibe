@@ -1,0 +1,33 @@
+name: python_build
+description: Comprehensive python build guidance
+triggers:
+- build.*complete
+- build.*package
+- build.*wheel
+- create.*dist
+- package.*built
+- package.*python
+- prepare.*release
+- validate.*build
+- verify.*package.*build
+steps:
+- 'Build package: `uv build` or `python -m build`'
+- 'Check artifacts: `ls -la dist/`'
+- 'Test install: `uv pip install dist/*.whl`'
+dependencies:
+- python_test
+- python_quality
+project_types:
+- python
+conditions:
+- file:pyproject.toml
+items:
+- Package builds without errors or warnings
+- Wheel (.whl) file is created in dist/ directory
+- Source distribution (.tar.gz) is created
+- Package can be installed successfully
+- All required files are included in the distribution
+- Package metadata is complete and accurate
+- Dependencies are properly specified
+- Built package works in a clean environment
+- Version numbers are consistent across files

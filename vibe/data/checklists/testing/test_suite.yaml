@@ -1,0 +1,35 @@
+name: Comprehensive Test Validation
+description: Comprehensive comprehensive test guidance
+triggers:
+- comprehensive test validation
+- comprehensive.*testing.*done
+- test suite validation
+- test validation checklist
+- tests.*complete
+- validate.*all.*tests
+- verify.*test.*suite
+project_types: []
+conditions: []
+dependencies: []
+items:
+- Unit tests pass with adequate coverage (>80%)
+- Integration tests execute without failures
+- MCP workflow execution tests are successful
+- YAML workflow files pass validation checks
+- MCP server functionality tests pass
+- CLI commands work correctly and produce expected output
+- All test environments are properly configured
+- No flaky or intermittent test failures
+- Test execution time is reasonable
+- Coverage reports are generated and accessible
+- 'Unit test coverage adequate: Core functionality achieves acceptable test coverage
+  thresholds'
+- 'MCP workflow execution validated: Session management and workflow execution function
+  correctly'
+- 'YAML quality maintained: All workflow files pass syntax and quality validation'
+- 'MCP server integration functional: Server-side functionality integrates properly
+  with client systems'
+- 'CLI command functionality verified: Command-line interface operates correctly and
+  provides expected guidance'
+- 'End-to-end integration operational: Complete system workflow from input to output
+  functions as expected'

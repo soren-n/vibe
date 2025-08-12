@@ -6,7 +6,7 @@ from pathlib import Path
 import click
 from rich.console import Console
 
-from ..workflows.quality import (
+from ..guidance.quality import (
     format_workflow_yamls,
     validate_workflow_yamls,
 )

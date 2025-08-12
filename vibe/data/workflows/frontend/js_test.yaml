@@ -1,0 +1,37 @@
+name: js_test
+description: Comprehensive js test guidance
+triggers:
+- jest.*test
+- mocha.*test
+- npm.*test
+- run.*js.*tests
+- test.*javascript
+- test.*validation
+- tests.*complete
+- validate.*js.*tests
+- verify.*javascript.*tests
+- vitest
+steps:
+- 'Run test suite: `npm test`'
+- 'Install test framework if missing: `npm install --save-dev jest`'
+- 'Add test script to package.json if missing: `"test": "jest"`'
+- 'Run with coverage: `npm test -- --coverage`'
+- 'Run in watch mode: `npm test -- --watch`'
+dependencies:
+- js_quality
+project_types:
+- javascript
+- typescript
+- node
+conditions:
+- file:package.json
+items:
+- All test suites pass without failures
+- Test coverage meets project requirements
+- Critical functionality is adequately tested
+- Edge cases and error conditions are covered
+- Tests run efficiently without timeouts
+- No flaky or intermittent test failures
+- Test configuration is properly set up in package.json
+- Continuous integration includes test execution
+- Test results are clearly reported and actionable

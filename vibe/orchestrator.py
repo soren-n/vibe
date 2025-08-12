@@ -7,9 +7,9 @@ from rich.panel import Panel
 from rich.table import Table
 
 from .config import VibeConfig
+from .guidance import get_workflow_registry
+from .guidance.loader import get_checklist
 from .session import SessionManager
-from .workflows import get_workflow_registry
-from .workflows.loader import get_checklist
 
 
 class WorkflowOrchestrator:

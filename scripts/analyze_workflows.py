@@ -84,69 +84,96 @@ def analyze_step(step: str) -> tuple[str, float]:
         return "MIXED", 0.5
 
 
-def analyze_workflow_file(file_path: Path) -> dict[str, Any] | None:
-    """Analyze a single workflow file."""
+def _load_workflow_data(file_path: Path) -> dict[str, Any] | None:
+    """Load and validate workflow data from file."""
     try:
         with open(file_path) as f:
             data = yaml.safe_load(f)
 
         if not data or "steps" not in data:
             return None
-
-        results = {
-            "name": data.get("name", file_path.stem),
-            "file": str(file_path),
-            "total_steps": len(data["steps"]),
-            "steps_analysis": [],
-            "validation_steps": [],
-            "execution_steps": [],
-            "mixed_steps": [],
-            "unclear_steps": [],
-        }
-
-        for i, step in enumerate(data["steps"]):
-            step_text = (
-                step if isinstance(step, str) else step.get("step_text", str(step))
-            )
-            step_type, confidence = analyze_step(step_text)
-
-            step_info = {
-                "index": i,
-                "text": step_text[:100] + "..." if len(step_text) > 100 else step_text,
-                "type": step_type,
-                "confidence": confidence,
-            }
-
-            results["steps_analysis"].append(step_info)
-
-            if step_type == "VALIDATION":
-                results["validation_steps"].append(step_info)
-            elif step_type == "EXECUTION":
-                results["execution_steps"].append(step_info)
-            elif step_type == "MIXED":
-                results["mixed_steps"].append(step_info)
-            else:
-                results["unclear_steps"].append(step_info)
-
-        # Calculate overall workflow classification
-        validation_pct = len(results["validation_steps"]) / results["total_steps"]
-        execution_pct = len(results["execution_steps"]) / results["total_steps"]
-
-        results["validation_percentage"] = validation_pct
-        results["execution_percentage"] = execution_pct
-        results["refactor_priority"] = (
-            "HIGH"
-            if validation_pct > 0.3
-            else "MEDIUM"
-            if validation_pct > 0.1
-            else "LOW"
-        )
-
-        return results
-
+        return data
     except Exception as e:
-        print(f"Error analyzing {file_path}: {e}")
+        print(f"Error loading {file_path}: {e}")
         return None
+
+
+def _initialize_results(data: dict[str, Any], file_path: Path) -> dict[str, Any]:
+    """Initialize results dictionary for workflow analysis."""
+    return {
+        "name": data.get("name", file_path.stem),
+        "file": str(file_path),
+        "total_steps": len(data["steps"]),
+        "steps_analysis": [],
+        "validation_steps": [],
+        "execution_steps": [],
+        "mixed_steps": [],
+        "unclear_steps": [],
+    }
+
+
+def _extract_step_text(step: Any) -> str:
+    """Extract step text from step object."""
+    if isinstance(step, str):
+        return step
+    return step.get("step_text", str(step))
+
+
+def _create_step_info(
+    index: int, step_text: str, step_type: str, confidence: float
+) -> dict[str, Any]:
+    """Create step information dictionary."""
+    return {
+        "index": index,
+        "text": step_text[:100] + "..." if len(step_text) > 100 else step_text,
+        "type": step_type,
+        "confidence": confidence,
+    }
+
+
+def _categorize_step(results: dict[str, Any], step_info: dict[str, Any]) -> None:
+    """Categorize step based on type."""
+    step_type = step_info["type"]
+    results["steps_analysis"].append(step_info)
+
+    if step_type == "VALIDATION":
+        results["validation_steps"].append(step_info)
+    elif step_type == "EXECUTION":
+        results["execution_steps"].append(step_info)
+    elif step_type == "MIXED":
+        results["mixed_steps"].append(step_info)
+    else:
+        results["unclear_steps"].append(step_info)
+
+
+def _calculate_workflow_classification(results: dict[str, Any]) -> None:
+    """Calculate overall workflow classification metrics."""
+    validation_pct = len(results["validation_steps"]) / results["total_steps"]
+    execution_pct = len(results["execution_steps"]) / results["total_steps"]
+
+    results["validation_percentage"] = validation_pct
+    results["execution_percentage"] = execution_pct
+    results["refactor_priority"] = (
+        "HIGH" if validation_pct > 0.3 else "MEDIUM" if validation_pct > 0.1 else "LOW"
+    )
+
+
+def analyze_workflow_file(file_path: Path) -> dict[str, Any] | None:
+    """Analyze a single workflow file."""
+    data = _load_workflow_data(file_path)
+    if not data:
+        return None
+
+    results = _initialize_results(data, file_path)
+
+    for i, step in enumerate(data["steps"]):
+        step_text = _extract_step_text(step)
+        step_type, confidence = analyze_step(step_text)
+        step_info = _create_step_info(i, step_text, step_type, confidence)
+        _categorize_step(results, step_info)
+
+    _calculate_workflow_classification(results)
+    return results
 
 
 def main() -> None:

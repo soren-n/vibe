@@ -9,11 +9,8 @@ dependencies = [
     "rich>=13.0.0",
     "pydantic>=2.0.0",
     "pyyaml>=6.0.0",
-    "typing-extensions>=4.0.0",
     "watchdog>=6.0.0",
     "jsonschema>=4.20.0",
-    "spacy>=3.8.7",
-    "en-core-web-sm",
 ]
 
 [project.scripts]
@@ -25,6 +22,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["vibe"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "vibe/_version.py"
@@ -58,9 +58,6 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "pydantic.*"
 ignore_missing_imports = true
-
-[tool.uv.sources]
-en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
 
 [dependency-groups]
 dev = [
