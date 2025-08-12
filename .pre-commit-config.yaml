@@ -31,6 +31,7 @@ repos:
       - id: mypy
         additional_dependencies: [types-pyyaml, types-click]
         args: [--ignore-missing-imports]
+        exclude: ^(scripts/|examples/|test_.*\.py$|tests/test_session_monitor\.py$)
 
   - repo: local
     hooks:

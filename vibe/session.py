@@ -73,14 +73,14 @@ class WorkflowSession:
     workflow_stack: list[WorkflowFrame]
     created_at: datetime
     last_accessed: datetime
-    session_config: SessionConfig = None
+    session_config: SessionConfig | None = None
 
     @classmethod
     def create(
         cls,
         prompt: str,
         initial_workflows: list[tuple[str, list[str]]],
-        session_config: SessionConfig = None,
+        session_config: SessionConfig | None = None,
     ) -> "WorkflowSession":
         """Create a new workflow session.
 
@@ -370,7 +370,7 @@ class SessionManager:
         self,
         prompt: str,
         workflows: list[tuple[str, list[str]]],
-        session_config: SessionConfig = None,
+        session_config: SessionConfig | None = None,
     ) -> WorkflowSession:
         """Create and persist a new workflow session.
 

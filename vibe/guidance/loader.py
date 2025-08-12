@@ -354,16 +354,17 @@ class WorkflowLoader:
             event_handler = WorkflowFileHandler(self._on_file_change)
 
             # Watch both workflows and checklists directories
-            if self.workflows_dir.exists():
+            if self.workflows_dir.exists() and self._observer:
                 self._observer.schedule(
                     event_handler, str(self.workflows_dir), recursive=True
                 )  # type: ignore
-            if self.checklists_dir.exists():
+            if self.checklists_dir.exists() and self._observer:
                 self._observer.schedule(
                     event_handler, str(self.checklists_dir), recursive=True
                 )  # type: ignore
 
-            self._observer.start()  # type: ignore
+            if self._observer:
+                self._observer.start()  # type: ignore
             self._watching = True
         except Exception as e:
             print(f"Warning: Could not start file watching: {e}")

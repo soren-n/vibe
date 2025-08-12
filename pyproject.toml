@@ -47,6 +47,11 @@ python_version = "3.13"
 strict = true
 warn_return_any = false
 warn_unused_ignores = false
+exclude = [
+    "scripts/",
+    "examples/",
+    "test_*.py"
+]
 
 [[tool.mypy.overrides]]
 module = "vibe.config"

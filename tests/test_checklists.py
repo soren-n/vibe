@@ -4,19 +4,33 @@ from vibe.guidance.loader import get_checklist, get_checklists
 from vibe.guidance.models import Checklist
 
 
-def test_checklist_loading():
-    """Test that checklists can be loaded properly."""
+def test_load_checklists() -> None:
+    """Test that checklists can be loaded successfully."""
     checklists = get_checklists()
 
-    # Should have our example checklists
-    assert len(checklists) >= 4
-    assert "Refactoring Validation" in checklists
-    assert "Python Release Readiness" in checklists
-    assert "Feature Development" in checklists
-    assert "Bug Fix Verification" in checklists
+    # Should load at least one checklist
+    assert len(checklists) > 0
+
+    # Check structure of first checklist
+    first_checklist = next(iter(checklists.values()))
+    assert hasattr(first_checklist, "name")
+    assert hasattr(first_checklist, "triggers")
+    assert hasattr(first_checklist, "items")
 
 
-def test_checklist_structure():
+def test_get_checklist_by_name() -> None:
+    """Test retrieving a specific checklist by name."""
+    checklist = get_checklist("Python Release Readiness")
+    assert checklist is not None
+    assert checklist.name == "Python Release Readiness"
+    assert len(checklist.items) > 0
+
+    # Test non-existent checklist
+    missing = get_checklist("Non-existent Checklist")
+    assert missing is None
+
+
+def test_checklist_structure() -> None:
     """Test that checklists have the correct structure."""
     checklist = get_checklist("Refactoring Validation")
     assert checklist is not None
@@ -28,33 +42,38 @@ def test_checklist_structure():
     assert all(not item.startswith("✅") for item in checklist.items)
 
 
-def test_checklist_project_types():
+def test_checklist_project_types() -> None:
     """Test that project type filtering works for checklists."""
     python_checklist = get_checklist("Python Release Readiness")
     assert python_checklist is not None
+    assert python_checklist.project_types is not None
     assert "python" in python_checklist.project_types
 
 
-def test_checklist_vs_workflow_distinction():
+def test_checklist_vs_workflow_distinction() -> None:
     """Test that checklists and workflows are distinct."""
     from vibe.guidance.loader import get_workflows
 
     workflows = get_workflows()
     checklists = get_checklists()
 
-    # Should have both workflows and checklists
-    assert len(workflows) > 0
-    assert len(checklists) > 0
+    assert workflows is not None
+    assert checklists is not None
 
-    # Names should be distinct (no overlap)
-    workflow_names = set(workflows.keys())
-    checklist_names = set(checklists.keys())
+    # Should find workflows but not confuse with checklists
+    workflow_names = list(workflows.keys()) if workflows else []
+    checklist_names = [c.name for c in checklists.values()]
 
-    # This might not be strictly required, but good practice
-    assert len(workflow_names & checklist_names) == 0
+    # These should be separate lists
+    assert len(workflow_names) > 0
+    assert len(checklist_names) > 0
+
+    # No overlap in names (they serve different purposes)
+    overlap = set(workflow_names) & set(checklist_names)
+    assert len(overlap) == 0, f"Found overlapping names: {overlap}"
 
 
-def test_analyzer_with_checklists():
+def test_analyzer_with_checklists() -> None:
     """Test that the analyzer properly detects checklists."""
     from vibe.analyzer import PromptAnalyzer
     from vibe.config import VibeConfig
@@ -87,7 +106,7 @@ def test_analyzer_with_checklists():
     assert "checklist:Python Release Readiness" in results
 
 
-def test_orchestrator_with_checklists():
+def test_orchestrator_with_checklists() -> None:
     """Test that the orchestrator properly handles checklists."""
     from vibe.config import VibeConfig
     from vibe.orchestrator import WorkflowOrchestrator

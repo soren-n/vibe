@@ -145,11 +145,11 @@ class SessionMonitor:
         current_step = session.get_current_step()
 
         if alert.alert_type == "forgotten_completion":
-            return self._format_completion_reminder(session, current_step)
+            return self._format_completion_reminder(session, current_step or {})
         elif alert.alert_type == "dormant_session":
-            return self._format_dormant_reminder(session, current_step)
+            return self._format_dormant_reminder(session, current_step or {})
         elif alert.alert_type == "stale_session":
-            return self._format_stale_reminder(session, current_step)
+            return self._format_stale_reminder(session, current_step or {})
 
         return ""
 
@@ -344,7 +344,7 @@ class SessionMonitor:
     ) -> str:
         """Format a reminder message for forgotten completion."""
         step_info = ""
-        if current_step:
+        if current_step and session.current_frame:
             step_info = (
                 f"You are currently on step {current_step['step_number']} of "
                 f"{len(session.current_frame.steps)} in the "
