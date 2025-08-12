@@ -1,17 +1,14 @@
 """MCP (Model Context Protocol) commands for step-by-step workflow execution."""
 
 import json
-import shutil
-import subprocess
 import sys
 from pathlib import Path
-from typing import Any
 
 import click
-import yaml
 
 from ..config import VibeConfig
 from ..orchestrator import WorkflowOrchestrator
+from .validation import check
 
 
 @click.group()
@@ -301,227 +298,11 @@ def mcp_check() -> None:
     Returns JSON with validation results.
     """
     try:
-        # Collect results for JSON output
-        check_results: dict[str, Any] = {
-            "success": True,
-            "issues_found": [],
-            "checks": {
-                "configuration": {},
-                "environment": {},
-                "tools": {},
-                "github_integration": {},
-            },
-        }
-
-        issues_found: list[str] = []
-
-        # Check 1: Configuration file validation
-        vibe_config_path = Path.cwd() / ".vibe.yaml"
-
-        if not vibe_config_path.exists():
-            check_results["checks"]["configuration"]["config_file"] = {
-                "status": "missing",
-                "message": ".vibe.yaml not found",
-            }
-            issues_found.append("missing_config")
-        else:
-            check_results["checks"]["configuration"]["config_file"] = {
-                "status": "found",
-                "message": ".vibe.yaml found",
-            }
-
-            # Validate config content
-            try:
-                with open(vibe_config_path) as f:
-                    config_data = yaml.safe_load(f) or {}
-
-                # Check protocol version
-                protocol_version = config_data.get("protocol_version")
-                current_version = 1
-
-                if not protocol_version:
-                    check_results["checks"]["configuration"]["protocol_version"] = {
-                        "status": "missing",
-                        "message": "Protocol version missing",
-                    }
-                    issues_found.append("missing_protocol_version")
-                else:
-                    try:
-                        if isinstance(protocol_version, str):
-                            normalized_version = int(float(protocol_version))
-                        else:
-                            normalized_version = int(protocol_version)
-
-                        if normalized_version != current_version:
-                            check_results["checks"]["configuration"][
-                                "protocol_version"
-                            ] = {
-                                "status": "outdated",
-                                "current": normalized_version,
-                                "expected": current_version,
-                                "message": (
-                                    f"Protocol version {protocol_version} "
-                                    f"!= current {current_version}"
-                                ),
-                            }
-                            issues_found.append("outdated_protocol")
-                        else:
-                            check_results["checks"]["configuration"][
-                                "protocol_version"
-                            ] = {
-                                "status": "current",
-                                "version": protocol_version,
-                                "message": (
-                                    f"Protocol version {protocol_version} (current)"
-                                ),
-                            }
-                    except (ValueError, TypeError):
-                        check_results["checks"]["configuration"]["protocol_version"] = {
-                            "status": "invalid",
-                            "value": protocol_version,
-                            "message": (
-                                f"Invalid protocol version format: {protocol_version}"
-                            ),
-                        }
-                        issues_found.append("invalid_protocol_version")
-
-                # Check project type
-                if "project_type" not in config_data:
-                    check_results["checks"]["configuration"]["project_type"] = {
-                        "status": "missing",
-                        "message": "Project type missing",
-                    }
-                    issues_found.append("missing_project_type")
-                else:
-                    check_results["checks"]["configuration"]["project_type"] = {
-                        "status": "found",
-                        "value": config_data["project_type"],
-                        "message": f"Project type: {config_data['project_type']}",
-                    }
-
-            except yaml.YAMLError as e:
-                check_results["checks"]["configuration"]["yaml_syntax"] = {
-                    "status": "invalid",
-                    "error": str(e),
-                    "message": f"Invalid YAML syntax: {e}",
-                }
-                issues_found.append("invalid_yaml")
-            except Exception as e:
-                check_results["checks"]["configuration"]["read_error"] = {
-                    "status": "error",
-                    "error": str(e),
-                    "message": f"Error reading config: {e}",
-                }
-                issues_found.append("config_read_error")
-
-        # Check 2: Environment validation
-        check_results["checks"]["environment"]["python"] = {}
-        try:
-            result = subprocess.run(
-                ["python", "--version"], capture_output=True, text=True
-            )
-            if result.returncode == 0:
-                check_results["checks"]["environment"]["python"] = {
-                    "status": "found",
-                    "version": result.stdout.strip(),
-                    "message": f"Python: {result.stdout.strip()}",
-                }
-            else:
-                check_results["checks"]["environment"]["python"] = {
-                    "status": "missing",
-                    "message": "Python not available",
-                }
-                issues_found.append("missing_python")
-        except FileNotFoundError:
-            check_results["checks"]["environment"]["python"] = {
-                "status": "not_found",
-                "message": "Python not found in PATH",
-            }
-            issues_found.append("missing_python")
-
-        # Check vibe CLI
-        vibe_path = shutil.which("vibe")
-        if vibe_path:
-            check_results["checks"]["environment"]["vibe_cli"] = {
-                "status": "found",
-                "path": vibe_path,
-                "message": f"Vibe CLI: {vibe_path}",
-            }
-        else:
-            check_results["checks"]["environment"]["vibe_cli"] = {
-                "status": "missing",
-                "message": "Vibe CLI not in PATH",
-            }
-            issues_found.append("missing_vibe_cli")
-
-        # Check 3: GitHub AI Integration
-        github_dir = Path.cwd() / ".github"
-        if github_dir.exists():
-            check_results["checks"]["github_integration"]["github_dir"] = {
-                "status": "found",
-                "message": ".github directory found",
-            }
-
-            # Check for copilot-instructions.md
-            instructions_file = github_dir / "copilot-instructions.md"
-            if instructions_file.exists():
-                check_results["checks"]["github_integration"][
-                    "copilot_instructions"
-                ] = {
-                    "status": "found",
-                    "message": "copilot-instructions.md found",
-                }
-            else:
-                check_results["checks"]["github_integration"][
-                    "copilot_instructions"
-                ] = {
-                    "status": "missing",
-                    "message": "copilot-instructions.md not found",
-                }
-                issues_found.append("missing_copilot_instructions")
-
-            # Check for chatmodes directory
-            chatmodes_dir = github_dir / "chatmodes"
-            if chatmodes_dir.exists():
-                check_results["checks"]["github_integration"]["chatmodes_dir"] = {
-                    "status": "found",
-                    "message": ".github/chatmodes directory found",
-                }
-
-                chatmode_file = chatmodes_dir / "vibe-agent.chatmode.md"
-                if chatmode_file.exists():
-                    check_results["checks"]["github_integration"]["chatmode_file"] = {
-                        "status": "found",
-                        "message": "vibe-agent.chatmode.md found",
-                    }
-                else:
-                    check_results["checks"]["github_integration"]["chatmode_file"] = {
-                        "status": "missing",
-                        "message": "vibe-agent.chatmode.md not found",
-                    }
-                    issues_found.append("missing_chatmode_file")
-            else:
-                check_results["checks"]["github_integration"]["chatmodes_dir"] = {
-                    "status": "missing",
-                    "message": ".github/chatmodes directory not found",
-                }
-                issues_found.append("missing_chatmodes_dir")
-        else:
-            check_results["checks"]["github_integration"]["github_dir"] = {
-                "status": "missing",
-                "message": ".github directory not found",
-            }
-            issues_found.append("missing_github_dir")
-
-        # Final results
-        check_results["issues_found"] = issues_found
-        check_results["success"] = len(issues_found) == 0
-
-        print(json.dumps(check_results, indent=2))
-
-        if not check_results["success"]:
-            sys.exit(1)
-
+        # Reuse the existing validation logic with JSON output
+        check(output_json=True)
+    except SystemExit:
+        # check() may call sys.exit, but we want to handle it gracefully for MCP
+        pass
     except Exception as e:
         error_result = {
             "success": False,
