@@ -338,7 +338,18 @@ class TextQualityLinter:
         """Analyze text quality and return metrics."""
         issues = []
 
-        # Basic length check
+        # Run all quality checks
+        issues.extend(self._check_text_length(text, context))
+        issues.extend(self._check_professional_language(text))
+        issues.extend(self._check_emoji_usage(text))
+        issues.extend(self._check_text_readability(text))
+
+        return issues
+
+    def _check_text_length(self, text: str, context: str) -> list[dict[str, Any]]:
+        """Check if text length exceeds recommended limits."""
+        issues: list[dict[str, Any]] = []
+
         if (
             len(text) > self.config.max_step_message_length
             and context == "step_message"
@@ -355,71 +366,91 @@ class TextQualityLinter:
                 }
             )
 
-        # Check for unprofessional language patterns
-        if self.config.check_professional_language:
-            import re
+        return issues
 
-            for pattern_str in self.config.unprofessional_patterns:
-                pattern = re.compile(pattern_str, re.IGNORECASE)
-                matches = list(pattern.finditer(text))
-                for match in matches:
-                    issues.append(
-                        {
-                            "type": "unprofessional_language",
-                            "severity": "info",
-                            "message": f"Potentially unprofessional language: "
-                            f"'{match.group()}'",
-                            "suggestion": "Consider using more formal language",
-                        }
-                    )
+    def _check_professional_language(self, text: str) -> list[dict[str, Any]]:
+        """Check for unprofessional language patterns."""
+        issues: list[dict[str, Any]] = []
 
-        # Check for emojis
-        if self.config.check_emojis:
-            import re
+        if not self.config.check_professional_language:
+            return issues
 
-            # Use the same comprehensive emoji pattern
-            emoji_pattern = re.compile(
-                r"[\U0001F600-\U0001F64F]|"  # emoticons
-                r"[\U0001F300-\U0001F5FF]|"  # symbols & pictographs
-                r"[\U0001F680-\U0001F6FF]|"  # transport & map symbols
-                r"[\U0001F1E0-\U0001F1FF]|"  # flags (iOS)
-                r"[\U00002600-\U000027BF]|"  # miscellaneous symbols
-                r"[\U0001F900-\U0001F9FF]|"  # supplemental symbols and pictographs
-                r"[🔍📁📋👀🌐🔒📈📖✨⚡🤖🔧✅🔗🎯📦🔑🏪🔐🚀📝📚🧪⚙️🔤🧹🛠️🔄⚠️]"
-            )
-            emoji_matches = list(emoji_pattern.finditer(text))
-            for match in emoji_matches:
+        import re
+
+        for pattern_str in self.config.unprofessional_patterns:
+            pattern = re.compile(pattern_str, re.IGNORECASE)
+            matches = list(pattern.finditer(text))
+            for match in matches:
                 issues.append(
                     {
-                        "type": "emoji_usage",
-                        "severity": "warning",
-                        "message": f"Emoji '{match.group()}' found in text",
-                        "suggestion": "Consider using descriptive text instead "
-                        "of emojis for professional communication",
+                        "type": "unprofessional_language",
+                        "severity": "info",
+                        "message": f"Potentially unprofessional language: "
+                        f"'{match.group()}'",
+                        "suggestion": "Consider using more formal language",
                     }
                 )
 
-        # Enhanced analysis with TextDescriptives if available
-        if self.textdescriptives_available:
-            try:
-                doc = self.nlp(text)
+        return issues
 
-                # Extract quality metrics
-                quality_score = getattr(doc._, "quality", 0)
-                if quality_score < 0.5:  # Arbitrary threshold
-                    issues.append(
-                        {
-                            "type": "readability",
-                            "severity": "info",
-                            "message": f"Text readability score "
-                            f"({quality_score:.2f}) could be improved",
-                            "suggestion": "Consider simplifying sentence "
-                            "structure and word choice",
-                        }
-                    )
+    def _check_emoji_usage(self, text: str) -> list[dict[str, Any]]:
+        """Check for emoji usage in text."""
+        issues: list[dict[str, Any]] = []
 
-            except Exception:
-                pass  # Fallback gracefully
+        if not self.config.check_emojis:
+            return issues
+
+        import re
+
+        # Use comprehensive emoji pattern
+        emoji_pattern = re.compile(
+            r"[\U0001F600-\U0001F64F]|"  # emoticons
+            r"[\U0001F300-\U0001F5FF]|"  # symbols & pictographs
+            r"[\U0001F680-\U0001F6FF]|"  # transport & map symbols
+            r"[\U0001F1E0-\U0001F1FF]|"  # flags (iOS)
+            r"[\U00002600-\U000027BF]|"  # miscellaneous symbols
+            r"[\U0001F900-\U0001F9FF]|"  # supplemental symbols and pictographs
+            r"[🔍📁📋👀🌐🔒📈📖✨⚡🤖🔧✅🔗🎯📦🔑🏪🔐🚀📝📚🧪⚙️🔤🧹🛠️🔄⚠️]"
+        )
+        emoji_matches = list(emoji_pattern.finditer(text))
+        for match in emoji_matches:
+            issues.append(
+                {
+                    "type": "emoji_usage",
+                    "severity": "warning",
+                    "message": f"Emoji '{match.group()}' found in text",
+                    "suggestion": "Consider using descriptive text instead "
+                    "of emojis for professional communication",
+                }
+            )
+
+        return issues
+
+    def _check_text_readability(self, text: str) -> list[dict[str, Any]]:
+        """Check text readability using TextDescriptives if available."""
+        issues: list[dict[str, Any]] = []
+
+        if not self.textdescriptives_available:
+            return issues
+
+        try:
+            doc = self.nlp(text)
+
+            # Extract quality metrics
+            quality_score = getattr(doc._, "quality", 0)
+            if quality_score < 0.5:  # Arbitrary threshold
+                issues.append(
+                    {
+                        "type": "readability",
+                        "severity": "info",
+                        "message": f"Text readability score "
+                        f"({quality_score:.2f}) could be improved",
+                        "suggestion": "Consider simplifying sentence "
+                        "structure and word choice",
+                    }
+                )
+        except Exception:
+            pass  # Fallback gracefully
 
         return issues
 

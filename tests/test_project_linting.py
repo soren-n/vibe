@@ -9,7 +9,7 @@ from vibe.config import LintConfig
 from vibe.lint import LanguageLinter, NamingConventionLinter, ProjectLinter
 
 
-def test_naming_convention_linter():
+def test_naming_convention_linter() -> None:
     """Test file naming convention detection."""
     config = LintConfig()
     linter = NamingConventionLinter(config)
@@ -27,7 +27,7 @@ def test_naming_convention_linter():
     assert "snake_case" in issues[0].message
 
 
-def test_language_linter():
+def test_language_linter() -> None:
     """Test language and emoji detection."""
     config = LintConfig()
     linter = LanguageLinter(config)
@@ -50,7 +50,7 @@ def test_language_linter():
         temp_path.unlink()
 
 
-def test_project_linter_integration():
+def test_project_linter_integration() -> None:
     """Test the main ProjectLinter class."""
     linter = ProjectLinter()
 
@@ -61,14 +61,18 @@ def test_project_linter_integration():
     assert len(issues) >= 3  # Should catch multiple unprofessional words
 
     # Test length checking for step messages
-    long_text = "This is a very long step message that exceeds the recommended length for workflow steps and continues with even more unnecessary verbose text to make it longer than one hundred characters"
+    long_text = (
+        "This is a very long step message that exceeds the recommended length "
+        "for workflow steps and continues with even more unnecessary verbose "
+        "text to make it longer than one hundred characters"
+    )
     step_issues = linter.lint_text(long_text, "step_message")
 
     length_issues = [i for i in step_issues if i["type"] == "length"]
     assert len(length_issues) == 1
 
 
-def test_config_defaults():
+def test_config_defaults() -> None:
     """Test that LintConfig has sensible defaults."""
     config = LintConfig()
 
@@ -80,7 +84,7 @@ def test_config_defaults():
     assert config.max_step_message_length == 100
 
 
-def test_exclude_patterns():
+def test_exclude_patterns() -> None:
     """Test that exclude patterns work correctly."""
     config = LintConfig()
     linter = NamingConventionLinter(config)
