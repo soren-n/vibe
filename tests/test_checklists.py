@@ -68,9 +68,13 @@ def test_analyzer_with_checklists():
     assert len(results) > 0
     # Check if any results correspond to known checklists
     from vibe.guidance.loader import get_checklists
+
     all_checklists = get_checklists()
     checklist_found = any(result in all_checklists for result in results)
-    assert checklist_found or len([item for item in results if "validation" in item.lower()]) > 0
+    assert (
+        checklist_found
+        or len([item for item in results if "validation" in item.lower()]) > 0
+    )
 
     # Test with project type override for Python-specific checklist
     config.project_type = "python"
