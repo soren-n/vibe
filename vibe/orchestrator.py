@@ -1,4 +1,4 @@
-"""Workflow orchestrator that plans and provides execution guidance for workflows and checklists."""
+"""Workflow orchestrator that plans and provides execution guidance for workflows."""
 
 from typing import Any
 
@@ -13,7 +13,7 @@ from .workflows.loader import get_checklist
 
 
 class WorkflowOrchestrator:
-    """Orchestrates workflow and checklist planning and provides execution guidance for AI agents."""
+    """Orchestrates workflow and checklist planning and provides execution guidance."""
 
     def __init__(self, config: VibeConfig):
         """Initialize the workflow orchestrator with configuration."""
@@ -177,7 +177,7 @@ class WorkflowOrchestrator:
         """Generate reasoning for why this checklist is needed."""
         reasoning_map = {
             "Quality Check": "To verify code quality and project standards are met",
-            "Python Release Readiness": "To ensure the Python project is ready for release",
+            "Python Release Readiness": "To ensure Python project is ready for release",
             "Feature Development": "To ensure new features are properly implemented",
             "Bug Fix Verification": "To verify bug fixes are complete and safe",
         }
@@ -216,7 +216,7 @@ class WorkflowOrchestrator:
     def _format_guidance_text(self, execution_plan: list[dict[str, Any]]) -> str:
         """Format guidance text for AI agents."""
         if not execution_plan:
-            return "No specific workflows or checklists needed. Proceed with general project analysis."
+            return "No specific workflows needed. Proceed with general analysis."
 
         guidance_parts = [
             "Based on the request, I recommend the following execution plan:",
@@ -272,7 +272,6 @@ class WorkflowOrchestrator:
             # Determine step type and add appropriate prefix
             if step.get("source") == "checklist":
                 step_prefix = "CHECKLIST"
-                step_type = "checklist"
             else:
                 step_prefix = "WORKFLOW"
 
