@@ -39,13 +39,25 @@ def test_mcp_workflow() -> None:
     print("🧪 Testing MCP Workflow Functionality")
     print("=" * 40)
 
-    # Test 1: Start a session
+    # Run all test phases
+    session_id = _test_start_session()
+    _test_session_status(session_id)
+    has_next = _test_advance_step(session_id)
+    _test_list_sessions()
+    _test_break_workflow_if_active(session_id, has_next)
+
+    print("\n🎉 MCP workflow test completed successfully!")
+
+
+def _test_start_session() -> str:
+    """Test starting a workflow session and return session ID."""
     print("\n1. Starting workflow session...")
     result = run_vibe_mcp_command(["mcp", "start", "analyze the project structure"])
 
     if not result.get("success"):
-        print(f"❌ Failed to start session: {result.get('error')}")
-        assert False, f"Failed to start session: {result.get('error')}"
+        error_msg = f"Failed to start session: {result.get('error')}"
+        print(f"❌ {error_msg}")
+        assert False, error_msg
 
     session_id = result.get("session_id")
     if not session_id:
@@ -53,31 +65,38 @@ def test_mcp_workflow() -> None:
         assert False, "No session ID returned"
 
     current_step = result.get("current_step")
-
     print(f"✅ Session started: {session_id}")
     if current_step:
         print(f"   Current step: {current_step.get('step_text', 'N/A')}")
         print(f"   Workflow: {current_step.get('workflow', 'N/A')}")
 
-    # Test 2: Get session status
+    return session_id
+
+
+def _test_session_status(session_id: str) -> None:
+    """Test getting session status."""
     print("\n2. Getting session status...")
     result = run_vibe_mcp_command(["mcp", "status", session_id])
 
     if not result.get("success"):
-        print(f"❌ Failed to get status: {result.get('error')}")
-        assert False, f"Failed to get status: {result.get('error')}"
+        error_msg = f"Failed to get status: {result.get('error')}"
+        print(f"❌ {error_msg}")
+        assert False, error_msg
 
     print("✅ Session status retrieved")
     print(f"   Prompt: {result.get('prompt', 'N/A')}")
     print(f"   Complete: {result.get('is_complete', False)}")
 
-    # Test 3: Advance to next step
+
+def _test_advance_step(session_id: str) -> bool:
+    """Test advancing to next step and return whether there are more steps."""
     print("\n3. Advancing to next step...")
     result = run_vibe_mcp_command(["mcp", "next", session_id])
 
     if not result.get("success"):
-        print(f"❌ Failed to advance: {result.get('error')}")
-        assert False, f"Failed to advance: {result.get('error')}"
+        error_msg = f"Failed to advance: {result.get('error')}"
+        print(f"❌ {error_msg}")
+        assert False, error_msg
 
     has_next = result.get("has_next", False)
     current_step = result.get("current_step")
@@ -87,13 +106,18 @@ def test_mcp_workflow() -> None:
     if current_step:
         print(f"   New step: {current_step.get('step_text', 'N/A')}")
 
-    # Test 4: List sessions
+    return has_next
+
+
+def _test_list_sessions() -> None:
+    """Test listing active sessions."""
     print("\n4. Listing active sessions...")
     result = run_vibe_mcp_command(["mcp", "list"])
 
     if not result.get("success"):
-        print(f"❌ Failed to list sessions: {result.get('error')}")
-        assert False, f"Failed to list sessions: {result.get('error')}"
+        error_msg = f"Failed to list sessions: {result.get('error')}"
+        print(f"❌ {error_msg}")
+        assert False, error_msg
 
     sessions = result.get("sessions", [])
     print(f"✅ Found {len(sessions)} active sessions")
@@ -103,18 +127,20 @@ def test_mcp_workflow() -> None:
             f"   - {session.get('session_id')}: {session.get('prompt', 'N/A')[:50]}..."
         )
 
-    # Test 5: Break out of workflow (if still active)
-    if has_next:
-        print("\n5. Breaking out of workflow...")
-        result = run_vibe_mcp_command(["mcp", "break", session_id])
 
-        if result.get("success"):
-            print("✅ Successfully broke out of workflow")
-            print(f"   Message: {result.get('message', 'N/A')}")
-        else:
-            print(f"⚠️  Break command result: {result.get('error', 'Unknown')}")
+def _test_break_workflow_if_active(session_id: str, has_next: bool) -> None:
+    """Test breaking out of workflow if it's still active."""
+    if not has_next:
+        return
 
-    print("\n🎉 MCP workflow test completed successfully!")
+    print("\n5. Breaking out of workflow...")
+    result = run_vibe_mcp_command(["mcp", "break", session_id])
+
+    if result.get("success"):
+        print("✅ Successfully broke out of workflow")
+        print(f"   Message: {result.get('message', 'N/A')}")
+    else:
+        print(f"⚠️  Break command result: {result.get('error', 'Unknown')}")
 
 
 if __name__ == "__main__":

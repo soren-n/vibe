@@ -58,7 +58,7 @@ else:
 
 
 class WorkflowLoader:
-    """Loads workflows and checklists from YAML files with dynamic discovery and caching."""
+    """Loads workflows and checklists from YAML files with dynamic discovery."""
 
     def __init__(self, *, enable_validation: bool = True) -> None:
         self.data_dir = Path(__file__).parent / "data"
@@ -119,44 +119,105 @@ class WorkflowLoader:
         if not force_reload and self._is_cache_valid():
             return self._workflow_cache
 
+        # Load all workflow data
+        workflows, checklists, timestamps = self._load_all_workflow_data()
+
+        # Update caches
+        self._update_caches(workflows, checklists, timestamps)
+
+        return workflows
+
+    def _load_all_workflow_data(
+        self,
+    ) -> tuple[dict[str, Workflow], dict[str, Any], dict[Path, float]]:
+        """Load all workflow and checklist data from YAML files."""
         workflows = {}
         checklists = {}
-        new_timestamps = {}
+        timestamps = {}
 
-        # Load YAML workflows from data directory (excluding checklists directory)
-        if self.data_dir.exists():
-            for yaml_file in self.data_dir.rglob("*.yaml"):
-                # Skip checklist files
-                if (
-                    self.checklists_dir.exists()
-                    and self.checklists_dir in yaml_file.parents
-                ):
-                    continue
+        # Load workflows from data directory
+        workflow_data = self._load_workflows_from_data_dir()
+        workflows.update(workflow_data["workflows"])
+        timestamps.update(workflow_data["timestamps"])
 
-                try:
-                    workflow = self._load_workflow_from_yaml(yaml_file)
-                    if workflow:
-                        workflows[workflow.name] = workflow
-                        new_timestamps[yaml_file] = self._get_file_timestamp(yaml_file)
-                except Exception as e:
-                    print(f"Warning: Failed to load workflow from {yaml_file}: {e}")
+        # Load checklists from checklists directory
+        checklist_data = self._load_checklists_from_dir()
+        checklists.update(checklist_data["checklists"])
+        timestamps.update(checklist_data["timestamps"])
 
-        # Load YAML checklists from checklists directory
-        if self.checklists_dir.exists():
-            for yaml_file in self.checklists_dir.rglob("*.yaml"):
-                try:
-                    checklist = self._load_checklist_from_yaml(yaml_file)
-                    if checklist:
-                        checklists[checklist.name] = checklist
-                        new_timestamps[yaml_file] = self._get_file_timestamp(yaml_file)
-                except Exception as e:
-                    print(f"Warning: Failed to load checklist from {yaml_file}: {e}")
+        return workflows, checklists, timestamps
 
+    def _load_workflows_from_data_dir(self) -> dict[str, Any]:
+        """Load workflows from the data directory, excluding checklists."""
+        workflows: dict[str, Workflow] = {}
+        timestamps: dict[Path, float] = {}
+
+        if not self.data_dir.exists():
+            return {"workflows": workflows, "timestamps": timestamps}
+
+        for yaml_file in self.data_dir.rglob("*.yaml"):
+            # Skip checklist files
+            if self._is_checklist_file(yaml_file):
+                continue
+
+            workflow, timestamp = self._load_single_workflow(yaml_file)
+            if workflow:
+                workflows[workflow.name] = workflow
+                timestamps[yaml_file] = timestamp
+
+        return {"workflows": workflows, "timestamps": timestamps}
+
+    def _load_checklists_from_dir(self) -> dict[str, Any]:
+        """Load checklists from the checklists directory."""
+        checklists: dict[str, Any] = {}
+        timestamps: dict[Path, float] = {}
+
+        if not self.checklists_dir.exists():
+            return {"checklists": checklists, "timestamps": timestamps}
+
+        for yaml_file in self.checklists_dir.rglob("*.yaml"):
+            checklist, timestamp = self._load_single_checklist(yaml_file)
+            if checklist:
+                checklists[checklist.name] = checklist
+                timestamps[yaml_file] = timestamp
+
+        return {"checklists": checklists, "timestamps": timestamps}
+
+    def _is_checklist_file(self, yaml_file: Path) -> bool:
+        """Check if a YAML file is in the checklists directory."""
+        return self.checklists_dir.exists() and self.checklists_dir in yaml_file.parents
+
+    def _load_single_workflow(self, yaml_file: Path) -> tuple[Workflow | None, float]:
+        """Load a single workflow from YAML file with error handling."""
+        try:
+            workflow = self._load_workflow_from_yaml(yaml_file)
+            timestamp = self._get_file_timestamp(yaml_file) if workflow else 0.0
+            return workflow, timestamp
+        except Exception as e:
+            print(f"Warning: Failed to load workflow from {yaml_file}: {e}")
+            return None, 0.0
+
+    def _load_single_checklist(self, yaml_file: Path) -> tuple[Any | None, float]:
+        """Load a single checklist from YAML file with error handling."""
+        try:
+            checklist = self._load_checklist_from_yaml(yaml_file)
+            timestamp = self._get_file_timestamp(yaml_file) if checklist else 0.0
+            return checklist, timestamp
+        except Exception as e:
+            print(f"Warning: Failed to load checklist from {yaml_file}: {e}")
+            return None, 0.0
+
+    def _update_caches(
+        self,
+        workflows: dict[str, Workflow],
+        checklists: dict[str, Any],
+        timestamps: dict[Path, float],
+    ) -> None:
+        """Update all internal caches with loaded data."""
         self._workflow_cache = workflows
         self._checklist_cache = checklists
-        self._file_timestamps = new_timestamps
+        self._file_timestamps = timestamps
         self._loaded = True
-        return workflows
 
     def _load_workflow_from_yaml(self, yaml_file: Path) -> Workflow | None:
         """Load a single workflow from a YAML file with schema validation."""
@@ -203,7 +264,8 @@ class WorkflowLoader:
         # Could create separate validation if needed
         if self.enable_validation:
             try:
-                # For checklists, validate the basic structure (name, description, triggers)
+                # For checklists, validate the basic structure
+                # (name, description, triggers)
                 # Items are similar to steps, so workflow validation works
                 checklist_data = data.copy()
                 # Map 'items' to 'steps' for validation
