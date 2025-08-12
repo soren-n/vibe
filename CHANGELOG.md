@@ -1,3 +1,26 @@
+## [0.6.0](https://github.com/soren-n/vibe/compare/v0.5.1...v0.6.0) (2025-08-12)
+
+### Features
+
+* Add comprehensive CLI lint tests for major coverage improvement ([9c9b5eb](https://github.com/soren-n/vibe/commit/9c9b5eba865742f45d75b7fa0e38de6fc6a06a05))
+* Add comprehensive CLI tests for improved coverage ([a257203](https://github.com/soren-n/vibe/commit/a257203c0f07ed7611308d9f1d1e46d72b9f22a3))
+* Add comprehensive CLI validation tests ([4f1ca1b](https://github.com/soren-n/vibe/commit/4f1ca1b00b8b05fd0e76db82b4a122ca2e7f8d31))
+* Add comprehensive project linting system ([2a65721](https://github.com/soren-n/vibe/commit/2a65721145d7b8d9698fae4261329ec1d10ba8bc))
+* complete workflow refactoring with checklist system ([829c27a](https://github.com/soren-n/vibe/commit/829c27a541e9bc9e87398678b01ec6ab05011578))
+* implement comprehensive session monitoring and workflow management system ([5d4bd8a](https://github.com/soren-n/vibe/commit/5d4bd8a8afc02f8b249b0931f43731dee53d70d9))
+* repository cleanup and restructuring complete ([3a5e3a3](https://github.com/soren-n/vibe/commit/3a5e3a33656ebbd9f5811be35a791fe74e6adfd1))
+
+### Bug Fixes
+
+* auto-format after type annotation changes ([0c59c94](https://github.com/soren-n/vibe/commit/0c59c941cc2f9b73a9287db817297e0f2185044c))
+* auto-format type annotations after ruff formatting ([885ae90](https://github.com/soren-n/vibe/commit/885ae9023acc1305ed0758f8b909b22dfbe6660a))
+* Code quality improvements in orchestrator ([fe96b4d](https://github.com/soren-n/vibe/commit/fe96b4de6b79753d51630db912d85dbdef7e5f97))
+* correct workflow validation import path in release pipeline ([1eb2cbe](https://github.com/soren-n/vibe/commit/1eb2cbe5e302305ef9e21449ca4478ba51c6220f))
+* resolve linting issues and test environment for release pipeline ([c920f22](https://github.com/soren-n/vibe/commit/c920f221cc7f1e12bbf21b7b9bc5ae930dacf015))
+* resolve mypy type checking errors for release pipeline ([5cc42ee](https://github.com/soren-n/vibe/commit/5cc42eed9fb81f4a7f63ffb219318ce086ddedb4))
+* resolve test failures for release pipeline ([e900a27](https://github.com/soren-n/vibe/commit/e900a27c8436a85ce4a5392083f960cb34e97484))
+* update test expectations after restructuring ([8d2f888](https://github.com/soren-n/vibe/commit/8d2f888aa5931ee46d155e93f7c1dadea89559a4))
+
 ## [0.5.1](https://github.com/soren-n/vibe/compare/v0.5.0...v0.5.1) (2025-08-11)
 
 ### Bug Fixes

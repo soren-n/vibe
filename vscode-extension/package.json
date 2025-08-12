@@ -2,7 +2,7 @@
   "name": "vibe-workflows",
   "displayName": "Vibe Workflows",
   "description": "Workflow orchestration for development tasks",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "soren-n",
   "icon": "images/vibe-icon.png",
   "repository": {
