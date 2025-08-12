@@ -80,7 +80,7 @@ jobs:
     - name: Validate workflows
       run: |
         uv run python -c "
-        from vibe.workflows.loader import WorkflowLoader
+        from vibe.guidance.loader import WorkflowLoader
         loader = WorkflowLoader()
         workflows = loader.load_workflows()
         print(f'✅ Successfully loaded {len(workflows)} workflows')
