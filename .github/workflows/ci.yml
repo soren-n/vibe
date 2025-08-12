@@ -31,12 +31,14 @@ jobs:
       - name: Run linting
         run: npm run lint
 
+      - name: Build project
+        run: npm run build
+
       - name: Run tests
         run: npm test
 
       - name: Test Vibe CLI functionality
         run: |
-          npm run build
           node dist/cli.js --help
 
   mcp-server-tests:
