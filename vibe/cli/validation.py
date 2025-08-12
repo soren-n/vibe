@@ -53,7 +53,6 @@ def check(output_json: bool = False) -> None:
     - .vibe.yaml configuration validity and protocol version
     - Workflow dependencies and tool availability
     """
-    # Collect results for JSON output
     check_results: dict[str, Any] = {
         "success": True,
         "issues_found": [],
@@ -72,316 +71,407 @@ def check(output_json: bool = False) -> None:
 
     issues_found: list[str] = []
 
-    # Check 1: Configuration file validation
+    # Run all validation checks
+    _check_configuration(issues_found, check_results, output_json)
+    _check_environment(issues_found, output_json)
+    _check_workflow_tools(issues_found, output_json)
+    _check_github_integration(issues_found, output_json)
+
+    # Display summary and output results
+    _display_summary(issues_found, output_json)
+
+    if output_json:
+        check_results["issues_found"] = issues_found
+        check_results["success"] = len(issues_found) == 0
+        import json
+
+        print(json.dumps(check_results, indent=2))
+
+
+def _check_configuration(
+    issues_found: list[str], check_results: dict[str, Any], output_json: bool
+) -> None:
+    """Check .vibe.yaml configuration file and content."""
     if not output_json:
         console.print("[bold]📁 Configuration Status:[/bold]")
+
     vibe_config_path = Path.cwd() / ".vibe.yaml"
 
     if not vibe_config_path.exists():
         if not output_json:
             console.print("❌ .vibe.yaml not found")
+            console.print(
+                "   💡 [dim]Create .vibe.yaml with: "
+                'protocol_version: 1 and project_type: "auto"[/dim]'
+            )
         check_results["checks"]["configuration"]["config_file"] = {
             "status": "missing",
             "message": ".vibe.yaml not found",
         }
         issues_found.append("missing_config")
+        return
+
+    if not output_json:
+        console.print("✅ .vibe.yaml found")
+    check_results["checks"]["configuration"]["config_file"] = {
+        "status": "found",
+        "message": ".vibe.yaml found",
+    }
+
+    # Validate config content
+    try:
+        with open(vibe_config_path) as f:
+            config_data = yaml.safe_load(f) or {}
+
+        _validate_protocol_version(config_data, issues_found, output_json)
+        _validate_project_type(config_data, issues_found, output_json)
+
+    except yaml.YAMLError as e:
         if not output_json:
+            console.print(f"❌ Invalid YAML syntax: {e}")
+        issues_found.append("invalid_yaml")
+    except Exception as e:
+        if not output_json:
+            console.print(f"❌ Error reading config: {e}")
+        issues_found.append("config_read_error")
+
+    if not output_json:
+        console.print()
+
+
+def _validate_protocol_version(
+    config_data: dict[str, Any], issues_found: list[str], output_json: bool
+) -> None:
+    """Validate protocol version in config."""
+    protocol_version = config_data.get("protocol_version")
+    current_version = 1  # Current supported version (integer)
+
+    if not protocol_version:
+        if not output_json:
+            console.print("⚠️  Protocol version missing")
+            console.print("   💡 [dim]Add 'protocol_version: 1' to .vibe.yaml[/dim]")
+        issues_found.append("missing_protocol_version")
+        return
+
+    # Normalize protocol version to integer
+    try:
+        if isinstance(protocol_version, str):
+            normalized_version = int(float(protocol_version))
+        else:
+            normalized_version = int(protocol_version)
+
+        if normalized_version != current_version:
+            if not output_json:
+                console.print(
+                    f"⚠️  Protocol version {protocol_version} "
+                    f"!= current {current_version}"
+                )
+                migration_guide = _get_migration_guide(
+                    normalized_version, current_version
+                )
+                console.print(f"   💡 [dim]{migration_guide}[/dim]")
+            issues_found.append("outdated_protocol")
+        else:
+            if not output_json:
+                console.print(f"✅ Protocol version {protocol_version} (current)")
+    except (ValueError, TypeError):
+        if not output_json:
+            console.print(f"⚠️  Invalid protocol version format: {protocol_version}")
+            console.print("   💡 [dim]Use integer format: protocol_version: 1[/dim]")
+        issues_found.append("invalid_protocol_version")
+
+
+def _validate_project_type(
+    config_data: dict[str, Any], issues_found: list[str], output_json: bool
+) -> None:
+    """Validate project type in config."""
+    if "project_type" not in config_data:
+        if not output_json:
+            console.print("⚠️  Project type missing")
             console.print(
-                "   💡 [dim]Create .vibe.yaml with: "
-                'protocol_version: 1 and project_type: "auto"[/dim]'
+                "   💡 [dim]Add 'project_type: \"auto\"' "
+                "or specific type to .vibe.yaml[/dim]"
             )
+        issues_found.append("missing_project_type")
     else:
         if not output_json:
-            console.print("✅ .vibe.yaml found")
-        check_results["checks"]["configuration"]["config_file"] = {
-            "status": "found",
-            "message": ".vibe.yaml found",
-        }
+            console.print(f"✅ Project type: {config_data['project_type']}")
 
-        # Validate config content
-        try:
-            with open(vibe_config_path) as f:
-                config_data = yaml.safe_load(f) or {}
 
-            # Check protocol version
-            protocol_version = config_data.get("protocol_version")
-            current_version = 1  # Current supported version (integer)
+def _check_environment(issues_found: list[str], output_json: bool) -> None:
+    """Check basic environment tools like Python and Vibe CLI."""
+    if not output_json:
+        console.print("[bold]🔧 Environment Compatibility:[/bold]")
 
-            if not protocol_version:
-                console.print("⚠️  Protocol version missing")
-                issues_found.append("missing_protocol_version")
-                console.print(
-                    "   💡 [dim]Add 'protocol_version: 1' to .vibe.yaml[/dim]"
-                )
-            else:
-                # Normalize protocol version to integer
-                try:
-                    if isinstance(protocol_version, str):
-                        # Handle string versions like "1.0" -> 1
-                        normalized_version = int(float(protocol_version))
-                    else:
-                        normalized_version = int(protocol_version)
+    _check_python(issues_found, output_json)
+    _check_vibe_cli(issues_found, output_json)
 
-                    if normalized_version != current_version:
-                        console.print(
-                            f"⚠️  Protocol version {protocol_version} "
-                            f"!= current {current_version}"
-                        )
-                        issues_found.append("outdated_protocol")
+    if not output_json:
+        console.print()
 
-                        # Provide version-specific migration guidance
-                        migration_guide = _get_migration_guide(
-                            normalized_version, current_version
-                        )
-                        console.print(f"   💡 [dim]{migration_guide}[/dim]")
-                    else:
-                        console.print(
-                            f"✅ Protocol version {protocol_version} (current)"
-                        )
-                except (ValueError, TypeError):
-                    console.print(
-                        f"⚠️  Invalid protocol version format: {protocol_version}"
-                    )
-                    issues_found.append("invalid_protocol_version")
-                    console.print(
-                        "   💡 [dim]Use integer format: protocol_version: 1[/dim]"
-                    )
 
-            # Check project type
-            if "project_type" not in config_data:
-                console.print("⚠️  Project type missing")
-                issues_found.append("missing_project_type")
-                console.print(
-                    "   💡 [dim]Add 'project_type: \"auto\"' "
-                    "or specific type to .vibe.yaml[/dim]"
-                )
-            else:
-                console.print(f"✅ Project type: {config_data['project_type']}")
-
-        except yaml.YAMLError as e:
-            console.print(f"❌ Invalid YAML syntax: {e}")
-            issues_found.append("invalid_yaml")
-        except Exception as e:
-            console.print(f"❌ Error reading config: {e}")
-            issues_found.append("config_read_error")
-
-    console.print()
-
-    # Check 2: Environment validation
-    console.print("[bold]🔧 Environment Compatibility:[/bold]")
-
-    # Check Python
+def _check_python(issues_found: list[str], output_json: bool) -> None:
+    """Check Python installation and availability."""
     try:
         result = subprocess.run(["python", "--version"], capture_output=True, text=True)
         if result.returncode == 0:
-            console.print(f"✅ Python: {result.stdout.strip()}")
+            if not output_json:
+                console.print(f"✅ Python: {result.stdout.strip()}")
         else:
-            console.print("❌ Python not available")
+            if not output_json:
+                console.print("❌ Python not available")
+                console.print("   💡 [dim]Install Python 3.13+ from python.org[/dim]")
             issues_found.append("missing_python")
-            console.print("   💡 [dim]Install Python 3.13+ from python.org[/dim]")
     except FileNotFoundError:
-        console.print("❌ Python not found in PATH")
+        if not output_json:
+            console.print("❌ Python not found in PATH")
+            console.print("   💡 [dim]Install Python 3.13+ and add to PATH[/dim]")
         issues_found.append("missing_python")
-        console.print("   💡 [dim]Install Python 3.13+ and add to PATH[/dim]")
 
-    # Check vibe CLI
+
+def _check_vibe_cli(issues_found: list[str], output_json: bool) -> None:
+    """Check Vibe CLI installation and availability."""
     vibe_path = shutil.which("vibe")
     if vibe_path:
-        console.print(f"✅ Vibe CLI: {vibe_path}")
+        if not output_json:
+            console.print(f"✅ Vibe CLI: {vibe_path}")
     else:
-        console.print("❌ Vibe CLI not in PATH")
+        if not output_json:
+            console.print("❌ Vibe CLI not in PATH")
+            console.print("   💡 [dim]Install vibe package: pip install vibe[/dim]")
         issues_found.append("missing_vibe_cli")
-        console.print("   💡 [dim]Install vibe package: pip install vibe[/dim]")
 
-    console.print()
 
-    # Check 3: Workflow-specific tool validation
-    console.print("[bold]🛠️  Workflow Tool Dependencies:[/bold]")
+def _check_workflow_tools(issues_found: list[str], output_json: bool) -> None:
+    """Check workflow-specific tool dependencies."""
+    if not output_json:
+        console.print("[bold]🛠️  Workflow Tool Dependencies:[/bold]")
 
-    # Load configuration to get available workflows
     try:
         config = VibeConfig.load_from_file()
         project_type = config.detect_project_type()
 
-        # Collect all unique commands from workflow steps
-        workflow_commands = set()
-
-        # Get built-in workflows
-        for workflow_name, workflow in config.workflows.items():
-            for step in workflow.steps:
-                # Extract tool commands from workflow steps
-                # (first word of each step if it's a command)
-                if step and not step.strip().startswith("echo"):
-                    # Handle complex commands like "python -m pytest"
-                    step_parts = step.strip().split()
-                    if step_parts:
-                        base_cmd = step_parts[0]
-                        # Handle special cases
-                        if (
-                            base_cmd == "python"
-                            and len(step_parts) > 2
-                            and step_parts[1] == "-m"
-                        ):
-                            workflow_commands.add(
-                                step_parts[2]
-                            )  # e.g., pytest from "python -m pytest"
-                        elif base_cmd not in [
-                            "if",
-                            "grep",
-                            "find",
-                            "ls",
-                            "echo",
-                            "which",
-                        ]:
-                            workflow_commands.add(base_cmd)
-
-        # Get project-specific workflows
-        project_config = config.project_types.get(project_type)
-        if project_config:
-            for workflow_name, workflow in project_config.workflows.items():
-                for step in workflow.steps:
-                    if step and not step.strip().startswith("echo"):
-                        step_parts = step.strip().split()
-                        if step_parts:
-                            base_cmd = step_parts[0]
-                            if (
-                                base_cmd == "python"
-                                and len(step_parts) > 2
-                                and step_parts[1] == "-m"
-                            ):
-                                workflow_commands.add(step_parts[2])
-                            elif base_cmd not in [
-                                "if",
-                                "grep",
-                                "find",
-                                "ls",
-                                "echo",
-                                "which",
-                            ]:
-                                workflow_commands.add(base_cmd)
-
-        # Common tools to always check
-        standard_tools = [
-            ("git", "Git version control", "Install Git from git-scm.com"),
-            ("python", "Python runtime", "Install Python 3.13+ from python.org"),
-        ]
-
-        # Project-specific tools based on detected type
-        project_specific_tools = {
-            "python": [
-                ("pytest", "Python testing framework", "Install: pip install pytest"),
-                ("ruff", "Python linter/formatter", "Install: pip install ruff"),
-                ("black", "Python code formatter", "Install: pip install black"),
-                ("mypy", "Python type checker", "Install: pip install mypy"),
-            ],
-            "vue_typescript": [
-                ("node", "Node.js runtime", "Install Node.js from nodejs.org"),
-                ("npm", "Node package manager", "Install Node.js (includes npm)"),
-                (
-                    "bun",
-                    "Bun package manager",
-                    "Install: curl -fsSL https://bun.sh/install | bash",
-                ),
-                ("vue", "Vue CLI", "Install: npm install -g @vue/cli"),
-                ("tsc", "TypeScript compiler", "Install: npm install -g typescript"),
-            ],
-            "generic": [
-                ("node", "Node.js runtime", "Install Node.js from nodejs.org"),
-                ("npm", "Node package manager", "Install Node.js (includes npm)"),
-            ],
-        }
-
-        # Combine standard tools with project-specific ones
-        tools_to_check = standard_tools[:]
-        if project_type in project_specific_tools:
-            tools_to_check.extend(project_specific_tools[project_type])
-
-        # Add workflow-detected commands
-        for cmd in sorted(workflow_commands):
-            if cmd not in [tool[0] for tool in tools_to_check]:
-                tools_to_check.append(
-                    (cmd, f"{cmd} command", f"Install {cmd} as required by workflows")
-                )
+        # Get tools to check
+        workflow_commands = _extract_workflow_commands(config, project_type)
+        tools_to_check = _get_tools_to_check(project_type, workflow_commands)
 
         # Check each tool
-        for tool, description, install_guide in tools_to_check:
-            tool_path = shutil.which(tool)
-            if tool_path:
-                try:
-                    result = subprocess.run(
-                        [tool, "--version"], capture_output=True, text=True, timeout=5
-                    )
-                    if result.returncode == 0 and result.stdout:
-                        version_info = result.stdout.strip().split("\n")[0]
-                        console.print(f"✅ {description}: {version_info}")
-                    else:
-                        console.print(f"✅ {description}: available")
-                except Exception:
-                    console.print(f"✅ {description}: available")
-            else:
-                console.print(f"⚠️  {description}: not found")
-                console.print(f"   💡 [dim]{install_guide}[/dim]")
-                if tool in ["python", "git"]:  # Critical tools
-                    issues_found.append(f"missing_{tool}")
+        _validate_tools(tools_to_check, issues_found, output_json)
 
     except Exception as e:
-        console.print(f"⚠️  Could not validate workflow tools: {e}")
-        console.print("   💡 [dim]Ensure .vibe.yaml is valid and accessible[/dim]")
+        if not output_json:
+            console.print(f"⚠️  Could not validate workflow tools: {e}")
+            console.print("   💡 [dim]Ensure .vibe.yaml is valid and accessible[/dim]")
 
-    console.print()
+    if not output_json:
+        console.print()
 
-    # Check 4: GitHub AI Integration (if applicable)
-    console.print("[bold]🤖 GitHub AI Integration:[/bold]")
+
+def _extract_workflow_commands(config: VibeConfig, project_type: str) -> set[str]:
+    """Extract unique commands from workflow steps."""
+    workflow_commands: set[str] = set()
+
+    # Get built-in workflows
+    for workflow in config.workflows.values():
+        for step in workflow.steps:
+            _extract_command_from_step(step, workflow_commands)
+
+    # Get project-specific workflows
+    project_config = config.project_types.get(project_type)
+    if project_config:
+        for workflow in project_config.workflows.values():
+            for step in workflow.steps:
+                _extract_command_from_step(step, workflow_commands)
+
+    return workflow_commands
+
+
+def _extract_command_from_step(step: str, workflow_commands: set[str]) -> None:
+    """Extract command from a workflow step."""
+    if not step or step.strip().startswith("echo"):
+        return
+
+    step_parts = step.strip().split()
+    if not step_parts:
+        return
+
+    base_cmd = step_parts[0]
+
+    # Handle special cases
+    if base_cmd == "python" and len(step_parts) > 2 and step_parts[1] == "-m":
+        workflow_commands.add(step_parts[2])  # e.g., pytest from "python -m pytest"
+    elif base_cmd not in ["if", "grep", "find", "ls", "echo", "which"]:
+        workflow_commands.add(base_cmd)
+
+
+def _get_tools_to_check(
+    project_type: str, workflow_commands: set[str]
+) -> list[tuple[str, str, str]]:
+    """Get list of tools to check based on project type and workflow commands."""
+    # Common tools to always check
+    standard_tools = [
+        ("git", "Git version control", "Install Git from git-scm.com"),
+        ("python", "Python runtime", "Install Python 3.13+ from python.org"),
+    ]
+
+    # Project-specific tools based on detected type
+    project_specific_tools = {
+        "python": [
+            ("pytest", "Python testing framework", "Install: pip install pytest"),
+            ("ruff", "Python linter/formatter", "Install: pip install ruff"),
+            ("black", "Python code formatter", "Install: pip install black"),
+            ("mypy", "Python type checker", "Install: pip install mypy"),
+        ],
+        "vue_typescript": [
+            ("node", "Node.js runtime", "Install Node.js from nodejs.org"),
+            ("npm", "Node package manager", "Install Node.js (includes npm)"),
+            (
+                "bun",
+                "Bun package manager",
+                "Install: curl -fsSL https://bun.sh/install | bash",
+            ),
+            ("vue", "Vue CLI", "Install: npm install -g @vue/cli"),
+            ("tsc", "TypeScript compiler", "Install: npm install -g typescript"),
+        ],
+        "generic": [
+            ("node", "Node.js runtime", "Install Node.js from nodejs.org"),
+            ("npm", "Node package manager", "Install Node.js (includes npm)"),
+        ],
+    }
+
+    # Combine standard tools with project-specific ones
+    tools_to_check = standard_tools[:]
+    if project_type in project_specific_tools:
+        tools_to_check.extend(project_specific_tools[project_type])
+
+    # Add workflow-detected commands
+    for cmd in sorted(workflow_commands):
+        if cmd not in [tool[0] for tool in tools_to_check]:
+            tools_to_check.append(
+                (cmd, f"{cmd} command", f"Install {cmd} as required by workflows")
+            )
+
+    return tools_to_check
+
+
+def _validate_tools(
+    tools_to_check: list[tuple[str, str, str]],
+    issues_found: list[str],
+    output_json: bool,
+) -> None:
+    """Validate that required tools are available."""
+    for tool, description, install_guide in tools_to_check:
+        tool_path = shutil.which(tool)
+        if tool_path:
+            try:
+                result = subprocess.run(
+                    [tool, "--version"], capture_output=True, text=True, timeout=5
+                )
+                if result.returncode == 0 and result.stdout:
+                    version_info = result.stdout.strip().split("\n")[0]
+                    if not output_json:
+                        console.print(f"✅ {description}: {version_info}")
+                else:
+                    if not output_json:
+                        console.print(f"✅ {description}: available")
+            except Exception:
+                if not output_json:
+                    console.print(f"✅ {description}: available")
+        else:
+            if not output_json:
+                console.print(f"⚠️  {description}: not found")
+                console.print(f"   💡 [dim]{install_guide}[/dim]")
+            if tool in ["python", "git"]:  # Critical tools
+                issues_found.append(f"missing_{tool}")
+
+
+def _check_github_integration(issues_found: list[str], output_json: bool) -> None:
+    """Check GitHub AI integration files and directories."""
+    if not output_json:
+        console.print("[bold]🤖 GitHub AI Integration:[/bold]")
 
     github_dir = Path.cwd() / ".github"
-    if github_dir.exists():
+    if not github_dir.exists():
+        _handle_missing_github_dir(issues_found, output_json)
+        return
+
+    if not output_json:
         console.print("✅ .github directory found")
 
-        # Check for copilot-instructions.md
-        instructions_file = github_dir / "copilot-instructions.md"
-        if instructions_file.exists():
-            console.print("✅ copilot-instructions.md found")
-        else:
-            console.print("⚠️  copilot-instructions.md not found")
-            issues_found.append("missing_copilot_instructions")
-            console.print(
-                "   💡 [dim]Create copilot-instructions.md in .github/ "
-                "for AI agent guidance[/dim]"
-            )
+    _check_copilot_instructions(github_dir, issues_found, output_json)
+    _check_chatmodes(github_dir, issues_found, output_json)
 
-        # Check for chatmodes directory and vibe-agent.chatmode.md
-        chatmodes_dir = github_dir / "chatmodes"
-        if chatmodes_dir.exists():
-            console.print("✅ .github/chatmodes directory found")
+    if not output_json:
+        console.print()
 
-            chatmode_file = chatmodes_dir / "vibe-agent.chatmode.md"
-            if chatmode_file.exists():
-                console.print("✅ vibe-agent.chatmode.md found")
-            else:
-                console.print("⚠️  vibe-agent.chatmode.md not found")
-                issues_found.append("missing_chatmode_file")
-                console.print(
-                    "   💡 [dim]Create vibe-agent.chatmode.md in "
-                    ".github/chatmodes/ for VS Code chat mode[/dim]"
-                )
-        else:
-            console.print("⚠️  .github/chatmodes directory not found")
-            issues_found.append("missing_chatmodes_dir")
-            console.print(
-                "   💡 [dim]Create .github/chatmodes/ directory "
-                "and vibe-agent.chatmode.md[/dim]"
-            )
-    else:
+
+def _handle_missing_github_dir(issues_found: list[str], output_json: bool) -> None:
+    """Handle case when .github directory is missing."""
+    if not output_json:
         console.print("⚠️  .github directory not found")
-        issues_found.append("missing_github_dir")
         console.print(
             "   💡 [dim]Create .github directory with "
             "copilot-instructions.md and chatmodes/[/dim]"
         )
+        console.print()
+    issues_found.append("missing_github_dir")
 
-    console.print()
 
-    # Summary
+def _check_copilot_instructions(
+    github_dir: Path, issues_found: list[str], output_json: bool
+) -> None:
+    """Check for copilot-instructions.md file."""
+    instructions_file = github_dir / "copilot-instructions.md"
+    if instructions_file.exists():
+        if not output_json:
+            console.print("✅ copilot-instructions.md found")
+    else:
+        if not output_json:
+            console.print("⚠️  copilot-instructions.md not found")
+            console.print(
+                "   💡 [dim]Create copilot-instructions.md in .github/ "
+                "for AI agent guidance[/dim]"
+            )
+        issues_found.append("missing_copilot_instructions")
+
+
+def _check_chatmodes(
+    github_dir: Path, issues_found: list[str], output_json: bool
+) -> None:
+    """Check for chatmodes directory and vibe-agent.chatmode.md file."""
+    chatmodes_dir = github_dir / "chatmodes"
+    if not chatmodes_dir.exists():
+        if not output_json:
+            console.print("⚠️  .github/chatmodes directory not found")
+            console.print(
+                "   💡 [dim]Create .github/chatmodes/ directory "
+                "and vibe-agent.chatmode.md[/dim]"
+            )
+        issues_found.append("missing_chatmodes_dir")
+        return
+
+    if not output_json:
+        console.print("✅ .github/chatmodes directory found")
+
+    chatmode_file = chatmodes_dir / "vibe-agent.chatmode.md"
+    if chatmode_file.exists():
+        if not output_json:
+            console.print("✅ vibe-agent.chatmode.md found")
+    else:
+        if not output_json:
+            console.print("⚠️  vibe-agent.chatmode.md not found")
+            console.print(
+                "   💡 [dim]Create vibe-agent.chatmode.md in "
+                ".github/chatmodes/ for VS Code chat mode[/dim]"
+            )
+        issues_found.append("missing_chatmode_file")
+
+
+def _display_summary(issues_found: list[str], output_json: bool) -> None:
+    """Display summary of validation results."""
+    if output_json:
+        return
+
     if issues_found:
         console.print(
             f"[yellow]⚠️  Found {len(issues_found)} issue(s) that may affect "
@@ -390,61 +480,9 @@ def check(output_json: bool = False) -> None:
         console.print()
         console.print("[bold]🔧 Quick Fix Commands:[/bold]")
 
-        if "missing_config" in issues_found:
-            console.print("• Create .vibe.yaml with minimum content:")
-            console.print("  [cyan]protocol_version: 1[/cyan]")
-            console.print('  [cyan]project_type: "auto"[/cyan]')
-            console.print(
-                '• [cyan]vibe guide "setup vibe project configuration"[/cyan] '
-                "- Get detailed setup steps"
-            )
-        if (
-            "missing_protocol_version" in issues_found
-            or "outdated_protocol" in issues_found
-            or "invalid_protocol_version" in issues_found
-        ):
-            console.print(
-                "• Edit .vibe.yaml and add/update: [cyan]protocol_version: 1[/cyan]"
-            )
-            console.print(
-                '• [cyan]vibe guide "migrate protocol version"[/cyan] - Get '
-                "migration guidance"
-            )
-        if "missing_project_type" in issues_found:
-            console.print(
-                '• Edit .vibe.yaml and add: [cyan]project_type: "auto"[/cyan]'
-            )
-        if "missing_python" in issues_found:
-            console.print("• Install Python 3.13+ from [cyan]https://python.org[/cyan]")
-            console.print(
-                '• [cyan]vibe guide "setup python environment"[/cyan] - Get '
-                "environment setup steps"
-            )
-        if "missing_vibe_cli" in issues_found:
-            console.print("• Install vibe: [cyan]pip install vibe[/cyan]")
-            console.print(
-                '• [cyan]vibe guide "install vibe cli"[/cyan] - Get '
-                "installation guidance"
-            )
-
-        # GitHub AI integration suggestions
-        if (
-            "missing_github_dir" in issues_found
-            or "missing_copilot_instructions" in issues_found
-            or "missing_chatmodes_dir" in issues_found
-            or "missing_chatmode_file" in issues_found
-        ):
-            console.print(
-                '• [cyan]vibe guide "setup github ai integration"[/cyan] - Get '
-                "GitHub AI setup steps"
-            )
-            console.print(
-                "• Create .github/copilot-instructions.md for AI agent guidance"
-            )
-            console.print(
-                "• Create .github/chatmodes/vibe-agent.chatmode.md "
-                "for VS Code integration"
-            )
+        _display_config_fixes(issues_found)
+        _display_environment_fixes(issues_found)
+        _display_github_fixes(issues_found)
 
         console.print()
         console.print(
@@ -468,13 +506,73 @@ def check(output_json: bool = False) -> None:
             "- Get configuration tips"
         )
 
-    # Output JSON if requested
-    if output_json:
-        check_results["issues_found"] = issues_found
-        check_results["success"] = len(issues_found) == 0
-        import json
 
-        print(json.dumps(check_results, indent=2))
+def _display_config_fixes(issues_found: list[str]) -> None:
+    """Display configuration-related fix suggestions."""
+    if "missing_config" in issues_found:
+        console.print("• Create .vibe.yaml with minimum content:")
+        console.print("  [cyan]protocol_version: 1[/cyan]")
+        console.print('  [cyan]project_type: "auto"[/cyan]')
+        console.print(
+            '• [cyan]vibe guide "setup vibe project configuration"[/cyan] '
+            "- Get detailed setup steps"
+        )
+
+    if any(
+        issue in issues_found
+        for issue in [
+            "missing_protocol_version",
+            "outdated_protocol",
+            "invalid_protocol_version",
+        ]
+    ):
+        console.print(
+            "• Edit .vibe.yaml and add/update: [cyan]protocol_version: 1[/cyan]"
+        )
+        console.print(
+            '• [cyan]vibe guide "migrate protocol version"[/cyan] - Get '
+            "migration guidance"
+        )
+
+    if "missing_project_type" in issues_found:
+        console.print('• Edit .vibe.yaml and add: [cyan]project_type: "auto"[/cyan]')
+
+
+def _display_environment_fixes(issues_found: list[str]) -> None:
+    """Display environment-related fix suggestions."""
+    if "missing_python" in issues_found:
+        console.print("• Install Python 3.13+ from [cyan]https://python.org[/cyan]")
+        console.print(
+            '• [cyan]vibe guide "setup python environment"[/cyan] - Get '
+            "environment setup steps"
+        )
+
+    if "missing_vibe_cli" in issues_found:
+        console.print("• Install vibe: [cyan]pip install vibe[/cyan]")
+        console.print(
+            '• [cyan]vibe guide "install vibe cli"[/cyan] - Get installation guidance'
+        )
+
+
+def _display_github_fixes(issues_found: list[str]) -> None:
+    """Display GitHub integration fix suggestions."""
+    if any(
+        issue in issues_found
+        for issue in [
+            "missing_github_dir",
+            "missing_copilot_instructions",
+            "missing_chatmodes_dir",
+            "missing_chatmode_file",
+        ]
+    ):
+        console.print(
+            '• [cyan]vibe guide "setup github ai integration"[/cyan] - Get '
+            "GitHub AI setup steps"
+        )
+        console.print("• Create .github/copilot-instructions.md for AI agent guidance")
+        console.print(
+            "• Create .github/chatmodes/vibe-agent.chatmode.md for VS Code integration"
+        )
 
 
 @click.command("config-info")
@@ -617,7 +715,7 @@ def validate_workflow_schemas() -> None:
                         else workflow_config.commands
                     )
 
-                    # If both steps and commands are empty, provide a default guidance step
+                    # If both steps and commands are empty, provide default guidance
                     if not steps:
                         steps = [f"Provide guidance for {workflow_name} workflow"]
 
