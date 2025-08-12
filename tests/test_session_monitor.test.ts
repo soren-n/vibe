@@ -317,6 +317,12 @@ describe('SessionMonitor Comprehensive Tests', () => {
     });
 
     test('getSessionStatusSummary handles empty session list', async () => {
+      // Clean up any existing sessions first
+      const existingSessions = await sessionManager.listActiveSessions();
+      for (const sessionId of existingSessions) {
+        await sessionManager.archiveSession(sessionId);
+      }
+
       const summary = await sessionMonitor.getSessionStatusSummary();
 
       expect(summary.total_active_sessions).toBe(0);
