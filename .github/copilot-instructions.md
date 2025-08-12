@@ -12,6 +12,7 @@ Use them for step-wise execution and compact status.
 
 ## Anti-patterns (avoid)
 - Skipping Vibe guidance; long narrative replies; repeating unchanged sections; copying large docs; running tools without brief explanation.
+- Creating summary/report/documentation files that serve no functional purpose (user preference: everything must have a function).
 
 ## Validation (fast path)
 - Ask: "what quality checks should I run?" then run those commands.

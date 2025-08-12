@@ -1,0 +1,21 @@
+# Vibe Project Preferences
+# This file contains functional preferences for AI agents working on this project
+
+# File creation policy: NO summary/report/documentation-only files
+# Everything must serve a functional purpose:
+# - Code that executes
+# - Configuration that's used
+# - Scripts that run
+# - Tests that validate
+# - Essential READMEs for setup/usage only
+
+# Anti-patterns to avoid:
+# - SUMMARY.md files
+# - REPORT.md files  
+# - OVERVIEW.md files
+# - Implementation documentation that just describes what was done
+# - Status reports
+# - Meeting notes
+# - Change logs that aren't functional
+
+# Exception: READMEs are OK if they provide essential setup/usage instructions
