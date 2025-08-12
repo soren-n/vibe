@@ -13,7 +13,7 @@ triggers:
 - webpack.*build
 steps:
 - 'Clean previous builds: `rm -rf dist/ build/`'
-- 'Run build command: `npm run build`'
+- 'Build command: `npm run build`'
 - 'Show build output: `ls -la dist/ build/ 2>/dev/null || echo ''No build directory
   found''`'
 - 'Show build size: `du -sh dist/ build/ 2>/dev/null || echo ''No build artifacts''`'

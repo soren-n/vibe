@@ -27,8 +27,8 @@ steps:
 - 'Install quality tools: `uv add --dev ruff mypy isort`'
 - 'Format code: `uv run ruff format .`'
 - 'Auto-fix lint issues: `uv run ruff check . --fix`'
-- 'Run type checking: `uv run mypy . --hide-error-context --no-error-summary`'
-- 'Run additional rules: `uv run ruff check . --select E501,I`'
+- 'Type checking: `uv run mypy . --hide-error-context --no-error-summary`'
+- 'Additional rules: `uv run ruff check . --select E501,I`'
 project_types:
 - python
 conditions:

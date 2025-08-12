@@ -1,30 +1,24 @@
-name: "CI/CD Pipeline Setup and Execution"
-description: "Execute CI/CD pipeline setup and automation tasks"
+name: CI/CD Pipeline Setup and Execution
+description: Execute CI/CD pipeline setup and automation tasks
 triggers:
-  - "setup ci cd"
-  - "run ci pipeline"
-  - "execute ci tasks"
-  - "configure pipeline"
-
-category: "development"
-
+- setup ci cd
+- run ci pipeline
+- execute ci tasks
+- configure pipeline
+category: development
 steps:
-  - step_text: "Create GitHub Actions workflow files"
-    command: "mkdir -p .github/workflows && cp templates/workflow.yml .github/workflows/"
-    working_dir: "."
-
-  - step_text: "Execute local quality checks"
-    command: "uv run pre-commit run --all-files && uv run pytest -q --maxfail=1"
-    working_dir: "."
-
-  - step_text: "Execute MCP server tests"
-    command: "cd mcp-server && npm test --silent && node test.js"
-    working_dir: "."
-
-  - step_text: "Generate coverage report"
-    command: "uv run pytest -q --maxfail=1 --cov=vibe --cov-report=term | head -40"
-    working_dir: "."
-
-  - step_text: "Install pre-commit hooks"
-    command: "uv run pre-commit install && uv run pre-commit autoupdate"
-    working_dir: "."
+- step_text: Create GitHub Actions workflow files
+  command: mkdir -p .github/workflows && cp templates/workflow.yml .github/workflows/
+  working_dir: .
+- step_text: Local quality checks
+  command: uv run pre-commit run --all-files && uv run pytest -q --maxfail=1
+  working_dir: .
+- step_text: MCP server tests
+  command: cd mcp-server && npm test --silent && node test.js
+  working_dir: .
+- step_text: Generate coverage report
+  command: uv run pytest -q --maxfail=1 --cov=vibe --cov-report=term | head -40
+  working_dir: .
+- step_text: Install pre-commit hooks
+  command: uv run pre-commit install && uv run pre-commit autoupdate
+  working_dir: .

@@ -20,9 +20,9 @@ steps:
 - 'Update uv package manager: `curl -LsSf https://astral.sh/uv/install.sh | sh`'
 - 'Update Python dependencies: `uv sync --upgrade`'
 - 'Update Node.js dependencies: `npm update` (if package.json exists)'
-- 'Run security audit: `npm audit` or `uv audit`'
+- 'Security audit: `npm audit` or `uv audit`'
 - 'Test build: `uv run python -c ''import sys; print(sys.version)''`'
-- 'Run tests: `uv run pytest -q` (if tests exist)'
+- 'Tests: `uv run pytest -q` (if tests exist)'
 - 'Commit changes: `git add -A && git commit -m ''Update dependencies''`'
 dependencies: []
 project_types: []

@@ -1,5 +1,6 @@
 """Workflow orchestrator that plans and provides execution guidance for workflows."""
 
+from datetime import datetime
 from typing import Any
 
 from rich.console import Console
@@ -360,7 +361,7 @@ class WorkflowOrchestrator:
                 }
 
             # Create session
-            session = self.session_manager.create_session(prompt, workflow_steps)
+            session = self.session_manager.create_session(prompt, workflow_steps, self.config.session)
 
             # Get first step
             current_step = session.get_current_step()
@@ -622,6 +623,104 @@ class WorkflowOrchestrator:
                 return workflow_config.steps
 
         return None
+
+    def monitor_sessions(self) -> dict[str, Any]:
+        """Get session health monitoring data including alerts for dormant workflows."""
+        from .session_monitor import SessionAlert, SessionMonitor
+
+        monitor = SessionMonitor(self)
+        status_summary = monitor.get_session_status_summary()
+
+        # Check for alerts and add intervention messages
+        for alert_dict in status_summary["alerts"]:
+            if alert_dict["severity"] in ["medium", "high"]:
+                session = self.session_manager.load_session(alert_dict["session_id"])
+                if session:
+                    # Create a proper SessionAlert object from the dict
+                    alert = SessionAlert(
+                        session_id=alert_dict["session_id"],
+                        alert_type=alert_dict["type"],
+                        message=alert_dict["message"],
+                        severity=alert_dict["severity"],
+                        timestamp=datetime.fromisoformat(alert_dict["timestamp"]),
+                        suggested_actions=alert_dict["suggested_actions"]
+                    )
+                    intervention_message = monitor.generate_intervention_message(alert)
+                    alert_dict["intervention_message"] = intervention_message
+
+        return {
+            "success": True,
+            "monitoring_data": status_summary,
+            "recommendations": self._generate_monitoring_recommendations(status_summary)
+        }
+
+    def cleanup_stale_sessions(self) -> dict[str, Any]:
+        """Automatically clean up sessions that have been inactive for too long."""
+        from .session_monitor import SessionMonitor
+
+        monitor = SessionMonitor(self)
+        cleaned_sessions = monitor.cleanup_stale_sessions()
+
+        return {
+            "success": True,
+            "cleaned_sessions": cleaned_sessions,
+            "message": f"Cleaned up {len(cleaned_sessions)} stale sessions"
+        }
+
+    def analyze_agent_response(self, session_id: str, response_text: str) -> dict[str, Any]:
+        """Analyze an agent response for patterns indicating forgotten workflow completion."""
+        from .session_monitor import SessionMonitor
+
+        monitor = SessionMonitor(self)
+        alert = monitor.analyze_agent_response(session_id, response_text)
+
+        if alert:
+            intervention_message = monitor.generate_intervention_message(alert)
+            return {
+                "success": True,
+                "alert_detected": True,
+                "alert": {
+                    "type": alert.alert_type,
+                    "message": alert.message,
+                    "severity": alert.severity,
+                    "suggested_actions": alert.suggested_actions,
+                    "intervention_message": intervention_message
+                }
+            }
+
+        return {
+            "success": True,
+            "alert_detected": False,
+            "message": "No completion patterns detected that require intervention"
+        }
+
+    def _generate_monitoring_recommendations(self, status_summary: dict[str, Any]) -> list[str]:
+        """Generate recommendations based on monitoring data."""
+        recommendations = []
+
+        if status_summary["dormant_sessions"] > 0:
+            recommendations.append(
+                f"You have {status_summary['dormant_sessions']} dormant sessions. "
+                "Consider using 'get_workflow_status' to check their current state."
+            )
+
+        if status_summary["stale_sessions"] > 0:
+            recommendations.append(
+                f"You have {status_summary['stale_sessions']} stale sessions. "
+                "Consider using 'break_workflow' to clean them up if no longer needed."
+            )
+
+        if status_summary["forgotten_completions"] > 0:
+            recommendations.append(
+                f"Detected {status_summary['forgotten_completions']} responses with "
+                "completion patterns but no workflow management. Remember to call "
+                "'advance_workflow' or 'break_workflow' when tasks are complete."
+            )
+
+        if status_summary["total_active_sessions"] == 0:
+            recommendations.append("No active workflow sessions detected.")
+
+        return recommendations
 
     def _display_execution_plan(self, execution_order: list[str]) -> None:
         """Display the execution plan."""

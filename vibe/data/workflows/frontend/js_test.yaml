@@ -12,11 +12,11 @@ triggers:
 - verify.*javascript.*tests
 - vitest
 steps:
-- 'Run test suite: `npm test`'
+- 'Test suite: `npm test`'
 - 'Install test framework if missing: `npm install --save-dev jest`'
 - 'Add test script to package.json if missing: `"test": "jest"`'
-- 'Run with coverage: `npm test -- --coverage`'
-- 'Run in watch mode: `npm test -- --watch`'
+- 'With coverage: `npm test -- --coverage`'
+- 'In watch mode: `npm test -- --watch`'
 dependencies:
 - js_quality
 project_types:

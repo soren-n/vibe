@@ -6,6 +6,7 @@ import click
 from rich.console import Console
 
 from .. import __version__
+from .checklists import checklists
 from .commands import guide, init, run
 from .lint import lint
 from .mcp import mcp
@@ -41,6 +42,7 @@ cli.add_command(validate)
 cli.add_command(workflows)
 cli.add_command(mcp)
 cli.add_command(lint)
+cli.add_command(checklists)
 
 
 def main() -> None:
@@ -73,6 +75,7 @@ def _is_known_command_or_option(first_arg: str) -> bool:
         "workflows",
         "mcp",
         "lint",
+        "checklists",
     ]
     return first_arg in known_commands or first_arg.startswith("-")
 

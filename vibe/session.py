@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .config import SessionConfig
+
 
 @dataclass
 class WorkflowFrame:
@@ -63,6 +65,7 @@ class WorkflowSession:
     - workflow_stack: Stack of workflow frames (nested workflows)
     - created_at: When this session was created
     - last_accessed: When this session was last accessed
+    - session_config: Configuration for session behavior
     """
 
     session_id: str
@@ -70,16 +73,21 @@ class WorkflowSession:
     workflow_stack: list[WorkflowFrame]
     created_at: datetime
     last_accessed: datetime
+    session_config: SessionConfig = None
 
     @classmethod
     def create(
-        cls, prompt: str, initial_workflows: list[tuple[str, list[str]]]
+        cls,
+        prompt: str,
+        initial_workflows: list[tuple[str, list[str]]],
+        session_config: SessionConfig = None
     ) -> "WorkflowSession":
         """Create a new workflow session.
 
         Args:
             prompt: The original prompt that triggered the workflows
             initial_workflows: List of (workflow_name, steps) tuples
+            session_config: Session configuration for behavior customization
 
         Returns:
             New WorkflowSession instance
@@ -101,6 +109,7 @@ class WorkflowSession:
             workflow_stack=workflow_stack,
             created_at=now,
             last_accessed=now,
+            session_config=session_config or SessionConfig(),
         )
 
     @property
@@ -128,12 +137,15 @@ class WorkflowSession:
         if not current_frame or current_frame.is_complete:
             return None
 
+        step_text = current_frame.current_step_text or ""
+        is_command = self._is_command_step(step_text)
+
         return {
             "workflow": current_frame.workflow_name,
             "step_number": current_frame.current_step + 1,  # 1-based for display
             "total_steps": len(current_frame.steps),
-            "step_text": current_frame.current_step_text,
-            "is_command": self._is_command_step(current_frame.current_step_text or ""),
+            "step_text": self._format_step_for_agent(step_text, is_command),
+            "is_command": is_command,
             "workflow_depth": len(self.workflow_stack),
         }
 
@@ -254,6 +266,42 @@ class WorkflowSession:
 
         return any(step_lower.startswith(cmd) for cmd in command_indicators)
 
+    def _format_step_for_agent(self, step_text: str, is_command: bool) -> str:
+        """Format step text with AI agent prefix and suffix for vibe coding sessions.
+
+        Args:
+            step_text: Original step text
+            is_command: Whether this step contains executable commands
+
+        Returns:
+            Step text with appropriate prefix and suffix for AI agent execution
+        """
+        if not step_text.strip():
+            return step_text
+
+        # Check if AI agent prefix/suffix is enabled in configuration
+        if not self.session_config:
+            return step_text
+
+        formatted_text = step_text
+
+        # Add prefix if enabled
+        if self.session_config.ai_agent_prefix:
+            if is_command:
+                prefix = "AUTO-VIBE: Execute without interaction. Use quiet/yes flags. Report outcome concisely."
+            else:
+                # For guidance/checklist items, use shorter prefix
+                prefix = "AUTO-VIBE: Verify and report status briefly."
+
+            formatted_text = f"{prefix}\n\n{formatted_text}"
+
+        # Add suffix if enabled
+        if self.session_config.ai_agent_suffix:
+            suffix = "Remember: Analyze, Reflect, Plan, Execute"
+            formatted_text = f"{formatted_text}\n\n{suffix}"
+
+        return formatted_text
+
     def to_dict(self) -> dict[str, Any]:
         """Convert session to dictionary for JSON serialization."""
         return {
@@ -262,6 +310,7 @@ class WorkflowSession:
             "workflow_stack": [asdict(frame) for frame in self.workflow_stack],
             "created_at": self.created_at.isoformat(),
             "last_accessed": self.last_accessed.isoformat(),
+            "session_config": self.session_config.model_dump() if self.session_config else None,
         }
 
     @classmethod
@@ -272,12 +321,20 @@ class WorkflowSession:
             frame = WorkflowFrame(**frame_data)
             workflow_stack.append(frame)
 
+        # Handle session_config (might not exist in older sessions)
+        session_config = None
+        if "session_config" in data and data["session_config"]:
+            session_config = SessionConfig(**data["session_config"])
+        else:
+            session_config = SessionConfig()  # Use default
+
         return cls(
             session_id=data["session_id"],
             prompt=data["prompt"],
             workflow_stack=workflow_stack,
             created_at=datetime.fromisoformat(data["created_at"]),
             last_accessed=datetime.fromisoformat(data["last_accessed"]),
+            session_config=session_config,
         )
 
 
@@ -305,19 +362,23 @@ class SessionManager:
         self.archive_dir.mkdir(exist_ok=True)
 
     def create_session(
-        self, prompt: str, workflows: list[tuple[str, list[str]]]
+        self,
+        prompt: str,
+        workflows: list[tuple[str, list[str]]],
+        session_config: SessionConfig = None
     ) -> WorkflowSession:
         """Create and persist a new workflow session.
 
         Args:
             prompt: Original prompt that triggered workflows
             workflows: List of (workflow_name, steps) tuples
+            session_config: Session configuration for behavior customization
 
         Returns:
             New WorkflowSession instance
 
         """
-        session = WorkflowSession.create(prompt, workflows)
+        session = WorkflowSession.create(prompt, workflows, session_config)
         self._save_session(session)
         return session
 
@@ -411,6 +472,53 @@ class SessionManager:
                 archived_count += 1
 
         return archived_count
+
+    def get_session_health_summary(self) -> dict[str, Any]:
+        """Get a health summary of all active sessions.
+
+        Returns:
+            Dictionary with session health information
+        """
+
+        active_sessions = []
+        dormant_sessions = []
+        stale_sessions = []
+        now = datetime.now()
+
+        for session_id in self.list_active_sessions():
+            session = self.load_session(session_id)
+            if not session:
+                continue
+
+            # Calculate inactivity time
+            inactive_minutes = (now - session.last_accessed).total_seconds() / 60
+
+            session_info = {
+                "session_id": session_id,
+                "inactive_minutes": inactive_minutes,
+                "current_workflow": session.current_frame.workflow_name if session.current_frame else None,
+                "is_complete": session.is_complete,
+                "created_at": session.created_at.isoformat(),
+                "last_accessed": session.last_accessed.isoformat()
+            }
+
+            active_sessions.append(session_info)
+
+            # Categorize sessions by health status
+            if inactive_minutes > 30:  # Stale threshold
+                stale_sessions.append(session_info)
+            elif inactive_minutes > 10:  # Dormant threshold
+                dormant_sessions.append(session_info)
+
+        return {
+            "total_active": len(active_sessions),
+            "total_dormant": len(dormant_sessions),
+            "total_stale": len(stale_sessions),
+            "active_sessions": active_sessions,
+            "dormant_sessions": dormant_sessions,
+            "stale_sessions": stale_sessions,
+            "timestamp": now.isoformat()
+        }
 
     def _save_session(self, session: WorkflowSession) -> None:
         """Internal method to save session to disk."""

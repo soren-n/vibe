@@ -2,6 +2,27 @@
 
 This directory contains utility scripts for maintaining and analyzing the Vibe project.
 
+## Content Management Scripts
+
+### `refactor_workflows.py`
+Refactors workflow and checklist YAML files to remove redundancy with the AI agent prefix/suffix system:
+- Removes redundant action verbs ("Execute", "Run", "Check that", etc.)
+- Ensures compliance with language standards
+- Creates backups before making changes
+- Provides confidence-based filtering of changes
+
+Usage:
+```bash
+# Analyze files and generate report
+python scripts/refactor_workflows.py --analyze
+
+# Apply high-confidence changes
+python scripts/refactor_workflows.py --apply
+
+# Apply all changes (including medium/low confidence)
+python scripts/refactor_workflows.py --apply --min-confidence medium
+```
+
 ## Repository Management Scripts
 
 ### `analyze_repository_sprawl.py`

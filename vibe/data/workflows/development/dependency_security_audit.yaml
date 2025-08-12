@@ -1,24 +1,33 @@
-name: "Dependency Security Audit"
-description: "Comprehensive security audit of project dependencies"
+name: Dependency Security Audit
+description: Comprehensive security audit of project dependencies
 triggers:
-  - "security audit"
-  - "dependency security"
-  - "vulnerability scan"
-  - "security check"
-  - "package vulnerabilities"
+- security audit
+- dependency security
+- vulnerability scan
+- security check
+- package vulnerabilities
 steps:
-  - "Install security tools: Install `pip-audit`, `safety`, and `bandit` for comprehensive security scanning"
-  - "Run vulnerability scan: Execute `pip-audit` to check for known CVEs in dependencies"
-  - "Check safety database: Run `safety check` against the PyUp.io vulnerability database"
-  - "Scan for secrets: Use `detect-secrets` or `truffleHog` to find hardcoded secrets in dependencies"
-  - "Review dependency sources: Verify packages are from trusted sources (PyPI, not typosquatting)"
-  - "Check for suspicious packages: Look for recently published packages with similar names to popular ones"
-  - "Analyze transitive dependencies: Examine all indirect dependencies for security issues"
-  - "Review package maintainers: Check if maintainers are known and trusted in the community"
-  - "Pin vulnerable dependencies: Temporarily pin versions while waiting for security fixes"
-  - "Set up automated monitoring: Configure tools like Dependabot or Renovate for ongoing security alerts"
-  - "Create security policy: Document how to handle security vulnerabilities in dependencies"
-  - "Plan incident response: Define steps to take when critical security issues are discovered"
+- 'Install security tools: Install `pip-audit`, `safety`, and `bandit` for comprehensive
+  security scanning'
+- 'Vulnerability scan: Execute `pip-audit` to check for known CVEs in dependencies'
+- 'Check safety database: Run `safety check` against the PyUp.io vulnerability database'
+- 'Scan for secrets: Use `detect-secrets` or `truffleHog` to find hardcoded secrets
+  in dependencies'
+- 'Review dependency sources: Verify packages are from trusted sources (PyPI, not
+  typosquatting)'
+- 'Check for suspicious packages: Look for recently published packages with similar
+  names to popular ones'
+- 'Analyze transitive dependencies: Examine all indirect dependencies for security
+  issues'
+- 'Review package maintainers: Check if maintainers are known and trusted in the community'
+- 'Pin vulnerable dependencies: Temporarily pin versions while waiting for security
+  fixes'
+- 'Set up automated monitoring: Configure tools like Dependabot or Renovate for ongoing
+  security alerts'
+- 'Create security policy: Document how to handle security vulnerabilities in dependencies'
+- 'Plan incident response: Define steps to take when critical security issues are
+  discovered'
 dependencies: []
-project_types: ["python"]
+project_types:
+- python
 conditions: []

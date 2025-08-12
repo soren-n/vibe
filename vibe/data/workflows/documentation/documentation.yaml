@@ -13,8 +13,8 @@ triggers:
 - validate.*docs
 - verify.*documentation
 steps:
-- 'Execute documentation discovery: Run `find . -name ''README*'' -o -name ''docs''
-  -type d` to locate current documentation'
+- 'Documentation discovery: Run `find . -name ''README*'' -o -name ''docs'' -type
+  d` to locate current documentation'
 - 'Create documentation structure: Execute `mkdir -p docs && touch docs/README.md`
   to establish framework'
 - 'Update main README: Add project description, installation, and usage sections with

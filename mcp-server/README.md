@@ -10,6 +10,9 @@ This MCP server solves the token throttling problem with AI agents by providing 
 
 - **Step-by-step workflow execution** - Reduces token usage by 90%+
 - **Workflow session management** - Persistent state across interactions
+- **Session monitoring & health checks** - Automatic detection of forgotten workflows
+- **Agent completion monitoring** - Catches when agents forget to complete workflows
+- **Automatic cleanup** - Stale session detection and cleanup
 - **Nested workflow support** - Call sub-workflows with automatic return to parent
 - **Natural language workflow analysis** - Powered by Vibe's intelligent prompt analysis
 - **JSON-based communication** - Clean, structured responses for AI agents
@@ -128,6 +131,86 @@ List all active workflow sessions.
 
 **No parameters required.**
 
+## Session Monitoring Tools
+
+The MCP server includes specialized tools to help AI agents properly complete workflows and avoid session abandonment.
+
+### `monitor_sessions`
+
+Monitor workflow sessions for health and completion status.
+
+**Parameters:**
+- `include_dormant` (optional, default: true): Include sessions that may be dormant or abandoned
+
+**Response:**
+```json
+{
+  "success": true,
+  "sessions": [
+    {
+      "session_id": "abc12345",
+      "status": "active",
+      "last_activity": "2024-01-01T12:00:00Z",
+      "current_step": {
+        "workflow": "python_analysis",
+        "step_number": 3,
+        "step_text": "Run linting checks: `uv run ruff check .`"
+      },
+      "health": "healthy",
+      "recommendations": []
+    }
+  ],
+  "dormant_sessions": [
+    {
+      "session_id": "def67890",
+      "status": "dormant",
+      "last_activity": "2024-01-01T10:00:00Z",
+      "time_since_activity": "2 hours",
+      "recommendation": "Consider calling advance_workflow or break_workflow"
+    }
+  ]
+}
+```
+
+### `cleanup_stale_sessions`
+
+Clean up abandoned or stale workflow sessions.
+
+**Parameters:**
+- `max_age_hours` (optional, default: 24): Maximum age in hours before considering a session stale
+- `dry_run` (optional, default: false): Preview cleanup without making changes
+
+**Response:**
+```json
+{
+  "success": true,
+  "cleaned_sessions": ["def67890", "ghi23456"],
+  "message": "Cleaned up 2 stale sessions older than 24 hours"
+}
+```
+
+### `analyze_agent_response`
+
+Analyze agent responses to detect workflow completion patterns and provide recommendations.
+
+**Parameters:**
+- `response_text` (required): The agent's response text to analyze
+- `session_id` (optional): Session ID for context-aware analysis
+
+**Response:**
+```json
+{
+  "success": true,
+  "analysis": {
+    "completion_indicators": ["summary", "analysis complete"],
+    "missing_actions": ["advance_workflow", "break_workflow"],
+    "recommendation": "Agent appears to have completed analysis but forgot to advance workflow. Consider calling advance_workflow.",
+    "confidence": "high",
+    "suggested_action": "advance_workflow"
+  }
+}
+```
+
 ## Workflow Session Lifecycle
 
 ```mermaid
@@ -213,6 +296,12 @@ while (currentStep) {
 4. **Nested Workflow Support**: Complex tasks can call sub-workflows automatically
 
 5. **Error Recovery**: If an agent gets confused, it can break out of workflows or restart sessions
+
+6. **Session Monitoring & Health Checks**: Automatic detection of dormant sessions and completion patterns to prevent workflow abandonment
+
+7. **Agent Completion Monitoring**: Analysis of agent responses to detect when they've finished but forgot to advance or break out of workflows
+
+8. **Automatic Cleanup**: Scheduled cleanup of stale sessions to prevent resource accumulation and maintain system health
 
 ## Development
 

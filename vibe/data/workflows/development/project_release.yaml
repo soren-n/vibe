@@ -15,16 +15,16 @@ project_types:
 - vue_typescript
 - vscode_extension
 steps:
-- 'Execute project type detection: Analyze project structure using `find . -name ''package.json''
+- 'Project type detection: Analyze project structure using `find . -name ''package.json''
   -o -name ''pyproject.toml'' -o -name ''Cargo.toml''`'
-- 'Run quality validation: Execute `uv run pytest -q && uv run ruff check .` for Python
+- 'Quality validation: Execute `uv run pytest -q && uv run ruff check .` for Python
   or `npm test && npm run lint` for Node.js'
-- 'Execute version management: Update version numbers using appropriate tools for
-  detected project type'
-- 'Execute build process: Run `uv build` for Python, `npm run build` for Node.js,
-  or equivalent for other project types'
-- 'Execute marketplace publishing: Deploy to target platforms using project-specific
-  publishing commands'
+- 'Version management: Update version numbers using appropriate tools for detected
+  project type'
+- 'Build process: Run `uv build` for Python, `npm run build` for Node.js, or equivalent
+  for other project types'
+- 'Marketplace publishing: Deploy to target platforms using project-specific publishing
+  commands'
 - 'Create GitHub release: Execute `gh release create` with changelog and built assets'
 items:
 - 'Project type identified: Release strategy has been determined based on project

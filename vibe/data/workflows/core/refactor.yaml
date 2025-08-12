@@ -1,14 +1,15 @@
-name: "Code Refactoring Execution"
-description: "Execute systematic code refactoring process"
+name: Code Refactoring Execution
+description: Execute systematic code refactoring process
 triggers:
-  - "refactor code"
-  - "improve code"
-  - "execute refactoring"
-  - "optimize code"
-  - "clean up code"
+- refactor code
+- improve code
+- execute refactoring
+- optimize code
+- clean up code
 steps:
-  - "Execute function extraction: Refactor one function at a time using systematic methodology"
-  - "Run regression tests: Execute `uv run pytest` immediately after each refactoring step"
-  - "Execute quality checks: Run `uv run ruff check .` and `uv run mypy .` for standards compliance"
-  - "Update documentation: Revise docstrings and comments to reflect refactored structure"
-  - "Commit incremental changes: Use descriptive commit messages following conventional commit format"
+- 'Function extraction: Refactor one function at a time using systematic methodology'
+- 'Regression tests: Execute `uv run pytest` immediately after each refactoring step'
+- 'Quality checks: Run `uv run ruff check .` and `uv run mypy .` for standards compliance'
+- 'Update documentation: Revise docstrings and comments to reflect refactored structure'
+- 'Commit incremental changes: Use descriptive commit messages following conventional
+  commit format'

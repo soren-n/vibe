@@ -16,10 +16,10 @@ steps:
 - step_text: Configure pre-commit hooks
   command: uv run pre-commit install --install-hooks
   working_dir: .
-- step_text: Run pre-commit on all files
+- step_text: Pre-commit on all files
   command: uv run pre-commit run --all-files
   working_dir: .
-- step_text: Execute quality validation suite
+- step_text: Quality validation suite
   command: uv run ruff check . && uv run mypy . && uv run pytest tests/ -q
   working_dir: .
 - step_text: Test MCP workflow automation

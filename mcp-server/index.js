@@ -335,6 +335,125 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'list_checklists': {
+        const { project_type, working_dir } = args;
+
+        const vibeArgs = ['mcp', 'list-checklists'];
+        if (project_type) vibeArgs.push('--project-type', project_type);
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'get_checklist': {
+        const { name, working_dir } = args;
+
+        if (!name || typeof name !== 'string') {
+          throw new Error('name is required and must be a string');
+        }
+
+        const vibeArgs = ['mcp', 'show-checklist', name];
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'run_checklist': {
+        const { name, format = 'json', working_dir } = args;
+
+        if (!name || typeof name !== 'string') {
+          throw new Error('name is required and must be a string');
+        }
+
+        const vibeArgs = ['mcp', 'run-checklist', name];
+        if (format) vibeArgs.push('--format', format);
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(vibeArgs, workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'monitor_sessions': {
+        const { working_dir } = args;
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(['mcp', 'monitor-sessions'], workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'cleanup_stale_sessions': {
+        const { working_dir } = args;
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(['mcp', 'cleanup-sessions'], workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'analyze_agent_response': {
+        const { session_id, response_text, working_dir } = args;
+
+        if (!session_id || !isValidSessionId(session_id)) {
+          throw new Error('session_id is required and must be a valid 8-character hex string');
+        }
+
+        if (!response_text || typeof response_text !== 'string') {
+          throw new Error('response_text is required and must be a string');
+        }
+
+        const workingDir = working_dir || process.cwd();
+        const result = await executeVibeCommand(['mcp', 'analyze-response', session_id, response_text], workingDir);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -550,6 +669,112 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             }
           },
           required: ['text']
+        }
+      },
+      {
+        name: 'list_checklists',
+        description: 'List all available checklists with optional filtering',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            project_type: {
+              type: 'string',
+              description: 'Filter checklists by project type (e.g., python, javascript, typescript)'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          }
+        }
+      },
+      {
+        name: 'get_checklist',
+        description: 'Get details of a specific checklist including items and metadata',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of the checklist to retrieve'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          },
+          required: ['name']
+        }
+      },
+      {
+        name: 'run_checklist',
+        description: 'Execute a checklist and get formatted output for validation',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              description: 'Name of the checklist to run'
+            },
+            format: {
+              type: 'string',
+              enum: ['json', 'simple'],
+              description: 'Output format (default: json for structured data, simple for readable text)'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          },
+          required: ['name']
+        }
+      },
+      {
+        name: 'monitor_sessions',
+        description: 'Get session health monitoring data including alerts for dormant or forgotten workflows',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          }
+        }
+      },
+      {
+        name: 'cleanup_stale_sessions',
+        description: 'Automatically clean up sessions that have been inactive for too long',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          }
+        }
+      },
+      {
+        name: 'analyze_agent_response',
+        description: 'Analyze an agent response for patterns indicating forgotten workflow completion',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            session_id: {
+              type: 'string',
+              description: 'The session ID to analyze'
+            },
+            response_text: {
+              type: 'string',
+              description: 'The agent response text to analyze for completion patterns'
+            },
+            working_dir: {
+              type: 'string',
+              description: 'Optional working directory to run commands in (defaults to current directory)'
+            }
+          },
+          required: ['session_id', 'response_text']
         }
       }
     ]

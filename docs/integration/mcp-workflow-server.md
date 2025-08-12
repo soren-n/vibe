@@ -200,6 +200,103 @@ Lists all active workflow sessions.
 }
 ```
 
+### 6. `list_checklists`
+Lists all available checklists with optional filtering.
+
+**Input**:
+```json
+{
+  "project_type": "python"  // optional filter
+}
+```
+
+**Output**:
+```json
+{
+  "success": true,
+  "checklists": [
+    {
+      "name": "Python Release Readiness",
+      "description": "Checklist to verify Python project is ready for release",
+      "triggers": ["release ready", "ready for release"],
+      "project_types": ["python"],
+      "item_count": 13
+    }
+  ]
+}
+```
+
+### 7. `get_checklist`
+Retrieves detailed information about a specific checklist.
+
+**Input**:
+```json
+{
+  "name": "Python Release Readiness"
+}
+```
+
+**Output**:
+```json
+{
+  "success": true,
+  "checklist": {
+    "name": "Python Release Readiness",
+    "description": "Checklist to verify Python project is ready for release",
+    "triggers": ["release ready", "ready for release"],
+    "project_types": ["python"],
+    "conditions": [],
+    "dependencies": ["pytest", "mypy", "ruff"],
+    "items": [
+      "Version number has been updated in all relevant files",
+      "CHANGELOG.md is updated with new features and fixes",
+      "All tests pass (pytest tests/)"
+    ]
+  }
+}
+```
+
+### 8. `run_checklist`
+Executes a checklist and returns formatted output for validation.
+
+**Input**:
+```json
+{
+  "name": "Python Release Readiness",
+  "format": "json"  // or "simple"
+}
+```
+
+**Output** (JSON format):
+```json
+{
+  "success": true,
+  "checklist": {
+    "name": "Python Release Readiness",
+    "description": "Checklist to verify Python project is ready for release",
+    "items": [
+      {
+        "index": 1,
+        "text": "Version number has been updated in all relevant files",
+        "completed": false
+      }
+    ]
+  }
+}
+```
+
+**Output** (Simple format):
+```json
+{
+  "success": true,
+  "checklist": {
+    "name": "Python Release Readiness",
+    "description": "Checklist to verify Python project is ready for release",
+    "formatted_output": "\nPython Release Readiness\n========================\n...\n[ ] 1. Version number has been updated..."
+  }
+}
+```
+
 ## Usage Patterns
 
 ### Basic Workflow Execution
@@ -242,6 +339,35 @@ Use `break_workflow` to manually exit nested workflows early.
 - Sessions automatically persist during execution
 - Use `list_workflow_sessions` to see all active sessions
 - Sessions include timestamps for tracking and cleanup
+
+### Checklist Validation Pattern
+
+```javascript
+// Discover available checklists for project
+const checklistsResult = await callTool('list_checklists', {
+  project_type: 'python'
+});
+
+// Select appropriate checklist for current task
+const releaseChecklist = 'Python Release Readiness';
+
+// Get checklist details
+const checklistResult = await callTool('get_checklist', {
+  name: releaseChecklist
+});
+
+// Execute checklist for validation
+const executionResult = await callTool('run_checklist', {
+  name: releaseChecklist,
+  format: 'json'
+});
+
+// Process checklist items for AI validation
+for (const item of executionResult.checklist.items) {
+  console.log(`Validating: ${item.text}`);
+  // AI agent can now validate each item systematically
+}
+```
 
 ## Integration with AI Agents
 

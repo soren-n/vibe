@@ -1,22 +1,23 @@
 name: python_session_cleanup
-description: "Clean up Python development session and prepare for commit"
+description: Clean up Python development session and prepare for commit
 triggers:
-  - "cleanup.*session"
-  - "clean.*python"
-  - "prepare.*commit"
-  - "session.*cleanup"
+- cleanup.*session
+- clean.*python
+- prepare.*commit
+- session.*cleanup
 steps:
-  - "Run final quality check: `uv run ruff check . --fix`"
-  - "Clean Python cache: `find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true`"
-  - "Remove .pyc files: `find . -name '*.pyc' -delete`"
-  - "Clean pytest cache: `rm -rf .pytest_cache`"
-  - "Remove debug files: `find . -name 'debug*.py' -delete`"
-  - "Remove temp files: `find . -name '*.tmp' -o -name '*.bak' -o -name '*~' -delete`"
-  - "Check git status: `git status --porcelain`"
-  - "Stage changes: `git add .`"
+- 'Final quality check: `uv run ruff check . --fix`'
+- 'Clean Python cache: `find . -type d -name ''__pycache__'' -exec rm -rf {} + 2>/dev/null
+  || true`'
+- 'Remove .pyc files: `find . -name ''*.pyc'' -delete`'
+- 'Clean pytest cache: `rm -rf .pytest_cache`'
+- 'Remove debug files: `find . -name ''debug*.py'' -delete`'
+- 'Remove temp files: `find . -name ''*.tmp'' -o -name ''*.bak'' -o -name ''*~'' -delete`'
+- 'Check git status: `git status --porcelain`'
+- 'Stage changes: `git add .`'
 project_types:
-  - "python"
+- python
 conditions:
-  - "pattern:*.py"
+- pattern:*.py
 dependencies:
-  - "python_quality"
+- python_quality

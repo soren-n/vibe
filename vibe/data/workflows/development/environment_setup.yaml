@@ -14,7 +14,7 @@ category: development
 steps:
 - 'Install dependencies: `uv sync --dev`'
 - 'Setup pre-commit hooks: `uv run pre-commit install`'
-- 'Run quality checks: `uv run pre-commit run --all-files`'
+- 'Quality checks: `uv run pre-commit run --all-files`'
 - 'Test workflow system: `uv run pytest tests/ -q --maxfail=1`'
 - 'Test MCP functionality: `uv run python test_mcp.py`'
 - 'Configure VS Code settings: Add `{"chat.agent.enabled": true, "chat.mcp.enabled":

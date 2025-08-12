@@ -225,6 +225,19 @@ class ProjectTypeConfig(BaseModel):
     workflows: dict[str, WorkflowConfig] = Field(default_factory=dict)
 
 
+class SessionConfig(BaseModel):
+    """Configuration for workflow session behavior."""
+
+    ai_agent_prefix: bool = Field(
+        default=True,
+        description="Add prefixes to workflow steps for AI agent optimization"
+    )
+    ai_agent_suffix: bool = Field(
+        default=True,
+        description="Add suffix reminders to workflow steps for AI agent optimization"
+    )
+
+
 class VibeConfig(BaseModel):
     """Main vibe configuration."""
 
@@ -232,6 +245,7 @@ class VibeConfig(BaseModel):
     workflows: dict[str, WorkflowConfig] = Field(default_factory=dict)
     project_types: dict[str, ProjectTypeConfig] = Field(default_factory=dict)
     lint: LintConfig = Field(default_factory=LintConfig)
+    session: SessionConfig = Field(default_factory=SessionConfig)
 
     @classmethod
     def load_from_file(cls, config_path: Path | None = None) -> "VibeConfig":

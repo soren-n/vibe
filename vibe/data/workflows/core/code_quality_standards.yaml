@@ -10,10 +10,9 @@ triggers:
 - run validation
 - standards checklist
 steps:
-- 'Run code formatting: Execute `uv run ruff check .` to validate consistent code
-  style'
-- 'Run type checking: Execute `uv run mypy .` to validate type safety and documentation'
-- 'Run test suite: Execute `uv run pytest` to ensure all functionality works correctly'
+- 'Code formatting: Execute `uv run ruff check .` to validate consistent code style'
+- 'Type checking: Execute `uv run mypy .` to validate type safety and documentation'
+- 'Test suite: Execute `uv run pytest` to ensure all functionality works correctly'
 dependencies:
 - ruff
 - mypy

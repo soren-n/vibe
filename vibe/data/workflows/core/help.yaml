@@ -1,14 +1,18 @@
-name: "Help System Display"
-description: "Display available commands and workflow guidance"
+name: Help System Display
+description: Display available commands and workflow guidance
 triggers:
-  - "show help"
-  - "display commands"
-  - "list workflows"
-  - "show available"
+- show help
+- display commands
+- list workflows
+- show available
 steps:
-  - "Execute guidance display: Show natural language guidance capabilities and concise mode availability"
-  - "Execute project command listing: Display \"analyze project\", \"update dependencies\", and project analysis workflows"
-  - "Execute documentation command display: Show \"check docs\", \"create adr\", and documentation workflows"
-  - "Execute development command presentation: Display \"run tests\", \"format code\", \"refactor code\", and development workflows"
-  - "Execute agent integration display: Show \"setup agent mode\" for VS Code AI integration configuration"
-  - "Execute fallback guidance: Display \"what next\" option for users seeking general direction"
+- 'Guidance display: Show natural language guidance capabilities and concise mode
+  availability'
+- 'Project command listing: Display "analyze project", "update dependencies", and
+  project analysis workflows'
+- 'Documentation command display: Show "check docs", "create adr", and documentation
+  workflows'
+- 'Development command presentation: Display "run tests", "format code", "refactor
+  code", and development workflows'
+- 'Agent integration display: Show "setup agent mode" for VS Code AI integration configuration'
+- 'Fallback guidance: Display "what next" option for users seeking general direction'

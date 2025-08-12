@@ -9,11 +9,11 @@ triggers:
 - reduce complexity
 - run complexity analysis
 steps:
-- 'Run McCabe complexity check: Execute `uv run ruff check --select=C901 .` to identify
+- 'McCabe complexity check: Execute `uv run ruff check --select=C901 .` to identify
   functions exceeding threshold'
 - 'Apply function extraction: Split complex functions into focused helper functions
   with single responsibilities'
-- 'Run validation tests: Execute `uv run pytest` after each refactoring step to ensure
+- 'Validation tests: Execute `uv run pytest` after each refactoring step to ensure
   no regressions'
 - 'Re-run complexity analysis: Execute `uv run ruff check --select=C901 .` to confirm
   measurable improvement'

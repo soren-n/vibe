@@ -1,12 +1,11 @@
-name: "Dynamic Discovery Test Execution"
-description: "Execute dynamic discovery test procedures"
+name: Dynamic Discovery Test Execution
+description: Execute dynamic discovery test procedures
 triggers:
-  - "run dynamic discovery test"
-  - "test dynamic loading"
-  - "execute discovery test"
+- run dynamic discovery test
+- test dynamic loading
+- execute discovery test
 project_types:
-  - "any"
+- any
 steps:
-  - "Execute workflow reload test: Load this workflow to verify dynamic discovery functionality"
-
+- 'Workflow reload test: Load this workflow to verify dynamic discovery functionality'
 dependencies: []
