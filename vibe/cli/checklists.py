@@ -58,10 +58,10 @@ def list_checklists(project_type: str | None, format: str) -> None:
                         "description": checklist.description,
                         "triggers": checklist.triggers,
                         "project_types": checklist.project_types,
-                        "item_count": len(checklist.items)
+                        "item_count": len(checklist.items),
                     }
                     for name, checklist in filtered_checklists.items()
-                ]
+                ],
             }
             print(json.dumps(result, indent=2))
         elif format == "simple":
@@ -74,7 +74,7 @@ def list_checklists(project_type: str | None, format: str) -> None:
         if format == "json":
             error_result = {
                 "success": False,
-                "error": f"Failed to list checklists: {str(e)}"
+                "error": f"Failed to list checklists: {str(e)}",
             }
             print(json.dumps(error_result, indent=2))
         else:
@@ -98,7 +98,7 @@ def show_checklist(name: str, format: str) -> None:
             if format == "json":
                 error_result = {
                     "success": False,
-                    "error": f"Checklist '{name}' not found"
+                    "error": f"Checklist '{name}' not found",
                 }
                 print(json.dumps(error_result, indent=2))
             else:
@@ -115,8 +115,8 @@ def show_checklist(name: str, format: str) -> None:
                     "project_types": checklist.project_types,
                     "conditions": checklist.conditions,
                     "dependencies": checklist.dependencies,
-                    "items": checklist.items
-                }
+                    "items": checklist.items,
+                },
             }
             print(json.dumps(result, indent=2))
         elif format == "simple":
@@ -132,7 +132,7 @@ def show_checklist(name: str, format: str) -> None:
         if format == "json":
             error_result = {
                 "success": False,
-                "error": f"Failed to show checklist: {str(e)}"
+                "error": f"Failed to show checklist: {str(e)}",
             }
             print(json.dumps(error_result, indent=2))
         else:
@@ -161,7 +161,7 @@ def run_checklist(name: str, format: str, interactive: bool) -> None:
             if format == "json":
                 error_result = {
                     "success": False,
-                    "error": f"Checklist '{name}' not found"
+                    "error": f"Checklist '{name}' not found",
                 }
                 print(json.dumps(error_result, indent=2))
             else:
@@ -178,11 +178,11 @@ def run_checklist(name: str, format: str, interactive: bool) -> None:
                         {
                             "index": i + 1,
                             "text": item,
-                            "completed": False  # Default state
+                            "completed": False,  # Default state
                         }
                         for i, item in enumerate(checklist.items)
-                    ]
-                }
+                    ],
+                },
             }
             print(json.dumps(result, indent=2))
         elif format == "simple":
@@ -198,7 +198,7 @@ def run_checklist(name: str, format: str, interactive: bool) -> None:
         if format == "json":
             error_result = {
                 "success": False,
-                "error": f"Failed to run checklist: {str(e)}"
+                "error": f"Failed to run checklist: {str(e)}",
             }
             print(json.dumps(error_result, indent=2))
         else:
@@ -225,21 +225,14 @@ def _display_checklists_rich(
 
     for name, checklist in sorted(checklists.items()):
         project_types_str = (
-            ", ".join(checklist.project_types)
-            if checklist.project_types
-            else "all"
+            ", ".join(checklist.project_types) if checklist.project_types else "all"
         )
         description = (
             checklist.description[:60] + "..."
             if len(checklist.description) > 60
             else checklist.description
         )
-        table.add_row(
-            name,
-            description,
-            str(len(checklist.items)),
-            project_types_str
-        )
+        table.add_row(name, description, str(len(checklist.items)), project_types_str)
 
     console.print(table)
 
@@ -278,11 +271,13 @@ def _run_checklist_rich(checklist: Any, interactive: bool) -> None:
         )
 
     # Header
-    console.print(Panel(
-        f"[bold blue]{checklist.name}[/bold blue]\n{checklist.description}",
-        title="Checklist Execution",
-        border_style="green"
-    ))
+    console.print(
+        Panel(
+            f"[bold blue]{checklist.name}[/bold blue]\n{checklist.description}",
+            title="Checklist Execution",
+            border_style="green",
+        )
+    )
 
     # Checklist items with checkboxes
     console.print("\n[bold]Complete the following items:[/bold]")

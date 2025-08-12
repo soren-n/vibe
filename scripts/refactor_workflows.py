@@ -25,6 +25,7 @@ import yaml
 @dataclass
 class RefactoringChange:
     """Represents a proposed change to a workflow/checklist item."""
+
     file_path: str
     item_type: str  # 'workflow_step' or 'checklist_item'
     original: str
@@ -39,32 +40,38 @@ class WorkflowRefactorer:
     def __init__(self):
         # Redundant action verbs that should be removed (case-insensitive)
         self.redundant_verbs = [
-            'execute', 'run', 'check that', 'verify that', 'validate that',
-            'ensure that', 'confirm that', 'test that'
+            "execute",
+            "run",
+            "check that",
+            "verify that",
+            "validate that",
+            "ensure that",
+            "confirm that",
+            "test that",
         ]
 
         # More complex patterns for transformation
         self.transformation_patterns = [
             # "Execute X" → "X"
-            (r'^Execute\s+(.+)$', r'\1', 'high'),
+            (r"^Execute\s+(.+)$", r"\1", "high"),
             # "Run X" → "X"
-            (r'^Run\s+(.+)$', r'\1', 'high'),
+            (r"^Run\s+(.+)$", r"\1", "high"),
             # "Check that X" → "X"
-            (r'^Check that\s+(.+)$', r'\1', 'high'),
+            (r"^Check that\s+(.+)$", r"\1", "high"),
             # "Verify that X" → "X"
-            (r'^Verify that\s+(.+)$', r'\1', 'high'),
+            (r"^Verify that\s+(.+)$", r"\1", "high"),
             # "Validate that X" → "X"
-            (r'^Validate that\s+(.+)$', r'\1', 'high'),
+            (r"^Validate that\s+(.+)$", r"\1", "high"),
             # "Ensure that X" → "X"
-            (r'^Ensure that\s+(.+)$', r'\1', 'high'),
+            (r"^Ensure that\s+(.+)$", r"\1", "high"),
             # "Confirm that X" → "X"
-            (r'^Confirm that\s+(.+)$', r'\1', 'high'),
+            (r"^Confirm that\s+(.+)$", r"\1", "high"),
             # "Test that X" → "X"
-            (r'^Test that\s+(.+)$', r'\1', 'medium'),
+            (r"^Test that\s+(.+)$", r"\1", "medium"),
             # Special case: "Run X: `command`" → "X: `command`"
-            (r'^Run\s+([^:]+):\s*(.+)$', r'\1: \2', 'high'),
+            (r"^Run\s+([^:]+):\s*(.+)$", r"\1: \2", "high"),
             # Special case: "Execute X with Y" → "X with Y"
-            (r'^Execute\s+([^:]+)\s+with\s+(.+)$', r'\1 with \2', 'high'),
+            (r"^Execute\s+([^:]+)\s+with\s+(.+)$", r"\1 with \2", "high"),
         ]
 
     def find_workflow_files(self, base_path: Path) -> list[Path]:
@@ -72,7 +79,7 @@ class WorkflowRefactorer:
         yaml_files = []
 
         # Look in vibe/data/workflows and vibe/data/checklists
-        for pattern in ['**/workflows/**/*.yaml', '**/checklists/**/*.yaml']:
+        for pattern in ["**/workflows/**/*.yaml", "**/checklists/**/*.yaml"]:
             yaml_files.extend(base_path.glob(pattern))
 
         return sorted(yaml_files)
@@ -82,26 +89,28 @@ class WorkflowRefactorer:
         changes = []
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
 
             if not data:
                 return changes
 
             # Analyze workflow steps
-            if 'steps' in data:
-                changes.extend(self._analyze_workflow_steps(file_path, data['steps']))
+            if "steps" in data:
+                changes.extend(self._analyze_workflow_steps(file_path, data["steps"]))
 
             # Analyze checklist items
-            if 'items' in data:
-                changes.extend(self._analyze_checklist_items(file_path, data['items']))
+            if "items" in data:
+                changes.extend(self._analyze_checklist_items(file_path, data["items"]))
 
         except Exception as e:
             print(f"Error analyzing {file_path}: {e}")
 
         return changes
 
-    def _analyze_workflow_steps(self, file_path: Path, steps: list[Any]) -> list[RefactoringChange]:
+    def _analyze_workflow_steps(
+        self, file_path: Path, steps: list[Any]
+    ) -> list[RefactoringChange]:
         """Analyze workflow steps for refactoring opportunities."""
         changes = []
 
@@ -111,26 +120,30 @@ class WorkflowRefactorer:
             # Handle both string steps and dict steps with step_text
             if isinstance(step, str):
                 step_text = step
-            elif isinstance(step, dict) and 'step_text' in step:
-                step_text = step['step_text']
+            elif isinstance(step, dict) and "step_text" in step:
+                step_text = step["step_text"]
             else:
                 continue
 
             # Check for transformation opportunities
             proposed_change = self._transform_text(step_text)
-            if proposed_change and proposed_change['text'] != step_text:
-                changes.append(RefactoringChange(
-                    file_path=str(file_path),
-                    item_type='workflow_step',
-                    original=step_text,
-                    proposed=proposed_change['text'],
-                    confidence=proposed_change['confidence'],
-                    reasoning=proposed_change['reasoning']
-                ))
+            if proposed_change and proposed_change["text"] != step_text:
+                changes.append(
+                    RefactoringChange(
+                        file_path=str(file_path),
+                        item_type="workflow_step",
+                        original=step_text,
+                        proposed=proposed_change["text"],
+                        confidence=proposed_change["confidence"],
+                        reasoning=proposed_change["reasoning"],
+                    )
+                )
 
         return changes
 
-    def _analyze_checklist_items(self, file_path: Path, items: list[str]) -> list[RefactoringChange]:
+    def _analyze_checklist_items(
+        self, file_path: Path, items: list[str]
+    ) -> list[RefactoringChange]:
         """Analyze checklist items for refactoring opportunities."""
         changes = []
 
@@ -139,15 +152,17 @@ class WorkflowRefactorer:
                 continue
 
             proposed_change = self._transform_text(item)
-            if proposed_change and proposed_change['text'] != item:
-                changes.append(RefactoringChange(
-                    file_path=str(file_path),
-                    item_type='checklist_item',
-                    original=item,
-                    proposed=proposed_change['text'],
-                    confidence=proposed_change['confidence'],
-                    reasoning=proposed_change['reasoning']
-                ))
+            if proposed_change and proposed_change["text"] != item:
+                changes.append(
+                    RefactoringChange(
+                        file_path=str(file_path),
+                        item_type="checklist_item",
+                        original=item,
+                        proposed=proposed_change["text"],
+                        confidence=proposed_change["confidence"],
+                        reasoning=proposed_change["reasoning"],
+                    )
+                )
 
         return changes
 
@@ -159,7 +174,9 @@ class WorkflowRefactorer:
         for pattern, replacement, confidence in self.transformation_patterns:
             match = re.match(pattern, original_text, re.IGNORECASE)
             if match:
-                transformed = re.sub(pattern, replacement, original_text, flags=re.IGNORECASE)
+                transformed = re.sub(
+                    pattern, replacement, original_text, flags=re.IGNORECASE
+                )
 
                 # Ensure first character is capitalized for professional appearance
                 if transformed and transformed[0].islower():
@@ -170,9 +187,9 @@ class WorkflowRefactorer:
                     continue
 
                 return {
-                    'text': transformed,
-                    'confidence': confidence,
-                    'reasoning': f'Removed redundant verb using pattern: {pattern}'
+                    "text": transformed,
+                    "confidence": confidence,
+                    "reasoning": f"Removed redundant verb using pattern: {pattern}",
                 }
 
         return None
@@ -190,14 +207,14 @@ class WorkflowRefactorer:
         report.append("")
 
         # Group by confidence level
-        high_confidence = [c for c in changes if c.confidence == 'high']
-        medium_confidence = [c for c in changes if c.confidence == 'medium']
-        low_confidence = [c for c in changes if c.confidence == 'low']
+        high_confidence = [c for c in changes if c.confidence == "high"]
+        medium_confidence = [c for c in changes if c.confidence == "medium"]
+        low_confidence = [c for c in changes if c.confidence == "low"]
 
         for confidence, changes_list in [
-            ('HIGH CONFIDENCE', high_confidence),
-            ('MEDIUM CONFIDENCE', medium_confidence),
-            ('LOW CONFIDENCE', low_confidence)
+            ("HIGH CONFIDENCE", high_confidence),
+            ("MEDIUM CONFIDENCE", medium_confidence),
+            ("LOW CONFIDENCE", low_confidence),
         ]:
             if not changes_list:
                 continue
@@ -215,7 +232,9 @@ class WorkflowRefactorer:
 
         return "\n".join(report)
 
-    def apply_changes(self, changes: list[RefactoringChange], create_backup: bool = True) -> bool:
+    def apply_changes(
+        self, changes: list[RefactoringChange], create_backup: bool = True
+    ) -> bool:
         """Apply the refactoring changes to files."""
         if not changes:
             print("No changes to apply.")
@@ -231,7 +250,7 @@ class WorkflowRefactorer:
             try:
                 # Create backup if requested
                 if create_backup:
-                    backup_path = Path(file_path + '.backup')
+                    backup_path = Path(file_path + ".backup")
                     shutil.copy2(file_path, backup_path)
                     print(f"Created backup: {backup_path}")
 
@@ -247,43 +266,66 @@ class WorkflowRefactorer:
 
     def _apply_file_changes(self, file_path: Path, changes: list[RefactoringChange]):
         """Apply changes to a specific file."""
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         # Build a mapping of original → proposed text
         change_map = {c.original: c.proposed for c in changes}
 
         # Apply changes to workflow steps
-        if 'steps' in data:
-            for i, step in enumerate(data['steps']):
+        if "steps" in data:
+            for i, step in enumerate(data["steps"]):
                 if isinstance(step, str) and step in change_map:
-                    data['steps'][i] = change_map[step]
-                elif isinstance(step, dict) and 'step_text' in step and step['step_text'] in change_map:
-                    data['steps'][i]['step_text'] = change_map[step['step_text']]
+                    data["steps"][i] = change_map[step]
+                elif (
+                    isinstance(step, dict)
+                    and "step_text" in step
+                    and step["step_text"] in change_map
+                ):
+                    data["steps"][i]["step_text"] = change_map[step["step_text"]]
 
         # Apply changes to checklist items
-        if 'items' in data:
-            for i, item in enumerate(data['items']):
+        if "items" in data:
+            for i, item in enumerate(data["items"]):
                 if isinstance(item, str) and item in change_map:
-                    data['items'][i] = change_map[item]
+                    data["items"][i] = change_map[item]
 
         # Write back to file
-        with open(file_path, 'w', encoding='utf-8') as f:
-            yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        with open(file_path, "w", encoding="utf-8") as f:
+            yaml.dump(
+                data, f, default_flow_style=False, allow_unicode=True, sort_keys=False
+            )
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Refactor Vibe workflows and checklists')
-    parser.add_argument('--path', type=Path, default=Path('.'),
-                       help='Base path to search for YAML files (default: current directory)')
-    parser.add_argument('--analyze', action='store_true',
-                       help='Analyze files and generate refactoring report (default mode)')
-    parser.add_argument('--apply', action='store_true',
-                       help='Apply refactoring changes to files')
-    parser.add_argument('--no-backup', action='store_true',
-                       help='Skip creating backup files when applying changes')
-    parser.add_argument('--min-confidence', choices=['high', 'medium', 'low'], default='high',
-                       help='Minimum confidence level for changes to apply (default: high)')
+    parser = argparse.ArgumentParser(
+        description="Refactor Vibe workflows and checklists"
+    )
+    parser.add_argument(
+        "--path",
+        type=Path,
+        default=Path("."),
+        help="Base path to search for YAML files (default: current directory)",
+    )
+    parser.add_argument(
+        "--analyze",
+        action="store_true",
+        help="Analyze files and generate refactoring report (default mode)",
+    )
+    parser.add_argument(
+        "--apply", action="store_true", help="Apply refactoring changes to files"
+    )
+    parser.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Skip creating backup files when applying changes",
+    )
+    parser.add_argument(
+        "--min-confidence",
+        choices=["high", "medium", "low"],
+        default="high",
+        help="Minimum confidence level for changes to apply (default: high)",
+    )
 
     args = parser.parse_args()
 
@@ -300,11 +342,10 @@ def main():
         all_changes.extend(changes)
 
     # Filter by confidence level
-    confidence_levels = {'high': 3, 'medium': 2, 'low': 1}
+    confidence_levels = {"high": 3, "medium": 2, "low": 1}
     min_level = confidence_levels[args.min_confidence]
     filtered_changes = [
-        c for c in all_changes
-        if confidence_levels.get(c.confidence, 0) >= min_level
+        c for c in all_changes if confidence_levels.get(c.confidence, 0) >= min_level
     ]
 
     # Generate and display report
@@ -318,7 +359,9 @@ def main():
             return
 
         print(f"\nApplying {len(filtered_changes)} changes...")
-        success = refactorer.apply_changes(filtered_changes, create_backup=not args.no_backup)
+        success = refactorer.apply_changes(
+            filtered_changes, create_backup=not args.no_backup
+        )
 
         if success:
             print("Refactoring completed successfully!")
@@ -329,5 +372,5 @@ def main():
         print(f"(Currently showing changes with confidence >= {args.min_confidence})")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -21,11 +21,13 @@ def main():
     """Demonstrate the session monitoring system."""
     console = Console()
 
-    console.print(Panel.fit(
-        "[bold blue]Vibe Session Monitoring System Demo[/bold blue]\n"
-        "This demo shows how to catch agents when they forget workflow completion.",
-        border_style="blue"
-    ))
+    console.print(
+        Panel.fit(
+            "[bold blue]Vibe Session Monitoring System Demo[/bold blue]\n"
+            "This demo shows how to catch agents when they forget workflow completion.",
+            border_style="blue",
+        )
+    )
 
     # Initialize the system
     config = VibeConfig()
@@ -41,10 +43,10 @@ def main():
             "Design the solution",
             "Implement the features",
             "Test the implementation",
-            "Deploy to production"
+            "Deploy to production",
         ],
         current_step=2,
-        context={"demo": True}
+        context={"demo": True},
     )
 
     session = WorkflowSession(
@@ -52,7 +54,8 @@ def main():
         prompt="Implement a user authentication system",
         workflow_stack=[frame],
         created_at=datetime.now() - timedelta(minutes=20),  # Created 20 minutes ago
-        last_accessed=datetime.now() - timedelta(minutes=12)  # Last accessed 12 minutes ago (dormant)
+        last_accessed=datetime.now()
+        - timedelta(minutes=12),  # Last accessed 12 minutes ago (dormant)
     )
 
     # Save the session
@@ -89,11 +92,13 @@ def main():
                 console.print(f"  • {alert['type']}: {alert['message']}")
                 console.print(f"    Severity: {alert['severity']}")
                 if "intervention_message" in alert:
-                    console.print(Panel(
-                        alert["intervention_message"],
-                        title="Intervention Message",
-                        border_style="yellow"
-                    ))
+                    console.print(
+                        Panel(
+                            alert["intervention_message"],
+                            title="Intervention Message",
+                            border_style="yellow",
+                        )
+                    )
 
         # Display recommendations
         if result["recommendations"]:
@@ -101,13 +106,15 @@ def main():
             for rec in result["recommendations"]:
                 console.print(f"  • {rec}")
 
-    console.print("\n[bold yellow]3. Simulating agent response analysis...[/bold yellow]")
+    console.print(
+        "\n[bold yellow]3. Simulating agent response analysis...[/bold yellow]"
+    )
 
     # Simulate an agent response that indicates completion without workflow management
     agent_responses = [
         "That completes the authentication implementation. The system is now ready to use.",
         "I'll continue with the next step in the workflow using advance_workflow.",
-        "In summary, we have successfully finished the user authentication feature."
+        "In summary, we have successfully finished the user authentication feature.",
     ]
 
     for i, response in enumerate(agent_responses, 1):
@@ -118,13 +125,17 @@ def main():
         if result["alert_detected"]:
             console.print("[red]⚠️  Alert: Forgotten completion pattern detected![/red]")
             alert = result["alert"]
-            console.print(Panel(
-                alert["intervention_message"],
-                title=f"Intervention Required ({alert['severity']} priority)",
-                border_style="red"
-            ))
+            console.print(
+                Panel(
+                    alert["intervention_message"],
+                    title=f"Intervention Required ({alert['severity']} priority)",
+                    border_style="red",
+                )
+            )
         else:
-            console.print("[green]✓ No issues detected - proper workflow management[/green]")
+            console.print(
+                "[green]✓ No issues detected - proper workflow management[/green]"
+            )
 
     console.print("\n[bold yellow]4. Demonstrating cleanup...[/bold yellow]")
 
@@ -133,7 +144,7 @@ def main():
         workflow_name="old_workflow",
         steps=["Old step 1", "Old step 2"],
         current_step=0,
-        context={}
+        context={},
     )
 
     old_session = WorkflowSession(
@@ -141,7 +152,7 @@ def main():
         prompt="Old abandoned workflow",
         workflow_stack=[old_frame],
         created_at=datetime.now() - timedelta(hours=8),  # Very old
-        last_accessed=datetime.now() - timedelta(hours=8)
+        last_accessed=datetime.now() - timedelta(hours=8),
     )
 
     orchestrator.session_manager.save_session(old_session)
@@ -168,20 +179,22 @@ def main():
     orchestrator.session_manager.archive_session(session.session_id)
     console.print(f"✓ Cleaned up demo session: {session.session_id}")
 
-    console.print(Panel.fit(
-        "[bold green]Demo Complete![/bold green]\n\n"
-        "The monitoring system successfully:\n"
-        "• Detected dormant sessions\n"
-        "• Identified completion patterns without workflow management\n"
-        "• Generated intervention messages\n"
-        "• Provided cleanup recommendations\n"
-        "• Automatically archived stale sessions\n\n"
-        "[bold cyan]Integration:[/bold cyan] These features are available in VS Code via MCP tools:\n"
-        "• monitor_sessions\n"
-        "• analyze_agent_response\n"
-        "• cleanup_stale_sessions",
-        border_style="green"
-    ))
+    console.print(
+        Panel.fit(
+            "[bold green]Demo Complete![/bold green]\n\n"
+            "The monitoring system successfully:\n"
+            "• Detected dormant sessions\n"
+            "• Identified completion patterns without workflow management\n"
+            "• Generated intervention messages\n"
+            "• Provided cleanup recommendations\n"
+            "• Automatically archived stale sessions\n\n"
+            "[bold cyan]Integration:[/bold cyan] These features are available in VS Code via MCP tools:\n"
+            "• monitor_sessions\n"
+            "• analyze_agent_response\n"
+            "• cleanup_stale_sessions",
+            border_style="green",
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -14,9 +14,9 @@ def run_command(cmd: list[str]) -> dict:
         return json.loads(result.stdout)
     except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
         print(f"❌ Command failed: {e}")
-        if hasattr(e, 'stdout'):
+        if hasattr(e, "stdout"):
             print(f"   stdout: {e.stdout}")
-        if hasattr(e, 'stderr'):
+        if hasattr(e, "stderr"):
             print(f"   stderr: {e.stderr}")
         sys.exit(1)
 
@@ -37,7 +37,16 @@ def test_cli_checklists():
     # Test show command
     print("\n2. Testing show command...")
     first_checklist = result["checklists"][0]["name"]
-    cmd = ["uv", "run", "vibe", "checklists", "show", first_checklist, "--format", "json"]
+    cmd = [
+        "uv",
+        "run",
+        "vibe",
+        "checklists",
+        "show",
+        first_checklist,
+        "--format",
+        "json",
+    ]
     result = run_command(cmd)
     assert result["success"], "Show command failed"
     assert result["checklist"]["name"] == first_checklist, "Wrong checklist returned"
@@ -45,11 +54,22 @@ def test_cli_checklists():
 
     # Test run command
     print("\n3. Testing run command...")
-    cmd = ["uv", "run", "vibe", "checklists", "run", first_checklist, "--format", "json"]
+    cmd = [
+        "uv",
+        "run",
+        "vibe",
+        "checklists",
+        "run",
+        first_checklist,
+        "--format",
+        "json",
+    ]
     result = run_command(cmd)
     assert result["success"], "Run command failed"
     assert len(result["checklist"]["items"]) > 0, "No checklist items found"
-    print(f"   ✅ Successfully ran '{first_checklist}' with {len(result['checklist']['items'])} items")
+    print(
+        f"   ✅ Successfully ran '{first_checklist}' with {len(result['checklist']['items'])} items"
+    )
 
 
 def test_mcp_checklists():
@@ -70,7 +90,9 @@ def test_mcp_checklists():
     cmd = ["uv", "run", "vibe", "mcp", "list-checklists", "--project-type", "python"]
     result = run_command(cmd)
     assert result["success"], "MCP list-checklists with filter failed"
-    python_checklists = [c for c in result["checklists"] if "python" in c.get("project_types", [])]
+    python_checklists = [
+        c for c in result["checklists"] if "python" in c.get("project_types", [])
+    ]
     print(f"   ✅ Found {len(python_checklists)} Python-specific checklists")
 
     # Test show-checklist
@@ -88,11 +110,22 @@ def test_mcp_checklists():
     result = run_command(cmd)
     assert result["success"], "MCP run-checklist failed"
     assert len(result["checklist"]["items"]) > 0, "No checklist items found"
-    print(f"   ✅ Successfully ran '{first_checklist}' via MCP with {len(result['checklist']['items'])} items")
+    print(
+        f"   ✅ Successfully ran '{first_checklist}' via MCP with {len(result['checklist']['items'])} items"
+    )
 
     # Test run-checklist with simple format
     print("\n5. Testing mcp run-checklist with simple format...")
-    cmd = ["uv", "run", "vibe", "mcp", "run-checklist", first_checklist, "--format", "simple"]
+    cmd = [
+        "uv",
+        "run",
+        "vibe",
+        "mcp",
+        "run-checklist",
+        first_checklist,
+        "--format",
+        "simple",
+    ]
     result = run_command(cmd)
     assert result["success"], "MCP run-checklist simple format failed"
     assert "formatted_output" in result["checklist"], "No formatted output found"

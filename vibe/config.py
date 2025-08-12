@@ -230,11 +230,11 @@ class SessionConfig(BaseModel):
 
     ai_agent_prefix: bool = Field(
         default=True,
-        description="Add prefixes to workflow steps for AI agent optimization"
+        description="Add prefixes to workflow steps for AI agent optimization",
     )
     ai_agent_suffix: bool = Field(
         default=True,
-        description="Add suffix reminders to workflow steps for AI agent optimization"
+        description="Add suffix reminders to workflow steps for AI agent optimization",
     )
 
 

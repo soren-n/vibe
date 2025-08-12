@@ -80,7 +80,7 @@ class WorkflowSession:
         cls,
         prompt: str,
         initial_workflows: list[tuple[str, list[str]]],
-        session_config: SessionConfig = None
+        session_config: SessionConfig = None,
     ) -> "WorkflowSession":
         """Create a new workflow session.
 
@@ -310,7 +310,9 @@ class WorkflowSession:
             "workflow_stack": [asdict(frame) for frame in self.workflow_stack],
             "created_at": self.created_at.isoformat(),
             "last_accessed": self.last_accessed.isoformat(),
-            "session_config": self.session_config.model_dump() if self.session_config else None,
+            "session_config": self.session_config.model_dump()
+            if self.session_config
+            else None,
         }
 
     @classmethod
@@ -365,7 +367,7 @@ class SessionManager:
         self,
         prompt: str,
         workflows: list[tuple[str, list[str]]],
-        session_config: SessionConfig = None
+        session_config: SessionConfig = None,
     ) -> WorkflowSession:
         """Create and persist a new workflow session.
 
@@ -496,10 +498,12 @@ class SessionManager:
             session_info = {
                 "session_id": session_id,
                 "inactive_minutes": inactive_minutes,
-                "current_workflow": session.current_frame.workflow_name if session.current_frame else None,
+                "current_workflow": session.current_frame.workflow_name
+                if session.current_frame
+                else None,
                 "is_complete": session.is_complete,
                 "created_at": session.created_at.isoformat(),
-                "last_accessed": session.last_accessed.isoformat()
+                "last_accessed": session.last_accessed.isoformat(),
             }
 
             active_sessions.append(session_info)
@@ -517,7 +521,7 @@ class SessionManager:
             "active_sessions": active_sessions,
             "dormant_sessions": dormant_sessions,
             "stale_sessions": stale_sessions,
-            "timestamp": now.isoformat()
+            "timestamp": now.isoformat(),
         }
 
     def _save_session(self, session: WorkflowSession) -> None:

@@ -344,10 +344,10 @@ def mcp_list_checklists(project_type: str | None) -> None:
                     "description": checklist.description,
                     "triggers": checklist.triggers,
                     "project_types": checklist.project_types,
-                    "item_count": len(checklist.items)
+                    "item_count": len(checklist.items),
                 }
                 for name, checklist in filtered_checklists.items()
-            ]
+            ],
         }
         print(json.dumps(result, indent=2))
 
@@ -371,10 +371,7 @@ def mcp_show_checklist(name: str) -> None:
         checklist = get_checklist(name)
 
         if not checklist:
-            error_result = {
-                "success": False,
-                "error": f"Checklist '{name}' not found"
-            }
+            error_result = {"success": False, "error": f"Checklist '{name}' not found"}
             print(json.dumps(error_result, indent=2))
             sys.exit(1)
 
@@ -387,8 +384,8 @@ def mcp_show_checklist(name: str) -> None:
                 "project_types": checklist.project_types,
                 "conditions": checklist.conditions,
                 "dependencies": checklist.dependencies,
-                "items": checklist.items
-            }
+                "items": checklist.items,
+            },
         }
         print(json.dumps(result, indent=2))
 
@@ -407,7 +404,7 @@ def mcp_show_checklist(name: str) -> None:
     "--format",
     type=click.Choice(["json", "simple"]),
     default="json",
-    help="Output format for MCP compatibility"
+    help="Output format for MCP compatibility",
 )
 def mcp_run_checklist(name: str, format: str) -> None:
     """Run checklist with JSON output for MCP.
@@ -418,10 +415,7 @@ def mcp_run_checklist(name: str, format: str) -> None:
         checklist = get_checklist(name)
 
         if not checklist:
-            error_result = {
-                "success": False,
-                "error": f"Checklist '{name}' not found"
-            }
+            error_result = {"success": False, "error": f"Checklist '{name}' not found"}
             print(json.dumps(error_result, indent=2))
             sys.exit(1)
 
@@ -437,8 +431,8 @@ def mcp_run_checklist(name: str, format: str) -> None:
                 "checklist": {
                     "name": checklist.name,
                     "description": checklist.description,
-                    "formatted_output": header + items
-                }
+                    "formatted_output": header + items,
+                },
             }
         else:
             # Structured JSON format
@@ -451,11 +445,11 @@ def mcp_run_checklist(name: str, format: str) -> None:
                         {
                             "index": i + 1,
                             "text": item,
-                            "completed": False  # Default state
+                            "completed": False,  # Default state
                         }
                         for i, item in enumerate(checklist.items)
-                    ]
-                }
+                    ],
+                },
             }
 
         print(json.dumps(result, indent=2))
@@ -525,7 +519,9 @@ def mcp_cleanup_sessions(config: str | None) -> None:
 @click.argument("session_id")
 @click.argument("response_text")
 @click.option("--config", "-c", type=click.Path(exists=True), help="Config file path")
-def mcp_analyze_response(session_id: str, response_text: str, config: str | None) -> None:
+def mcp_analyze_response(
+    session_id: str, response_text: str, config: str | None
+) -> None:
     """Analyze an agent response for patterns indicating forgotten workflow completion.
 
     Args:

@@ -34,7 +34,7 @@ def sample_session():
         workflow_name="test_workflow",
         steps=["Step 1", "Step 2", "Step 3"],
         current_step=1,
-        context={}
+        context={},
     )
 
     session = WorkflowSession(
@@ -42,7 +42,7 @@ def sample_session():
         prompt="Test workflow",
         workflow_stack=[frame],
         created_at=datetime.now() - timedelta(hours=1),
-        last_accessed=datetime.now() - timedelta(minutes=15)
+        last_accessed=datetime.now() - timedelta(minutes=15),
     )
 
     return session
@@ -64,7 +64,7 @@ class TestSessionMonitor:
             prompt="Stale workflow",
             workflow_stack=[],
             created_at=datetime.now() - timedelta(hours=2),
-            last_accessed=datetime.now() - timedelta(minutes=45)
+            last_accessed=datetime.now() - timedelta(minutes=45),
         )
 
         assert session_monitor._is_session_stale(stale_session)
@@ -75,7 +75,7 @@ class TestSessionMonitor:
             "That completes the implementation. We have successfully set up the authentication system.",
             "In summary, the project is now ready for deployment.",
             "Final step: the tests are passing and everything looks good.",
-            "This concludes our work on the feature."
+            "This concludes our work on the feature.",
         ]
 
         for response in completion_responses:
@@ -86,7 +86,7 @@ class TestSessionMonitor:
         non_completion_responses = [
             "Let's continue with the next step.",
             "I'm working on implementing the feature.",
-            "The current status shows progress."
+            "The current status shows progress.",
         ]
 
         for response in non_completion_responses:
@@ -97,7 +97,7 @@ class TestSessionMonitor:
         workflow_responses = [
             "I'll use advance_workflow to move to the next step.",
             "Let me break_workflow since we're done.",
-            "I should check workflow status first."
+            "I should check workflow status first.",
         ]
 
         for response in workflow_responses:
@@ -121,8 +121,10 @@ class TestSessionMonitor:
 
         assert alert is None
 
-    @patch.object(SessionMonitor, '_get_active_sessions')
-    def test_check_session_health(self, mock_get_sessions, session_monitor, sample_session):
+    @patch.object(SessionMonitor, "_get_active_sessions")
+    def test_check_session_health(
+        self, mock_get_sessions, session_monitor, sample_session
+    ):
         """Test the session health check functionality."""
         mock_get_sessions.return_value = [sample_session]
 
@@ -140,10 +142,12 @@ class TestSessionMonitor:
             message="Test alert",
             severity="high",
             timestamp=datetime.now(),
-            suggested_actions=["advance_workflow", "break_workflow"]
+            suggested_actions=["advance_workflow", "break_workflow"],
         )
 
-        with patch.object(session_monitor.session_manager, 'load_session', return_value=sample_session):
+        with patch.object(
+            session_monitor.session_manager, "load_session", return_value=sample_session
+        ):
             message = session_monitor.generate_intervention_message(alert)
 
             assert "Workflow Management Reminder" in message
@@ -151,8 +155,10 @@ class TestSessionMonitor:
             assert "break_workflow" in message
             assert sample_session.session_id in message
 
-    @patch.object(SessionMonitor, '_get_active_sessions')
-    def test_get_session_status_summary(self, mock_get_sessions, session_monitor, sample_session):
+    @patch.object(SessionMonitor, "_get_active_sessions")
+    def test_get_session_status_summary(
+        self, mock_get_sessions, session_monitor, sample_session
+    ):
         """Test the session status summary functionality."""
         mock_get_sessions.return_value = [sample_session]
 
@@ -173,9 +179,11 @@ class TestSessionMonitor:
 class TestSessionMonitorIntegration:
     """Test integration with the orchestrator."""
 
-    @patch.object(SessionManager, 'list_sessions')
-    @patch.object(SessionManager, 'load_session')
-    def test_orchestrator_monitor_sessions(self, mock_load, mock_list, mock_orchestrator):
+    @patch.object(SessionManager, "list_sessions")
+    @patch.object(SessionManager, "load_session")
+    def test_orchestrator_monitor_sessions(
+        self, mock_load, mock_list, mock_orchestrator
+    ):
         """Test the orchestrator's monitor_sessions method."""
         # Setup mock session
         mock_list.return_value = ["test1234"]
@@ -184,7 +192,7 @@ class TestSessionMonitorIntegration:
             prompt="Test",
             workflow_stack=[],
             created_at=datetime.now() - timedelta(hours=1),
-            last_accessed=datetime.now() - timedelta(minutes=15)
+            last_accessed=datetime.now() - timedelta(minutes=15),
         )
         mock_load.return_value = mock_session
 
@@ -194,10 +202,12 @@ class TestSessionMonitorIntegration:
         assert "monitoring_data" in result
         assert "recommendations" in result
 
-    @patch.object(SessionManager, 'list_sessions')
-    @patch.object(SessionManager, 'load_session')
-    @patch.object(SessionManager, 'archive_session')
-    def test_orchestrator_cleanup_stale_sessions(self, mock_archive, mock_load, mock_list, mock_orchestrator):
+    @patch.object(SessionManager, "list_sessions")
+    @patch.object(SessionManager, "load_session")
+    @patch.object(SessionManager, "archive_session")
+    def test_orchestrator_cleanup_stale_sessions(
+        self, mock_archive, mock_load, mock_list, mock_orchestrator
+    ):
         """Test the orchestrator's cleanup_stale_sessions method."""
         # Setup mock stale session
         mock_list.return_value = ["stale123"]
@@ -206,7 +216,7 @@ class TestSessionMonitorIntegration:
             prompt="Stale",
             workflow_stack=[],
             created_at=datetime.now() - timedelta(hours=7),  # Old enough to archive
-            last_accessed=datetime.now() - timedelta(hours=7)
+            last_accessed=datetime.now() - timedelta(hours=7),
         )
         mock_load.return_value = mock_session
 
@@ -219,8 +229,7 @@ class TestSessionMonitorIntegration:
     def test_orchestrator_analyze_agent_response(self, mock_orchestrator):
         """Test the orchestrator's analyze_agent_response method."""
         result = mock_orchestrator.analyze_agent_response(
-            "test1234",
-            "That completes the implementation task."
+            "test1234", "That completes the implementation task."
         )
 
         assert result["success"] is True

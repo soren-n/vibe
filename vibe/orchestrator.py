@@ -361,7 +361,9 @@ class WorkflowOrchestrator:
                 }
 
             # Create session
-            session = self.session_manager.create_session(prompt, workflow_steps, self.config.session)
+            session = self.session_manager.create_session(
+                prompt, workflow_steps, self.config.session
+            )
 
             # Get first step
             current_step = session.get_current_step()
@@ -643,7 +645,7 @@ class WorkflowOrchestrator:
                         message=alert_dict["message"],
                         severity=alert_dict["severity"],
                         timestamp=datetime.fromisoformat(alert_dict["timestamp"]),
-                        suggested_actions=alert_dict["suggested_actions"]
+                        suggested_actions=alert_dict["suggested_actions"],
                     )
                     intervention_message = monitor.generate_intervention_message(alert)
                     alert_dict["intervention_message"] = intervention_message
@@ -651,7 +653,9 @@ class WorkflowOrchestrator:
         return {
             "success": True,
             "monitoring_data": status_summary,
-            "recommendations": self._generate_monitoring_recommendations(status_summary)
+            "recommendations": self._generate_monitoring_recommendations(
+                status_summary
+            ),
         }
 
     def cleanup_stale_sessions(self) -> dict[str, Any]:
@@ -664,10 +668,12 @@ class WorkflowOrchestrator:
         return {
             "success": True,
             "cleaned_sessions": cleaned_sessions,
-            "message": f"Cleaned up {len(cleaned_sessions)} stale sessions"
+            "message": f"Cleaned up {len(cleaned_sessions)} stale sessions",
         }
 
-    def analyze_agent_response(self, session_id: str, response_text: str) -> dict[str, Any]:
+    def analyze_agent_response(
+        self, session_id: str, response_text: str
+    ) -> dict[str, Any]:
         """Analyze an agent response for patterns indicating forgotten workflow completion."""
         from .session_monitor import SessionMonitor
 
@@ -684,17 +690,19 @@ class WorkflowOrchestrator:
                     "message": alert.message,
                     "severity": alert.severity,
                     "suggested_actions": alert.suggested_actions,
-                    "intervention_message": intervention_message
-                }
+                    "intervention_message": intervention_message,
+                },
             }
 
         return {
             "success": True,
             "alert_detected": False,
-            "message": "No completion patterns detected that require intervention"
+            "message": "No completion patterns detected that require intervention",
         }
 
-    def _generate_monitoring_recommendations(self, status_summary: dict[str, Any]) -> list[str]:
+    def _generate_monitoring_recommendations(
+        self, status_summary: dict[str, Any]
+    ) -> list[str]:
         """Generate recommendations based on monitoring data."""
         recommendations = []
 

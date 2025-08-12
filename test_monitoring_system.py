@@ -22,7 +22,7 @@ def test_monitoring_system():
 
     # Test 1: Check monitoring methods exist
     print("\n1. Verifying monitoring methods...")
-    methods = ['monitor_sessions', 'cleanup_stale_sessions', 'analyze_agent_response']
+    methods = ["monitor_sessions", "cleanup_stale_sessions", "analyze_agent_response"]
     for method in methods:
         if hasattr(orchestrator, method):
             print(f"   ✅ {method}")
@@ -36,12 +36,12 @@ def test_monitoring_system():
         result = orchestrator.monitor_sessions()
         print("   ✅ Monitor sessions method succeeded")
 
-        if 'monitoring_data' in result:
-            monitoring_data = result['monitoring_data']
-            sessions_count = monitoring_data.get('total_active_sessions', 0)
+        if "monitoring_data" in result:
+            monitoring_data = result["monitoring_data"]
+            sessions_count = monitoring_data.get("total_active_sessions", 0)
             print(f"   📊 Found {sessions_count} active sessions")
 
-            alerts = monitoring_data.get('alerts', [])
+            alerts = monitoring_data.get("alerts", [])
             print(f"   � Found {len(alerts)} alerts")
 
             if alerts:
@@ -53,6 +53,7 @@ def test_monitoring_system():
     except Exception as e:
         print(f"   ❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -62,15 +63,19 @@ def test_monitoring_system():
         "I've completed the analysis. The project structure looks good.",
         "Here's my summary of the findings: ...",
         "The linting checks passed successfully.",
-        "I need to check the dependencies first."
+        "I need to check the dependencies first.",
     ]
 
     for i, response in enumerate(test_responses, 1):
         try:
             # Use a dummy session ID for testing
             result = orchestrator.analyze_agent_response("test_session", response)
-            completion_indicators = result.get('analysis', {}).get('completion_indicators', [])
-            print(f"   Response {i}: {len(completion_indicators)} completion indicators")
+            completion_indicators = result.get("analysis", {}).get(
+                "completion_indicators", []
+            )
+            print(
+                f"   Response {i}: {len(completion_indicators)} completion indicators"
+            )
         except Exception as e:
             print(f"   ❌ Error analyzing response {i}: {e}")
             return False
@@ -83,7 +88,9 @@ def test_monitoring_system():
 
         # Test status summary
         status_summary = monitor.get_session_status_summary()
-        print(f"   📊 Status summary: {status_summary['total_active_sessions']} sessions")
+        print(
+            f"   📊 Status summary: {status_summary['total_active_sessions']} sessions"
+        )
 
         # Test pattern detection by analyzing agent response
         test_text = "I've completed the analysis and found no issues."
@@ -96,12 +103,14 @@ def test_monitoring_system():
     except Exception as e:
         print(f"   ❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
     print("\n" + "=" * 50)
     print("🎉 All monitoring system tests passed!")
     return True
+
 
 if __name__ == "__main__":
     success = test_monitoring_system()

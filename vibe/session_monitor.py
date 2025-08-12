@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SessionAlert:
     """Represents an alert about a session that needs attention."""
+
     session_id: str
     alert_type: str
     message: str
@@ -50,22 +51,22 @@ class SessionMonitor:
 
         # Configuration
         self.dormant_threshold_minutes = 10  # Sessions inactive for 10+ minutes
-        self.stale_threshold_minutes = 30    # Sessions inactive for 30+ minutes
-        self.max_session_age_hours = 6       # Auto-archive after 6 hours
+        self.stale_threshold_minutes = 30  # Sessions inactive for 30+ minutes
+        self.max_session_age_hours = 6  # Auto-archive after 6 hours
 
         # Pattern detection for completion indicators
         self.completion_patterns = [
-            r'\b(summary|conclusion|final|complete|done|finished|ready)\b',
-            r'\b(that should|this completes|we have|i have)\b',
-            r'\b(in summary|to summarize|to conclude)\b',
-            r'\b(next steps?|follow.?up|moving forward)\b',
+            r"\b(summary|conclusion|final|complete|done|finished|ready)\b",
+            r"\b(that should|this completes|we have|i have)\b",
+            r"\b(in summary|to summarize|to conclude)\b",
+            r"\b(next steps?|follow.?up|moving forward)\b",
         ]
 
         # Pattern detection for workflow continuation indicators
         self.continuation_patterns = [
-            r'\b(next|continue|proceed|advance|step)\b',
-            r'\b(workflow|checklist|session)\b',
-            r'\b(let me|i will|shall we)\b',
+            r"\b(next|continue|proceed|advance|step)\b",
+            r"\b(workflow|checklist|session)\b",
+            r"\b(let me|i will|shall we)\b",
         ]
 
         # Track recent agent responses for pattern analysis
@@ -96,7 +97,9 @@ class SessionMonitor:
 
         return alerts
 
-    def analyze_agent_response(self, session_id: str, response: str) -> SessionAlert | None:
+    def analyze_agent_response(
+        self, session_id: str, response: str
+    ) -> SessionAlert | None:
         """
         Analyze an agent response for patterns indicating forgotten workflow completion.
 
@@ -117,7 +120,9 @@ class SessionMonitor:
         self._response_history[session_id] = self._response_history[session_id][-5:]
 
         # Check for completion patterns without workflow management
-        if self._has_completion_pattern(response) and not self._has_workflow_management(response):
+        if self._has_completion_pattern(response) and not self._has_workflow_management(
+            response
+        ):
             return self._create_forgotten_completion_alert(session_id, response)
 
         return None
@@ -159,9 +164,15 @@ class SessionMonitor:
 
         return {
             "total_active_sessions": len(active_sessions),
-            "dormant_sessions": len([a for a in alerts if a.alert_type == "dormant_session"]),
-            "stale_sessions": len([a for a in alerts if a.alert_type == "stale_session"]),
-            "forgotten_completions": len([a for a in alerts if a.alert_type == "forgotten_completion"]),
+            "dormant_sessions": len(
+                [a for a in alerts if a.alert_type == "dormant_session"]
+            ),
+            "stale_sessions": len(
+                [a for a in alerts if a.alert_type == "stale_session"]
+            ),
+            "forgotten_completions": len(
+                [a for a in alerts if a.alert_type == "forgotten_completion"]
+            ),
             "alerts": [
                 {
                     "session_id": a.session_id,
@@ -169,7 +180,7 @@ class SessionMonitor:
                     "severity": a.severity,
                     "message": a.message,
                     "timestamp": a.timestamp.isoformat(),
-                    "suggested_actions": a.suggested_actions
+                    "suggested_actions": a.suggested_actions,
                 }
                 for a in alerts
             ],
@@ -178,13 +189,17 @@ class SessionMonitor:
                     "session_id": s.session_id,
                     "created_at": s.created_at.isoformat(),
                     "last_accessed": s.last_accessed.isoformat(),
-                    "current_workflow": s.current_frame.workflow_name if s.current_frame else None,
-                    "current_step": s.current_frame.current_step if s.current_frame else None,
+                    "current_workflow": s.current_frame.workflow_name
+                    if s.current_frame
+                    else None,
+                    "current_step": s.current_frame.current_step
+                    if s.current_frame
+                    else None,
                     "total_steps": len(s.current_frame.steps) if s.current_frame else 0,
-                    "is_complete": s.is_complete
+                    "is_complete": s.is_complete,
                 }
                 for s in active_sessions
-            ]
+            ],
         }
 
     def cleanup_stale_sessions(self) -> list[str]:
@@ -234,14 +249,21 @@ class SessionMonitor:
     def _has_completion_pattern(self, text: str) -> bool:
         """Check if text contains patterns indicating completion."""
         text_lower = text.lower()
-        return any(re.search(pattern, text_lower) for pattern in self.completion_patterns)
+        return any(
+            re.search(pattern, text_lower) for pattern in self.completion_patterns
+        )
 
     def _has_workflow_management(self, text: str) -> bool:
         """Check if text contains workflow management keywords."""
         workflow_keywords = [
-            'advance_workflow', 'break_workflow', 'get_workflow_status',
-            'list_workflow_sessions', 'workflow status', 'next step',
-            'continue workflow', 'complete workflow'
+            "advance_workflow",
+            "break_workflow",
+            "get_workflow_status",
+            "list_workflow_sessions",
+            "workflow status",
+            "next step",
+            "continue workflow",
+            "complete workflow",
         ]
         text_lower = text.lower()
         return any(keyword in text_lower for keyword in workflow_keywords)
@@ -259,8 +281,8 @@ class SessionMonitor:
             suggested_actions=[
                 "Check if workflow should be advanced",
                 "Consider breaking out of workflow if complete",
-                "Verify if session is still needed"
-            ]
+                "Verify if session is still needed",
+            ],
         )
 
     def _create_stale_alert(self, session: WorkflowSession) -> SessionAlert:
@@ -276,8 +298,8 @@ class SessionMonitor:
             suggested_actions=[
                 "Archive session if no longer needed",
                 "Break out of workflow to clean up",
-                "Check if session was forgotten"
-            ]
+                "Check if session was forgotten",
+            ],
         )
 
     def _create_archive_alert(self, session: WorkflowSession) -> SessionAlert:
@@ -292,11 +314,13 @@ class SessionMonitor:
             timestamp=datetime.now(),
             suggested_actions=[
                 "Session will be automatically archived",
-                "No action required unless session is still active"
-            ]
+                "No action required unless session is still active",
+            ],
         )
 
-    def _create_forgotten_completion_alert(self, session_id: str, response: str) -> SessionAlert:
+    def _create_forgotten_completion_alert(
+        self, session_id: str, response: str
+    ) -> SessionAlert:
         """Create an alert for forgotten workflow completion."""
         return SessionAlert(
             session_id=session_id,
@@ -307,11 +331,13 @@ class SessionMonitor:
             suggested_actions=[
                 "Remind agent to call advance_workflow",
                 "Check if workflow should be completed with break_workflow",
-                "Verify workflow status with get_workflow_status"
-            ]
+                "Verify workflow status with get_workflow_status",
+            ],
         )
 
-    def _format_completion_reminder(self, session: WorkflowSession, current_step: dict[str, Any]) -> str:
+    def _format_completion_reminder(
+        self, session: WorkflowSession, current_step: dict[str, Any]
+    ) -> str:
         """Format a reminder message for forgotten completion."""
         step_info = ""
         if current_step:
@@ -334,7 +360,9 @@ I notice you may have completed a task, but there's an active workflow session t
 This ensures proper workflow completion and prevents orphaned sessions.
 """
 
-    def _format_dormant_reminder(self, session: WorkflowSession, current_step: dict[str, Any]) -> str:
+    def _format_dormant_reminder(
+        self, session: WorkflowSession, current_step: dict[str, Any]
+    ) -> str:
         """Format a reminder message for dormant sessions."""
         step_info = ""
         if current_step:
@@ -346,7 +374,7 @@ This ensures proper workflow completion and prevents orphaned sessions.
 You have a workflow session that's been inactive.
 
 **Session:** `{session.session_id}`
-**Workflow:** `{session.current_frame.workflow_name if session.current_frame else 'Unknown'}`
+**Workflow:** `{session.current_frame.workflow_name if session.current_frame else "Unknown"}`
 {step_info}
 
 **Consider:**
@@ -355,7 +383,9 @@ You have a workflow session that's been inactive.
 - `break_workflow` - Exit if workflow is no longer needed
 """
 
-    def _format_stale_reminder(self, session: WorkflowSession, current_step: dict[str, Any]) -> str:
+    def _format_stale_reminder(
+        self, session: WorkflowSession, current_step: dict[str, Any]
+    ) -> str:
         """Format a reminder message for stale sessions."""
         return f"""
 ⏰ **Stale Workflow Session**
