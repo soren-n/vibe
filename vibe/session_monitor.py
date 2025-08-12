@@ -56,15 +56,16 @@ class SessionMonitor:
 
         # Pattern detection for completion indicators
         self.completion_patterns = [
-            r"\b(summary|conclusion|final|complete|done|finished|ready)\b",
-            r"\b(that should|this completes|we have|i have)\b",
+            r"\b(summary|conclusion|concludes|final|complete|done|finished|ready)\b",
+            r"\b(that|this) (should|completes|completed)\b",
+            r"\b(we have|i have) (completed|finished|done)\b",
             r"\b(in summary|to summarize|to conclude)\b",
-            r"\b(next steps?|follow.?up|moving forward)\b",
         ]
 
         # Pattern detection for workflow continuation indicators
         self.continuation_patterns = [
             r"\b(next|continue|proceed|advance|step)\b",
+            r"\b(next steps?|follow.?up|moving forward)\b",
             r"\b(workflow|checklist|session)\b",
             r"\b(let me|i will|shall we)\b",
         ]
@@ -383,8 +384,8 @@ You have a workflow session that's been inactive.
 
 **Session:** `{session.session_id}`
 **Workflow:** `{
-    session.current_frame.workflow_name if session.current_frame else "Unknown"
-}`
+            session.current_frame.workflow_name if session.current_frame else "Unknown"
+        }`
 {step_info}
 
 **Consider:**
