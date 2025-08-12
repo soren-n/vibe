@@ -643,9 +643,7 @@ def list_workflows(workflows: tuple[str, ...]) -> None:
 
 def validate_workflow_schemas() -> None:
     """Validate all workflow YAML files against the JSON schema."""
-
     from ..workflows.loader import WorkflowLoader
-    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
 
     console.print("🔍 [bold blue]Validating Workflow Schemas[/bold blue]")
     console.print()
@@ -653,101 +651,149 @@ def validate_workflow_schemas() -> None:
     # Create a loader with validation enabled
     loader = WorkflowLoader(enable_validation=True)
 
-    # First validate workflows in data directory
+    # Validate data directory workflows
+    valid_count, invalid_count = _validate_data_directory_workflows(loader)
+
+    # Validate .vibe.yaml workflows
+    config_valid, config_invalid = _validate_config_workflows()
+
+    # Combine results and display summary
+    total_valid = valid_count + config_valid
+    total_invalid = invalid_count + config_invalid
+    _display_validation_summary(total_valid, total_invalid)
+
+
+def _validate_data_directory_workflows(loader: Any) -> tuple[int, int]:
+    """Validate workflows in the data directory."""
+
     valid_count = 0
     invalid_count = 0
 
-    if loader.data_dir.exists():
-        yaml_files = list(loader.data_dir.rglob("*.yaml"))
-        if yaml_files:
-            console.print(f"📋 Found {len(yaml_files)} workflow files to validate")
-            console.print()
+    if not loader.data_dir.exists():
+        return valid_count, invalid_count
 
-            for yaml_file in yaml_files:
-                relative_path = yaml_file.relative_to(loader.data_dir)
+    yaml_files = list(loader.data_dir.rglob("*.yaml"))
+    if not yaml_files:
+        return valid_count, invalid_count
 
-                try:
-                    with open(yaml_file, encoding="utf-8") as f:
-                        data = yaml.safe_load(f)
+    console.print(f"📋 Found {len(yaml_files)} workflow files to validate")
+    console.print()
 
-                    if not data:
-                        console.print(
-                            f"[yellow]⚠️ {relative_path}: Empty or invalid YAML[/yellow]"
-                        )
-                        invalid_count += 1
-                        continue
+    for yaml_file in yaml_files:
+        valid, invalid = _validate_single_workflow_file(yaml_file, loader.data_dir)
+        valid_count += valid
+        invalid_count += invalid
 
-                    # Validate against schema
-                    validate_workflow_data(data)
-                    console.print(f"[green]✅ {relative_path}[/green]")
-                    valid_count += 1
+    return valid_count, invalid_count
 
-                except WorkflowValidationError as e:
-                    console.print(f"[red]❌ {relative_path}:[/red]")
-                    # Print validation errors with indentation
-                    for line in str(e).split("\n")[1:]:  # Skip the first line
-                        if line.strip():
-                            console.print(f"   {line}")
-                    invalid_count += 1
 
-                except Exception as e:
-                    console.print(f"[red]❌ {relative_path}: {e}[/red]")
-                    invalid_count += 1
+def _validate_single_workflow_file(yaml_file: Path, data_dir: Path) -> tuple[int, int]:
+    """Validate a single workflow YAML file."""
+    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
 
-    # Now validate workflows in .vibe.yaml
+    relative_path = yaml_file.relative_to(data_dir)
+
+    try:
+        with open(yaml_file, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+
+        if not data:
+            console.print(f"[yellow]⚠️ {relative_path}: Empty or invalid YAML[/yellow]")
+            return 0, 1
+
+        # Validate against schema
+        validate_workflow_data(data)
+        console.print(f"[green]✅ {relative_path}[/green]")
+        return 1, 0
+
+    except WorkflowValidationError as e:
+        console.print(f"[red]❌ {relative_path}:[/red]")
+        # Print validation errors with indentation
+        for line in str(e).split("\n")[1:]:  # Skip the first line
+            if line.strip():
+                console.print(f"   {line}")
+        return 0, 1
+
+    except Exception as e:
+        console.print(f"[red]❌ {relative_path}: {e}[/red]")
+        return 0, 1
+
+
+def _validate_config_workflows() -> tuple[int, int]:
+    """Validate workflows defined in .vibe.yaml."""
     console.print()
     console.print("🔍 [bold blue]Validating .vibe.yaml Workflows[/bold blue]")
     console.print()
 
     try:
         config = VibeConfig.load_from_file()
-        if config.workflows:
-            console.print(f"📋 Found {len(config.workflows)} workflows in .vibe.yaml")
-            console.print()
-
-            for workflow_name, workflow_config in config.workflows.items():
-                try:
-                    # Convert WorkflowConfig to dict for validation
-                    # Use commands as steps if steps is empty (legacy support)
-                    steps = (
-                        workflow_config.steps
-                        if workflow_config.steps
-                        else workflow_config.commands
-                    )
-
-                    # If both steps and commands are empty, provide default guidance
-                    if not steps:
-                        steps = [f"Provide guidance for {workflow_name} workflow"]
-
-                    workflow_data = {
-                        "name": workflow_config.description or workflow_name,
-                        "description": workflow_config.description,
-                        "triggers": workflow_config.triggers,
-                        "steps": steps,
-                    }
-
-                    # Validate against schema
-                    validate_workflow_data(workflow_data)
-                    console.print(f"[green]✅ .vibe.yaml: {workflow_name}[/green]")
-                    valid_count += 1
-
-                except WorkflowValidationError as e:
-                    console.print(f"[red]❌ .vibe.yaml: {workflow_name}:[/red]")
-                    for line in str(e).split("\n")[1:]:
-                        if line.strip():
-                            console.print(f"   {line}")
-                    invalid_count += 1
-
-                except Exception as e:
-                    console.print(f"[red]❌ .vibe.yaml: {workflow_name}: {e}[/red]")
-                    invalid_count += 1
-        else:
+        if not config.workflows:
             console.print("[dim]No workflows found in .vibe.yaml[/dim]")
+            return 0, 0
+
+        console.print(f"📋 Found {len(config.workflows)} workflows in .vibe.yaml")
+        console.print()
+
+        valid_count = 0
+        invalid_count = 0
+
+        for workflow_name, workflow_config in config.workflows.items():
+            valid, invalid = _validate_single_config_workflow(
+                workflow_name, workflow_config
+            )
+            valid_count += valid
+            invalid_count += invalid
+
+        return valid_count, invalid_count
 
     except Exception as e:
         console.print(f"[red]❌ Error loading .vibe.yaml: {e}[/red]")
-        invalid_count += 1
+        return 0, 1
 
+
+def _validate_single_config_workflow(
+    workflow_name: str, workflow_config: Any
+) -> tuple[int, int]:
+    """Validate a single workflow from .vibe.yaml configuration."""
+    from ..workflows.validation import WorkflowValidationError, validate_workflow_data
+
+    try:
+        # Convert WorkflowConfig to dict for validation
+        # Use commands as steps if steps is empty (legacy support)
+        steps = (
+            workflow_config.steps if workflow_config.steps else workflow_config.commands
+        )
+
+        # If both steps and commands are empty, provide default guidance
+        if not steps:
+            steps = [f"Provide guidance for {workflow_name} workflow"]
+
+        workflow_data = {
+            "name": workflow_config.description or workflow_name,
+            "description": workflow_config.description,
+            "triggers": workflow_config.triggers,
+            "steps": steps,
+        }
+
+        # Validate against schema
+        validate_workflow_data(workflow_data)
+        console.print(f"[green]✅ .vibe.yaml: {workflow_name}[/green]")
+        return 1, 0
+
+    except WorkflowValidationError as e:
+        console.print(f"[red]❌ .vibe.yaml: {workflow_name}:[/red]")
+        for line in str(e).split("\n")[1:]:
+            if line.strip():
+                console.print(f"   {line}")
+        return 0, 1
+
+    except Exception as e:
+        console.print(f"[red]❌ .vibe.yaml: {workflow_name}: {e}[/red]")
+        return 0, 1
+
+
+def _display_validation_summary(valid_count: int, invalid_count: int) -> None:
+    """Display validation summary and exit appropriately."""
     console.print()
     console.print("📊 [bold]Validation Summary:[/bold]")
     console.print(f"   [green]✅ Valid: {valid_count}[/green]")
