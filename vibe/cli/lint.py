@@ -115,51 +115,74 @@ def text(text: str, context: str, format: str) -> None:
     linter = ProjectLinter()
     quality_issues = linter.lint_text(text, context)
 
+    # Route to appropriate output format
     if format == "json":
-        import json
+        _print_text_json_report(quality_issues)
+    elif format == "summary":
+        _print_text_summary_report(quality_issues)
+    else:
+        _print_text_rich_report(quality_issues)
 
-        result = {
-            "issues": quality_issues,
-            "report": {
-                "total_issues": len(quality_issues),
-                "issues_by_type": {},
-                "issues_by_severity": {},
-                "suggestions": [],
-            },
-        }
 
-        for issue in quality_issues:
-            issue_type = issue["type"]
-            severity = issue["severity"]
-            result["report"]["issues_by_type"][issue_type] = (
-                result["report"]["issues_by_type"].get(issue_type, 0) + 1
-            )
-            result["report"]["issues_by_severity"][severity] = (
-                result["report"]["issues_by_severity"].get(severity, 0) + 1
-            )
+def _print_text_json_report(quality_issues: list[dict[str, Any]]) -> None:
+    """Print text quality issues in JSON format."""
+    import json
 
-            if suggestion := issue.get("suggestion"):
-                result["report"]["suggestions"].append(suggestion)
+    result = {
+        "issues": quality_issues,
+        "report": _build_text_quality_report(quality_issues),
+    }
+    print(json.dumps(result, indent=2))
 
-        print(json.dumps(result, indent=2))
+
+def _build_text_quality_report(quality_issues: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build a quality report summary from issues."""
+    report: dict[str, Any] = {
+        "total_issues": len(quality_issues),
+        "issues_by_type": {},
+        "issues_by_severity": {},
+        "suggestions": [],
+    }
+
+    for issue in quality_issues:
+        issue_type = issue["type"]
+        severity = issue["severity"]
+
+        # Count by type and severity
+        issues_by_type = report["issues_by_type"]
+        issues_by_type[issue_type] = issues_by_type.get(issue_type, 0) + 1
+
+        issues_by_severity = report["issues_by_severity"]
+        issues_by_severity[severity] = issues_by_severity.get(severity, 0) + 1
+
+        # Collect suggestions
+        if suggestion := issue.get("suggestion"):
+            suggestions = report["suggestions"]
+            suggestions.append(suggestion)
+
+    return report
+
+
+def _print_text_summary_report(quality_issues: list[dict[str, Any]]) -> None:
+    """Print text quality issues in summary format."""
+    if not quality_issues:
+        print("Text quality: PASS")
         return
 
+    print(f"Text quality issues: {len(quality_issues)} found")
+    for issue in quality_issues:
+        print(f"  {issue['severity'].upper()}: {issue['message']}")
+
+
+def _print_text_rich_report(quality_issues: list[dict[str, Any]]) -> None:
+    """Print text quality issues in rich table format."""
     console = Console()
 
     if not quality_issues:
-        if format == "summary":
-            print("Text quality: PASS")
-        else:
-            console.print("✅ [green]Text quality looks good![/green]")
+        console.print("✅ [green]Text quality looks good![/green]")
         return
 
-    if format == "summary":
-        print(f"Text quality issues: {len(quality_issues)} found")
-        for issue in quality_issues:
-            print(f"  {issue['severity'].upper()}: {issue['message']}")
-        return
-
-    # Rich format (default)
+    # Create and populate table
     table = Table(title="Text Quality Analysis")
     table.add_column("Type", style="cyan")
     table.add_column("Severity", style="yellow")
@@ -212,7 +235,14 @@ def _print_rich_report(console: Console, issues: list[Any], report: LintReport) 
         console.print("✅ [green]No linting issues found![/green]")
         return
 
-    # Summary panel
+    # Print all sections of the report
+    _print_summary_panel(console, total, report)
+    _print_detailed_issues(console, issues, total)
+    _print_suggestions_panel(console, report)
+
+
+def _print_summary_panel(console: Console, total: int, report: LintReport) -> None:
+    """Print the summary panel with issue counts by severity."""
     summary_text = Text()
     summary_text.append(f"Total Issues: {total}\n", style="bold")
 
@@ -225,56 +255,79 @@ def _print_rich_report(console: Console, issues: list[Any], report: LintReport) 
     console.print(Panel(summary_text, title="📊 Linting Summary", border_style="blue"))
     console.print()
 
-    # Detailed issues
-    for issue in issues[:20]:  # Limit to first 20 issues
-        # Choose emoji and color based on issue type and severity
-        type_emoji = {
-            "naming_convention": "📝",
-            "emoji_usage": "😀",
-            "unprofessional_language": "💬",
-        }.get(issue.issue_type, "⚠️")
 
-        severity_color = {"error": "red", "warning": "yellow", "info": "blue"}.get(
-            issue.severity, "white"
-        )
-
-        # Format location info
-        location = str(issue.file_path)
-        if issue.line_number:
-            location += f":{issue.line_number}"
-            if issue.column:
-                location += f":{issue.column}"
-
-        # Build issue text
-        issue_text = Text()
-        issue_text.append(f"{type_emoji} ", style="")
-        issue_text.append(f"[{issue.severity.upper()}] ", style=severity_color)
-        issue_text.append(f"{issue.message}\n", style="white")
-        issue_text.append(f"   📁 {location}", style="dim")
-
-        if issue.suggestion:
-            issue_text.append(f"\n   💡 {issue.suggestion}", style="green")
-
+def _print_detailed_issues(console: Console, issues: list[Any], total: int) -> None:
+    """Print detailed issue information with formatting."""
+    # Show first 20 issues with details
+    for issue in issues[:20]:
+        issue_text = _format_single_issue(issue)
         console.print(issue_text)
         console.print()
 
+    # Show overflow message if needed
     if total > 20:
         console.print(f"... and {total - 20} more issues")
         console.print("💡 Use --format=summary for a condensed view")
 
-    # Top suggestions
-    if report["suggestions"]:
-        console.print()
-        suggestions_text = Text()
-        suggestions_text.append("🔧 Quick Fixes:\n", style="bold green")
 
-        # Show top 5 suggestions
-        for i, suggestion in enumerate(report["suggestions"][:5], 1):
-            suggestions_text.append(f"{i}. {suggestion['suggestion']}\n", style="green")
-            suggestions_text.append(
-                f"   {Path(suggestion['file']).name}\n", style="dim"
-            )
+def _format_single_issue(issue: Any) -> Text:
+    """Format a single issue with emojis, colors, and location info."""
+    # Choose emoji and color based on issue type and severity
+    type_emoji = {
+        "naming_convention": "📝",
+        "emoji_usage": "😀",
+        "unprofessional_language": "💬",
+    }.get(issue.issue_type, "⚠️")
 
-        console.print(
-            Panel(suggestions_text, title="💡 Suggestions", border_style="green")
-        )
+    severity_color = {"error": "red", "warning": "yellow", "info": "blue"}.get(
+        issue.severity, "white"
+    )
+
+    # Format location info
+    location = _format_issue_location(issue)
+
+    # Build issue text
+    issue_text = Text()
+    issue_text.append(f"{type_emoji} ", style="")
+    issue_text.append(f"[{issue.severity.upper()}] ", style=severity_color)
+    issue_text.append(f"{issue.message}\n", style="white")
+    issue_text.append(f"   📁 {location}", style="dim")
+
+    if issue.suggestion:
+        issue_text.append(f"\n   💡 {issue.suggestion}", style="green")
+
+    return issue_text
+
+
+def _format_issue_location(issue: Any) -> str:
+    """Format the location string for an issue."""
+    location = str(issue.file_path)
+    if issue.line_number:
+        location += f":{issue.line_number}"
+        if issue.column:
+            location += f":{issue.column}"
+    return location
+
+
+def _print_suggestions_panel(console: Console, report: LintReport) -> None:
+    """Print the suggestions panel with quick fixes."""
+    if not report["suggestions"]:
+        return
+
+    console.print()
+    suggestions_text = Text()
+    suggestions_text.append("🔧 Quick Fixes:\n", style="bold green")
+
+    # Show top 5 suggestions
+    for i, suggestion in enumerate(report["suggestions"][:5], 1):
+        if isinstance(suggestion, dict):
+            suggestion_text = suggestion.get("suggestion", str(suggestion))
+            file_name = suggestion.get("file", "unknown")
+        else:
+            suggestion_text = str(suggestion)
+            file_name = "unknown"
+
+        suggestions_text.append(f"{i}. {suggestion_text}\n", style="green")
+        suggestions_text.append(f"   {Path(file_name).name}\n", style="dim")
+
+    console.print(Panel(suggestions_text, title="💡 Suggestions", border_style="green"))

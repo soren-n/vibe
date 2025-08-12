@@ -119,7 +119,16 @@ class PromptAnalyzer:
         """Display analysis results with rich formatting."""
         self.console.print()
 
-        # Show prompt
+        # Show sections of the analysis
+        self._display_prompt_panel(prompt)
+        self._display_workflow_results(
+            all_items, built_in_workflows, config_workflows, matching_checklists
+        )
+
+        self.console.print()
+
+    def _display_prompt_panel(self, prompt: str) -> None:
+        """Display the prompt being analyzed."""
         self.console.print(
             Panel(
                 f"[bold blue]{prompt}[/bold blue]",
@@ -128,51 +137,100 @@ class PromptAnalyzer:
             )
         )
 
-        # Show detected workflows and checklists
+    def _display_workflow_results(
+        self,
+        all_items: list[str],
+        built_in_workflows: list[str],
+        config_workflows: list[str],
+        matching_checklists: list[str],
+    ) -> None:
+        """Display detected workflows and checklists."""
         if all_items:
-            item_descriptions = []
-
-            # Add built-in workflows with their descriptions
-            for workflow_name in built_in_workflows:
-                workflow = self.workflow_registry.get_workflow(workflow_name)
-                if workflow:
-                    description = workflow.description
-                    item_descriptions.append(f"  [built-in workflow] {description}")
-
-            # Add config workflows
-            for workflow_name in config_workflows:
-                if workflow_name not in built_in_workflows:  # Avoid duplicates
-                    workflow_config = self.config.workflows.get(workflow_name)
-                    if workflow_config and workflow_config.description:
-                        description = workflow_config.description
-                    else:
-                        description = f"{workflow_name.title()} workflow"
-                    item_descriptions.append(f"  [custom workflow] {description}")
-
-            # Add checklists
-            for checklist_item in matching_checklists:
-                if checklist_item.startswith("checklist:"):
-                    checklist_name = checklist_item.replace("checklist:", "")
-                    checklist = self.checklists.get(checklist_name)
-                    if checklist:
-                        item_descriptions.append(
-                            f"  [checklist] {checklist.description}"
-                        )
-
-            self.console.print(
-                Panel(
-                    "\n".join(item_descriptions),
-                    title="Detected Workflow and Checklist Needs",
-                    border_style="green",
-                )
+            item_descriptions = self._build_item_descriptions(
+                built_in_workflows, config_workflows, matching_checklists
             )
+            self._display_detected_items_panel(item_descriptions)
         else:
-            self.console.print(
-                Panel(
-                    "  → Defaulting to analysis workflow",
-                    title="⚠️ No Specific Workflows or Checklists Detected",
-                    border_style="yellow",
-                )
-            )
+            self._display_no_detection_panel()
 
-        self.console.print()
+    def _build_item_descriptions(
+        self,
+        built_in_workflows: list[str],
+        config_workflows: list[str],
+        matching_checklists: list[str],
+    ) -> list[str]:
+        """Build description list for detected workflows and checklists."""
+        item_descriptions = []
+
+        # Add built-in workflows with their descriptions
+        item_descriptions.extend(
+            self._get_builtin_workflow_descriptions(built_in_workflows)
+        )
+
+        # Add config workflows
+        item_descriptions.extend(
+            self._get_config_workflow_descriptions(config_workflows, built_in_workflows)
+        )
+
+        # Add checklists
+        item_descriptions.extend(self._get_checklist_descriptions(matching_checklists))
+
+        return item_descriptions
+
+    def _get_builtin_workflow_descriptions(
+        self, built_in_workflows: list[str]
+    ) -> list[str]:
+        """Get descriptions for built-in workflows."""
+        descriptions = []
+        for workflow_name in built_in_workflows:
+            workflow = self.workflow_registry.get_workflow(workflow_name)
+            if workflow:
+                description = workflow.description
+                descriptions.append(f"  [built-in workflow] {description}")
+        return descriptions
+
+    def _get_config_workflow_descriptions(
+        self, config_workflows: list[str], built_in_workflows: list[str]
+    ) -> list[str]:
+        """Get descriptions for config workflows."""
+        descriptions = []
+        for workflow_name in config_workflows:
+            if workflow_name not in built_in_workflows:  # Avoid duplicates
+                workflow_config = self.config.workflows.get(workflow_name)
+                if workflow_config and workflow_config.description:
+                    description = workflow_config.description
+                else:
+                    description = f"{workflow_name.title()} workflow"
+                descriptions.append(f"  [custom workflow] {description}")
+        return descriptions
+
+    def _get_checklist_descriptions(self, matching_checklists: list[str]) -> list[str]:
+        """Get descriptions for checklists."""
+        descriptions = []
+        for checklist_item in matching_checklists:
+            if checklist_item.startswith("checklist:"):
+                checklist_name = checklist_item.replace("checklist:", "")
+                checklist = self.checklists.get(checklist_name)
+                if checklist:
+                    descriptions.append(f"  [checklist] {checklist.description}")
+        return descriptions
+
+    def _display_detected_items_panel(self, item_descriptions: list[str]) -> None:
+        """Display panel with detected workflows and checklists."""
+        self.console.print(
+            Panel(
+                "\n".join(item_descriptions),
+                title="Detected Workflow and Checklist Needs",
+                border_style="green",
+            )
+        )
+
+    def _display_no_detection_panel(self) -> None:
+        """Display panel when no workflows are detected."""
+        self.console.print(
+            Panel(
+                "  → Defaulting to analysis workflow",
+                title="⚠️ No Specific Workflows or Checklists Detected",
+                border_style="yellow",
+            )
+        )
