@@ -512,7 +512,19 @@ def get_step_message_quality_report(root: Path | None = None) -> dict[str, Any]:
     Returns:
         Dictionary with quality metrics and insights.
     """
-    report = {
+    report = _initialize_quality_report()
+    metrics = _collect_step_metrics(root)
+
+    if metrics["step_count"] > 0:
+        _populate_quality_report(report, metrics)
+        _generate_quality_recommendations(report, metrics)
+
+    return report
+
+
+def _initialize_quality_report() -> dict[str, Any]:
+    """Initialize the quality report structure."""
+    return {
         "files_analyzed": 0,
         "steps_analyzed": 0,
         "quality_metrics": {
@@ -525,78 +537,139 @@ def get_step_message_quality_report(root: Path | None = None) -> dict[str, Any]:
         "textdescriptives_available": HAS_TEXTDESCRIPTIVES,
     }
 
-    total_word_count = 0
-    total_complexity = 0
-    action_word_count = 0
-    emoji_count = 0
-    step_count = 0
+
+def _collect_step_metrics(root: Path | None) -> dict[str, Any]:
+    """Collect metrics from all workflow step messages."""
+    metrics = {
+        "files_analyzed": 0,
+        "step_count": 0,
+        "total_word_count": 0,
+        "total_complexity": 0,
+        "action_word_count": 0,
+        "emoji_count": 0,
+    }
 
     for file in _iter_yaml_files(root):
-        data, err = _load_yaml(file)
-        if err or data is None:
-            continue
+        file_metrics = _analyze_file_steps(file)
+        if file_metrics:
+            _accumulate_metrics(metrics, file_metrics)
 
-        files_analyzed = report["files_analyzed"]
-        assert isinstance(files_analyzed, int)
-        report["files_analyzed"] = files_analyzed + 1
-        steps = data.get("steps", [])
+    return metrics
 
-        for step in steps:
-            if isinstance(step, dict):
-                message = step.get("step_text")
-                if not isinstance(message, str):
-                    continue
-            elif isinstance(step, str):
-                message = step
-            else:
-                continue
 
-            step_count += 1
-            quality = _analyze_text_quality(message)
+def _analyze_file_steps(file: Path) -> dict[str, Any] | None:
+    """Analyze all steps in a single workflow file."""
+    data, err = _load_yaml(file)
+    if err or data is None:
+        return None
 
-            total_word_count += quality["word_count"]
-            total_complexity += quality["complexity_score"]
-            if quality["starts_with_action"]:
-                action_word_count += 1
+    file_metrics = {
+        "files_analyzed": 1,
+        "step_count": 0,
+        "total_word_count": 0,
+        "total_complexity": 0,
+        "action_word_count": 0,
+        "emoji_count": 0,
+    }
 
-            if _manual_emoji_detection(message):
-                emoji_count += 1
+    steps = data.get("steps", [])
+    for step in steps:
+        step_metrics = _analyze_single_step(step)
+        if step_metrics:
+            _accumulate_step_metrics(file_metrics, step_metrics)
 
-    if step_count > 0:
-        report["steps_analyzed"] = step_count
-        quality_metrics = report["quality_metrics"]
-        recommendations = report["recommendations"]
+    return file_metrics
 
-        assert isinstance(quality_metrics, dict)
-        assert isinstance(recommendations, list)
 
-        quality_metrics["avg_word_count"] = total_word_count / step_count
-        quality_metrics["avg_complexity_score"] = total_complexity / step_count
-        quality_metrics["action_word_percentage"] = (
-            action_word_count / step_count
-        ) * 100
-        quality_metrics["emoji_count"] = emoji_count
+def _analyze_single_step(step: Any) -> dict[str, Any] | None:
+    """Analyze a single step and return its metrics."""
+    message = _extract_step_message(step)
+    if message is None:
+        return None
 
-        # Generate recommendations
-        if quality_metrics["avg_complexity_score"] > 30:
-            recommendations.append(
-                "Consider simplifying step messages - use shorter sentences "
-                "and common words"
-            )
+    quality = _analyze_text_quality(message)
 
-        if quality_metrics["action_word_percentage"] < 60:
-            recommendations.append(
-                "Consider starting more steps with action words "
-                "(run, create, check, etc.)"
-            )
+    return {
+        "word_count": quality["word_count"],
+        "complexity_score": quality["complexity_score"],
+        "starts_with_action": quality["starts_with_action"],
+        "has_emoji": _manual_emoji_detection(message),
+    }
 
-        if emoji_count > 0:
-            recommendations.append(
-                f"Found {emoji_count} steps with emojis - consider "
-                "professional text alternatives"
-            )
 
-    return report
+def _accumulate_metrics(target: dict[str, Any], source: dict[str, Any]) -> None:
+    """Accumulate metrics from source into target."""
+    target["files_analyzed"] += source["files_analyzed"]
+    target["step_count"] += source["step_count"]
+    target["total_word_count"] += source["total_word_count"]
+    target["total_complexity"] += source["total_complexity"]
+    target["action_word_count"] += source["action_word_count"]
+    target["emoji_count"] += source["emoji_count"]
+
+
+def _accumulate_step_metrics(
+    file_metrics: dict[str, Any], step_metrics: dict[str, Any]
+) -> None:
+    """Accumulate metrics from a single step into file metrics."""
+    file_metrics["step_count"] += 1
+    file_metrics["total_word_count"] += step_metrics["word_count"]
+    file_metrics["total_complexity"] += step_metrics["complexity_score"]
+
+    if step_metrics["starts_with_action"]:
+        file_metrics["action_word_count"] += 1
+
+    if step_metrics["has_emoji"]:
+        file_metrics["emoji_count"] += 1
+
+
+def _populate_quality_report(report: dict[str, Any], metrics: dict[str, Any]) -> None:
+    """Populate the quality report with calculated metrics."""
+    step_count = metrics["step_count"]
+
+    report["files_analyzed"] = metrics["files_analyzed"]
+    report["steps_analyzed"] = step_count
+
+    quality_metrics = report["quality_metrics"]
+    assert isinstance(quality_metrics, dict)
+
+    quality_metrics["avg_word_count"] = metrics["total_word_count"] / step_count
+    quality_metrics["avg_complexity_score"] = metrics["total_complexity"] / step_count
+    quality_metrics["action_word_percentage"] = (
+        metrics["action_word_count"] / step_count
+    ) * 100
+    quality_metrics["emoji_count"] = metrics["emoji_count"]
+
+
+def _generate_quality_recommendations(
+    report: dict[str, Any], metrics: dict[str, Any]
+) -> None:
+    """Generate quality recommendations based on metrics."""
+    quality_metrics = report["quality_metrics"]
+    recommendations = report["recommendations"]
+
+    assert isinstance(quality_metrics, dict)
+    assert isinstance(recommendations, list)
+
+    # Complexity recommendation
+    if quality_metrics["avg_complexity_score"] > 30:
+        recommendations.append(
+            "Consider simplifying step messages - use shorter sentences "
+            "and common words"
+        )
+
+    # Action word recommendation
+    if quality_metrics["action_word_percentage"] < 60:
+        recommendations.append(
+            "Consider starting more steps with action words (run, create, check, etc.)"
+        )
+
+    # Emoji recommendation
+    emoji_count = metrics["emoji_count"]
+    if emoji_count > 0:
+        recommendations.append(
+            f"Found {emoji_count} steps with emojis - consider "
+            "professional text alternatives"
+        )
 
 
 def validate_workflow_yamls(
