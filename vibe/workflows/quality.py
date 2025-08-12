@@ -247,159 +247,261 @@ def _validate_step_messages(
     issues: list[str] = []
 
     for i, step in enumerate(steps):
-        if isinstance(step, dict):
-            # For object steps, check step_text
-            step_text = step.get("step_text")
-            if not isinstance(step_text, str):
-                continue
-            message = step_text
-        elif isinstance(step, str):
-            message = step
-        else:
+        message = _extract_step_message(step)
+        if message is None:
             continue
 
         step_num = i + 1
+        step_issues = _validate_single_step_message(
+            message, file_path, step_num, strict_mode
+        )
+        issues.extend(step_issues)
 
-        # Enhanced emoji detection and text quality analysis
-        try:
-            if HAS_TEXTDESCRIPTIVES:
-                nlp = _get_nlp_pipeline()
-                if nlp is not None:
-                    doc = nlp(message)
-                    # Use TextDescriptives emoji detection if available
-                    emoji_count = getattr(doc._, "emoji_count", 0)
-                    has_emoji = emoji_count > 0
+    return issues
 
-                    # Additional readability check
-                    grade_level = getattr(doc._, "flesch_kincaid_grade_level", None)
-                    if grade_level is not None and grade_level > 12:
-                        issues.append(
-                            f"{file_path}: step {step_num} may be too complex "
-                            f"(grade level {grade_level:.1f}) - "
-                            "consider simpler language"
-                        )
-                else:
-                    has_emoji = _manual_emoji_detection(message)
-            else:
-                has_emoji = _manual_emoji_detection(message)
 
-            # Built-in text quality analysis (always available)
-            quality = _analyze_text_quality(message)
+def _extract_step_message(step: Any) -> str | None:
+    """Extract the message text from a step definition."""
+    if isinstance(step, dict):
+        # For object steps, check step_text
+        step_text = step.get("step_text")
+        if isinstance(step_text, str):
+            return step_text
+    elif isinstance(step, str):
+        return step
+    return None
 
-            # Check for overly complex language using built-in analysis
-            if quality["complexity_score"] > 50:  # Heuristic threshold
-                issues.append(
-                    f"{file_path}: step {step_num} may be complex - "
-                    "consider shorter sentences and simpler words"
-                )
 
-            # Encourage action-oriented language
-            if not quality["starts_with_action"] and quality["word_count"] > 3:
-                # Only suggest for longer messages that don't start with action words
-                common_starters = [
-                    "the",
-                    "this",
-                    "that",
-                    "a",
-                    "an",
-                    "if",
-                    "when",
-                    "how",
-                ]
-                first_word = (
-                    message.split()[0].lower().strip("`*.,()[]{}:;!?")
-                    if message.split()
-                    else ""
-                )
-                if first_word in common_starters:
-                    issues.append(
-                        f"{file_path}: step {step_num} consider starting with "
-                        "action word (e.g., 'run', 'create', 'check') for clarity"
-                    )
+def _validate_single_step_message(
+    message: str, file_path: Path, step_num: int, strict_mode: bool
+) -> list[str]:
+    """Validate a single step message."""
+    issues: list[str] = []
 
-        except Exception:
-            # Fallback to manual detection if anything goes wrong
-            has_emoji = _manual_emoji_detection(message)
+    # Enhanced emoji and quality analysis
+    issues.extend(_validate_step_content_quality(message, file_path, step_num))
 
-        if has_emoji and strict_mode:
+    # Check emoji usage in strict mode
+    if strict_mode:
+        issues.extend(_validate_step_emoji_usage(message, file_path, step_num))
+
+    # Check message length
+    issues.extend(_validate_step_length(message, file_path, step_num))
+
+    # Check punctuation and formatting
+    issues.extend(_validate_step_formatting(message, file_path, step_num))
+
+    return issues
+
+
+def _validate_step_content_quality(
+    message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate content quality using NLP if available."""
+    issues: list[str] = []
+
+    try:
+        if HAS_TEXTDESCRIPTIVES:
+            issues.extend(_validate_with_textdescriptives(message, file_path, step_num))
+
+        # Built-in text quality analysis (always available)
+        quality = _analyze_text_quality(message)
+        issues.extend(_validate_builtin_quality(quality, message, file_path, step_num))
+
+    except Exception:
+        # Continue with basic validation if NLP fails
+        pass
+
+    return issues
+
+
+def _validate_with_textdescriptives(
+    message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate using TextDescriptives NLP pipeline."""
+    issues: list[str] = []
+
+    nlp = _get_nlp_pipeline()
+    if nlp is not None:
+        doc = nlp(message)
+
+        # Additional readability check
+        grade_level = getattr(doc._, "flesch_kincaid_grade_level", None)
+        if grade_level is not None and grade_level > 12:
             issues.append(
-                f"{file_path}: step {step_num} contains emojis - "
-                "use professional text instead"
+                f"{file_path}: step {step_num} may be too complex "
+                f"(grade level {grade_level:.1f}) - "
+                "consider simpler language"
             )
 
-        # Check length (after stripping markdown formatting for accurate count)
-        clean_message = message
-        # Remove common markdown: **bold**, `code`, [links](url)
-        import re
+    return issues
 
-        clean_message = re.sub(r"\*\*(.*?)\*\*", r"\1", clean_message)
-        clean_message = re.sub(r"`([^`]*)`", r"\1", clean_message)
-        clean_message = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", clean_message)
-        clean_message = clean_message.strip()
 
-        if len(clean_message) < 10:
-            issues.append(
-                f"{file_path}: step {step_num} too short - "
-                "should be descriptive (10+ chars)"
-            )
-        elif len(clean_message) > 120:  # Reduced from 150 for better readability
-            issues.append(
-                f"{file_path}: step {step_num} too long - keep concise (120 chars max)"
-            )
+def _validate_builtin_quality(
+    quality: dict[str, Any], message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate using built-in quality analysis."""
+    issues: list[str] = []
 
-        # Check for excessive punctuation
-        if message.count("!") > 2:
-            issues.append(
-                f"{file_path}: step {step_num} excessive exclamation marks - "
-                "keep professional"
-            )
+    # Check for overly complex language
+    if quality["complexity_score"] > 50:  # Heuristic threshold
+        issues.append(
+            f"{file_path}: step {step_num} may be complex - "
+            "consider shorter sentences and simpler words"
+        )
 
-        # Check for all caps words (except common abbreviations)
-        words = message.split()
-        all_caps_words = [
-            w.strip("`*.,()[]{}:;!?")
-            for w in words
-            if w.strip("`*.,()[]{}:;!?").isupper()
-            and len(w.strip("`*.,()[]{}:;!?")) > 2
-        ]
-        common_abbrevs = {
-            "API",
-            "CLI",
-            "URL",
-            "HTTP",
-            "JSON",
-            "XML",
-            "CSS",
-            "HTML",
-            "SQL",
-            "MCP",
-            "ADR",
-            "README",
-            "YAML",
-            "TOML",
-            "CI",
-            "CD",
-            "GIT",
-            "VSCODE",
-            "IDE",
-            "TDD",
-            "PASS",
-            "FAIL",
-            "HEAD",
-            "PAT",
-            "VSCE",
-            "VSIX",
-            "CHANGELOG",
-        }
-        excessive_caps = [
-            w for w in all_caps_words if w not in common_abbrevs and len(w) > 2
-        ]
+    # Encourage action-oriented language
+    if not quality["starts_with_action"] and quality["word_count"] > 3:
+        issues.extend(_validate_action_oriented_language(message, file_path, step_num))
 
-        if excessive_caps:
-            issues.append(
-                f"{file_path}: step {step_num} excessive caps: "
-                f"{', '.join(excessive_caps)} - use normal case"
-            )
+    return issues
+
+
+def _validate_action_oriented_language(
+    message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate that longer messages start with action words."""
+    issues: list[str] = []
+
+    common_starters = [
+        "the",
+        "this",
+        "that",
+        "a",
+        "an",
+        "if",
+        "when",
+        "how",
+    ]
+    first_word = (
+        message.split()[0].lower().strip("`*.,()[]{}:;!?") if message.split() else ""
+    )
+    if first_word in common_starters:
+        issues.append(
+            f"{file_path}: step {step_num} consider starting with "
+            "action word (e.g., 'run', 'create', 'check') for clarity"
+        )
+
+    return issues
+
+
+def _validate_step_emoji_usage(
+    message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate emoji usage in strict mode."""
+    issues: list[str] = []
+
+    has_emoji = _manual_emoji_detection(message)
+    if has_emoji:
+        issues.append(
+            f"{file_path}: step {step_num} contains emojis - "
+            "use professional text instead"
+        )
+
+    return issues
+
+
+def _validate_step_length(message: str, file_path: Path, step_num: int) -> list[str]:
+    """Validate message length after cleaning markdown."""
+    issues: list[str] = []
+
+    # Remove common markdown for accurate length count
+    clean_message = _clean_markdown(message)
+
+    if len(clean_message) < 10:
+        issues.append(
+            f"{file_path}: step {step_num} too short - "
+            "should be descriptive (10+ chars)"
+        )
+    elif len(clean_message) > 120:  # Reduced from 150 for better readability
+        issues.append(
+            f"{file_path}: step {step_num} too long - keep concise (120 chars max)"
+        )
+
+    return issues
+
+
+def _clean_markdown(message: str) -> str:
+    """Remove markdown formatting for accurate character counting."""
+    import re
+
+    clean_message = message
+    # Remove common markdown: **bold**, `code`, [links](url)
+    clean_message = re.sub(r"\*\*(.*?)\*\*", r"\1", clean_message)
+    clean_message = re.sub(r"`([^`]*)`", r"\1", clean_message)
+    clean_message = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", clean_message)
+    return clean_message.strip()
+
+
+def _validate_step_formatting(
+    message: str, file_path: Path, step_num: int
+) -> list[str]:
+    """Validate punctuation and formatting."""
+    issues: list[str] = []
+
+    # Check for excessive punctuation
+    if message.count("!") > 2:
+        issues.append(
+            f"{file_path}: step {step_num} excessive exclamation marks - "
+            "keep professional"
+        )
+
+    # Check for all caps words (except common abbreviations)
+    issues.extend(_validate_caps_usage(message, file_path, step_num))
+
+    return issues
+
+
+def _validate_caps_usage(message: str, file_path: Path, step_num: int) -> list[str]:
+    """Validate usage of all-caps words."""
+    issues: list[str] = []
+
+    words = message.split()
+    all_caps_words = [
+        w.strip("`*.,()[]{}:;!?")
+        for w in words
+        if w.strip("`*.,()[]{}:;!?").isupper() and len(w.strip("`*.,()[]{}:;!?")) > 2
+    ]
+
+    common_abbrevs = {
+        "API",
+        "CLI",
+        "URL",
+        "HTTP",
+        "JSON",
+        "XML",
+        "CSS",
+        "HTML",
+        "SQL",
+        "MCP",
+        "ADR",
+        "README",
+        "YAML",
+        "TOML",
+        "CI",
+        "CD",
+        "GIT",
+        "VSCODE",
+        "IDE",
+        "TDD",
+        "PASS",
+        "FAIL",
+        "HEAD",
+        "PAT",
+        "VSCE",
+        "VSIX",
+        "CHANGELOG",
+    }
+
+    excessive_caps = [
+        w for w in all_caps_words if w not in common_abbrevs and len(w) > 2
+    ]
+
+    if excessive_caps:
+        issues.append(
+            f"{file_path}: step {step_num} excessive caps: "
+            f"{', '.join(excessive_caps)} - use normal case"
+        )
 
     return issues
 
@@ -513,77 +615,150 @@ def validate_workflow_yamls(
     names: dict[str, Path] = {}
 
     for file in _iter_yaml_files(root):
-        # Detect duplicate keys by traversing the YAML AST before/alongside loading
-        try:
-            text_for_dups = file.read_text(encoding="utf-8")
-        except UnicodeDecodeError as e:
-            issues.append(f"{file}: not UTF-8 encoded ({e})")
-            continue
+        file_issues = _validate_single_yaml_file(file, names, strict_mode)
+        issues.extend(file_issues)
 
-        dup_keys = _collect_duplicate_keys_from_text(text_for_dups)
-        if dup_keys:
-            uniq = ", ".join(sorted(set(dup_keys)))
-            issues.append(f"{file}: duplicate keys detected: {uniq}")
+    return issues
 
-        data, err = _load_yaml(file)
-        if err:
-            issues.append(err)
-            continue
 
-        if data is None:
-            issues.append(f"{file}: empty or invalid YAML content")
-            continue
+def _validate_single_yaml_file(
+    file: Path, names: dict[str, Path], strict_mode: bool
+) -> list[str]:
+    """Validate a single YAML workflow file."""
+    issues: list[str] = []
 
-        # Required fields
-        for key in ("name", "description", "triggers", "steps"):
-            if key not in data:
-                issues.append(f"{file}: missing required key '{key}'")
+    # Check encoding and detect duplicate keys
+    text_for_dups, encoding_issue = _read_file_safely(file)
+    if encoding_issue:
+        return [encoding_issue]
 
-        name = data.get("name")
-        if isinstance(name, str):
-            if name in names:
-                issues.append(
-                    f"{file}: duplicate workflow name '{name}' also in {names[name]}"
-                )
-            else:
-                names[name] = file
-        else:
-            issues.append(f"{file}: 'name' must be a string")
+    # Check for duplicate keys
+    dup_keys = _collect_duplicate_keys_from_text(text_for_dups)
+    if dup_keys:
+        uniq = ", ".join(sorted(set(dup_keys)))
+        issues.append(f"{file}: duplicate keys detected: {uniq}")
 
-        # Types
-        if "triggers" in data and not isinstance(data["triggers"], list):
-            issues.append(f"{file}: 'triggers' must be a list of strings")
-        if "steps" in data and not isinstance(data["steps"], list):
-            issues.append(f"{file}: 'steps' must be a list of strings")
+    # Load and validate YAML content
+    data, err = _load_yaml(file)
+    if err:
+        issues.append(err)
+        return issues
 
-        # Encoding sanity (replacement character indicates prior decode issues)
-        replacement = "\ufffd"
+    if data is None:
+        issues.append(f"{file}: empty or invalid YAML content")
+        return issues
 
-        def _contains_repl(val: Any) -> bool:
-            if isinstance(val, str):
-                return replacement in val
-            if isinstance(val, list):
-                return any(_contains_repl(v) for v in val)
-            if isinstance(val, dict):
-                return any(_contains_repl(v) for v in val.values())
-            return False
+    # Validate structure and content
+    issues.extend(_validate_yaml_structure(file, data))
+    issues.extend(_validate_workflow_name(file, data, names))
+    issues.extend(_validate_field_types(file, data))
+    issues.extend(_validate_unicode_content(file, data))
+    issues.extend(_validate_step_content(file, data, strict_mode))
+    issues.extend(_validate_unknown_keys(file, data))
 
-        if _contains_repl(data):
+    return issues
+
+
+def _read_file_safely(file: Path) -> tuple[str, str | None]:
+    """Read file safely, returning content and any encoding issue."""
+    try:
+        text = file.read_text(encoding="utf-8")
+        return text, None
+    except UnicodeDecodeError as e:
+        return "", f"{file}: not UTF-8 encoded ({e})"
+
+
+def _validate_yaml_structure(file: Path, data: dict[str, Any]) -> list[str]:
+    """Validate required YAML structure."""
+    issues: list[str] = []
+
+    # Required fields
+    for key in ("name", "description", "triggers", "steps"):
+        if key not in data:
+            issues.append(f"{file}: missing required key '{key}'")
+
+    return issues
+
+
+def _validate_workflow_name(
+    file: Path, data: dict[str, Any], names: dict[str, Path]
+) -> list[str]:
+    """Validate workflow name uniqueness."""
+    issues: list[str] = []
+
+    name = data.get("name")
+    if isinstance(name, str):
+        if name in names:
             issues.append(
-                f"{file}: contains Unicode replacement character (�); fix UTF-8 content"
+                f"{file}: duplicate workflow name '{name}' also in {names[name]}"
             )
+        else:
+            names[name] = file
+    else:
+        issues.append(f"{file}: 'name' must be a string")
 
-        # Step message conventions
-        steps = data.get("steps", [])
-        if isinstance(steps, list):
-            step_issues = _validate_step_messages(steps, file, strict_mode=strict_mode)
-            issues.extend(step_issues)
+    return issues
 
-        # Unknown keys
-        unknown = set(data.keys()) - ALLOWED_KEYS - ALLOWED_EXTRA_KEYS
-        if unknown:
-            pretty = ", ".join(sorted(unknown))
-            issues.append(f"{file}: unknown keys: {pretty}")
+
+def _validate_field_types(file: Path, data: dict[str, Any]) -> list[str]:
+    """Validate field types."""
+    issues: list[str] = []
+
+    # Types
+    if "triggers" in data and not isinstance(data["triggers"], list):
+        issues.append(f"{file}: 'triggers' must be a list of strings")
+    if "steps" in data and not isinstance(data["steps"], list):
+        issues.append(f"{file}: 'steps' must be a list of strings")
+
+    return issues
+
+
+def _validate_unicode_content(file: Path, data: dict[str, Any]) -> list[str]:
+    """Validate Unicode content for replacement characters."""
+    issues: list[str] = []
+    replacement = "\ufffd"
+
+    def _contains_repl(val: Any) -> bool:
+        if isinstance(val, str):
+            return replacement in val
+        if isinstance(val, list):
+            return any(_contains_repl(v) for v in val)
+        if isinstance(val, dict):
+            return any(_contains_repl(v) for v in val.values())
+        return False
+
+    if _contains_repl(data):
+        issues.append(
+            f"{file}: contains Unicode replacement character (�); fix UTF-8 content"
+        )
+
+    return issues
+
+
+def _validate_step_content(
+    file: Path, data: dict[str, Any], strict_mode: bool
+) -> list[str]:
+    """Validate step message content."""
+    issues: list[str] = []
+
+    # Step message conventions
+    steps = data.get("steps", [])
+    if isinstance(steps, list):
+        step_issues = _validate_step_messages(steps, file, strict_mode=strict_mode)
+        issues.extend(step_issues)
+
+    return issues
+
+
+def _validate_unknown_keys(file: Path, data: dict[str, Any]) -> list[str]:
+    """Validate for unknown keys."""
+    issues: list[str] = []
+
+    # Unknown keys
+    unknown = set(data.keys()) - ALLOWED_KEYS - ALLOWED_EXTRA_KEYS
+    if unknown:
+        pretty = ", ".join(sorted(unknown))
+        issues.append(f"{file}: unknown keys: {pretty}")
 
     return issues
 
