@@ -51,7 +51,25 @@ class ProjectDetector:
         """Detect all applicable project types/frameworks."""
         types = []
 
-        # Check for specific frameworks and languages
+        # Detect JavaScript/TypeScript frameworks and add their tech stack
+        types.extend(self._detect_frontend_frameworks())
+
+        # Detect Python and its frameworks
+        types.extend(self._detect_python_stack())
+
+        # Detect other language projects
+        types.extend(self._detect_other_languages())
+
+        # Detect general project characteristics
+        types.extend(self._detect_general_types())
+
+        # Remove duplicates while preserving order
+        return list(dict.fromkeys(types))
+
+    def _detect_frontend_frameworks(self) -> list[str]:
+        """Detect frontend frameworks and their associated tech stack."""
+        types = []
+
         if self._is_vue_project():
             types.extend(["vue", "javascript", "web", "node"])
 
@@ -76,6 +94,12 @@ class ProjectDetector:
         if self._is_javascript_project():
             types.extend(["javascript", "node"])
 
+        return types
+
+    def _detect_python_stack(self) -> list[str]:
+        """Detect Python and its frameworks."""
+        types = []
+
         if self._is_python_project():
             types.append("python")
 
@@ -87,17 +111,28 @@ class ProjectDetector:
             elif self._is_flask_project():
                 types.append("flask")
 
+        return types
+
+    def _detect_other_languages(self) -> list[str]:
+        """Detect other programming languages."""
+        types = []
+
         if self._is_rust_project():
             types.append("rust")
 
         if self._is_go_project():
             types.append("go")
 
+        return types
+
+    def _detect_general_types(self) -> list[str]:
+        """Detect general project characteristics."""
+        types = []
+
         if self._is_web_project():
             types.append("web")
 
-        # Remove duplicates while preserving order
-        return list(dict.fromkeys(types))
+        return types
 
     def _is_vue_project(self) -> bool:
         """Detect Vue.js projects."""
@@ -275,46 +310,78 @@ class ProjectDetector:
 
     def _has_python_dependency(self, dependencies: list[str]) -> bool:
         """Check if any of the dependencies exist in Python project files."""
-        # Check pyproject.toml
+        return self._check_pyproject_dependencies(
+            dependencies
+        ) or self._check_requirements_dependencies(dependencies)
+
+    def _check_pyproject_dependencies(self, dependencies: list[str]) -> bool:
+        """Check dependencies in pyproject.toml file."""
         pyproject_path = self.project_path / "pyproject.toml"
-        if pyproject_path.exists():
-            try:
-                import tomllib
+        if not pyproject_path.exists():
+            return False
 
-                with open(pyproject_path, "rb") as f:
-                    pyproject_data = tomllib.load(f)
+        # Try structured parsing first
+        if self._check_pyproject_structured(pyproject_path, dependencies):
+            return True
 
-                # Check dependencies in project section
-                project_deps = pyproject_data.get("project", {}).get("dependencies", [])
-                for dep_line in project_deps:
-                    dep_name = (
-                        dep_line.split(">=")[0].split("==")[0].split("[")[0].strip()
-                    )
-                    if dep_name.lower() in [d.lower() for d in dependencies]:
+        # Fallback to text parsing
+        return self._check_pyproject_text(pyproject_path, dependencies)
+
+    def _check_pyproject_structured(
+        self, pyproject_path: Path, dependencies: list[str]
+    ) -> bool:
+        """Check pyproject.toml using structured TOML parsing."""
+        try:
+            import tomllib
+
+            with open(pyproject_path, "rb") as f:
+                pyproject_data = tomllib.load(f)
+
+            # Check dependencies in project section
+            project_deps = pyproject_data.get("project", {}).get("dependencies", [])
+            for dep_line in project_deps:
+                dep_name = self._extract_dependency_name(dep_line)
+                if dep_name.lower() in [d.lower() for d in dependencies]:
+                    return True
+
+        except (ImportError, Exception):
+            pass
+
+        return False
+
+    def _check_pyproject_text(
+        self, pyproject_path: Path, dependencies: list[str]
+    ) -> bool:
+        """Check pyproject.toml using text parsing as fallback."""
+        try:
+            with open(pyproject_path) as f:
+                content = f.read().lower()
+                for dep in dependencies:
+                    if dep.lower() in content:
                         return True
+        except OSError:
+            pass
 
-            except (ImportError, Exception):
-                # Fallback to text parsing if tomllib not available
-                try:
-                    with open(pyproject_path) as f:
-                        content = f.read().lower()
-                        for dep in dependencies:
-                            if dep.lower() in content:
-                                return True
-                except OSError:
-                    pass
+        return False
 
-        # Check requirements.txt
+    def _extract_dependency_name(self, dep_line: str) -> str:
+        """Extract clean dependency name from dependency specification."""
+        return dep_line.split(">=")[0].split("==")[0].split("[")[0].strip()
+
+    def _check_requirements_dependencies(self, dependencies: list[str]) -> bool:
+        """Check dependencies in requirements.txt file."""
         req_path = self.project_path / "requirements.txt"
-        if req_path.exists():
-            try:
-                with open(req_path) as f:
-                    content = f.read().lower()
-                    for dep in dependencies:
-                        if dep.lower() in content:
-                            return True
-            except OSError:
-                pass
+        if not req_path.exists():
+            return False
+
+        try:
+            with open(req_path) as f:
+                content = f.read().lower()
+                for dep in dependencies:
+                    if dep.lower() in content:
+                        return True
+        except OSError:
+            pass
 
         return False
 
