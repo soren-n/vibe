@@ -5,6 +5,7 @@ Analyze all workflows to identify steps that should be converted to checklists.
 
 import re
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -83,7 +84,7 @@ def analyze_step(step: str) -> tuple[str, float]:
         return "MIXED", 0.5
 
 
-def analyze_workflow_file(file_path: Path) -> dict:
+def analyze_workflow_file(file_path: Path) -> dict[str, Any] | None:
     """Analyze a single workflow file."""
     try:
         with open(file_path) as f:
@@ -148,61 +149,113 @@ def analyze_workflow_file(file_path: Path) -> dict:
         return None
 
 
-def main():
+def main() -> None:
     """Main analysis function."""
     workflows_dir = Path("vibe/workflows/data")
 
-    # Skip checklist directory since those are already checklists
+    # Collect and analyze workflow files
+    workflow_files = _collect_workflow_files(workflows_dir)
+    analysis_results = _analyze_workflow_files(workflow_files)
+
+    # Categorize by priority
+    prioritized_results = _categorize_by_priority(analysis_results)
+
+    # Generate reports
+    _print_analysis_summary(prioritized_results)
+    _print_refactoring_recommendations(prioritized_results["high_priority"])
+
+
+def _collect_workflow_files(workflows_dir: Path) -> list[Path]:
+    """Collect workflow YAML files, excluding checklists."""
     workflow_files = []
     for yaml_file in workflows_dir.rglob("*.yaml"):
         if "checklists" not in str(yaml_file):
             workflow_files.append(yaml_file)
+    return sorted(workflow_files)
 
+
+def _analyze_workflow_files(workflow_files: list[Path]) -> list[dict[str, Any]]:
+    """Analyze all workflow files and return results."""
     print(f"Analyzing {len(workflow_files)} workflow files...\n")
 
+    results = []
+    for file_path in workflow_files:
+        result = analyze_workflow_file(file_path)
+        if result:
+            results.append(result)
+
+    return results
+
+
+def _categorize_by_priority(
+    analysis_results: list[dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Categorize analysis results by refactoring priority."""
     high_priority = []
     medium_priority = []
     low_priority = []
 
-    for file_path in sorted(workflow_files):
-        result = analyze_workflow_file(file_path)
-        if result:
-            if result["refactor_priority"] == "HIGH":
-                high_priority.append(result)
-            elif result["refactor_priority"] == "MEDIUM":
-                medium_priority.append(result)
-            else:
-                low_priority.append(result)
+    for result in analysis_results:
+        if result["refactor_priority"] == "HIGH":
+            high_priority.append(result)
+        elif result["refactor_priority"] == "MEDIUM":
+            medium_priority.append(result)
+        else:
+            low_priority.append(result)
 
-    # Print summary
+    return {
+        "high_priority": high_priority,
+        "medium_priority": medium_priority,
+        "low_priority": low_priority,
+    }
+
+
+def _print_analysis_summary(
+    prioritized_results: dict[str, list[dict[str, Any]]],
+) -> None:
+    """Print the analysis summary with all priority categories."""
     print("WORKFLOW REFACTORING ANALYSIS")
     print("=" * 50)
 
+    _print_high_priority_summary(prioritized_results["high_priority"])
+    _print_medium_priority_summary(prioritized_results["medium_priority"])
+    _print_low_priority_summary(prioritized_results["low_priority"])
+
+
+def _print_high_priority_summary(high_priority: list[dict[str, Any]]) -> None:
+    """Print high priority workflow summary."""
     print(f"\nHIGH PRIORITY (>30% validation steps): {len(high_priority)} workflows")
     for workflow in high_priority:
-        print(
-            f"  📋 {workflow['name']} ({workflow['validation_percentage']:.1%} validation)"
-        )
+        validation_pct = workflow["validation_percentage"]
+        print(f"  📋 {workflow['name']} ({validation_pct:.1%} validation)")
         print(f"     File: {workflow['file']}")
-        print(
-            f"     Steps: {len(workflow['validation_steps'])} validation, {len(workflow['execution_steps'])} execution"
-        )
+
+        val_count = len(workflow["validation_steps"])
+        exec_count = len(workflow["execution_steps"])
+        print(f"     Steps: {val_count} validation, {exec_count} execution")
         if workflow["validation_steps"]:
             print("     Validation examples:")
             for step in workflow["validation_steps"][:2]:
                 print(f"       - {step['text']}")
         print()
 
+
+def _print_medium_priority_summary(medium_priority: list[dict[str, Any]]) -> None:
+    """Print medium priority workflow summary."""
     print(f"\nMEDIUM PRIORITY (10-30% validation): {len(medium_priority)} workflows")
     for workflow in medium_priority:
-        print(
-            f"  🔧 {workflow['name']} ({workflow['validation_percentage']:.1%} validation)"
-        )
+        validation_pct = workflow["validation_percentage"]
+        print(f"  🔧 {workflow['name']} ({validation_pct:.1%} validation)")
 
+
+def _print_low_priority_summary(low_priority: list[dict[str, Any]]) -> None:
+    """Print low priority workflow summary."""
     print(f"\nLOW PRIORITY (<10% validation): {len(low_priority)} workflows")
     print("  These workflows are mostly execution-focused and need minimal changes.")
 
-    # Create refactoring recommendations
+
+def _print_refactoring_recommendations(high_priority: list[dict[str, Any]]) -> None:
+    """Print detailed refactoring recommendations."""
     print("\nREFACTORING RECOMMENDATIONS")
     print("=" * 50)
 
