@@ -59,8 +59,8 @@ export class WorkflowLoader {
     for (const dataPath of possiblePaths) {
       if (fs.existsSync(dataPath)) {
         if (!this.quiet) {
-          // Only log in development/debug mode
-          const isDev = __dirname.includes('/src/');
+          // Only log in development/debug mode - exclude compiled dist builds
+          const isDev = __dirname.includes('/src/') && !__dirname.includes('/dist/');
           if (isDev) {
             console.log(`[Workflows] Using data directory: ${dataPath}`);
           }
@@ -190,7 +190,9 @@ export class WorkflowLoader {
     cacheLoaded = true;
 
     if (!this.quiet) {
-      console.log(`Loaded ${Object.keys(workflows).length} workflows from YAML files`);
+      console.log(
+        `[Workflows] Loaded ${Object.keys(workflows).length} workflows from YAML files`
+      );
     }
 
     return workflows;
@@ -225,7 +227,7 @@ export class WorkflowLoader {
 
     if (!this.quiet) {
       console.log(
-        `Loaded ${Object.keys(checklists).length} checklists from YAML files`
+        `[Workflows] Loaded ${Object.keys(checklists).length} checklists from YAML files`
       );
     }
 
