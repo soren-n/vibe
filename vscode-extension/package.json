@@ -2,7 +2,7 @@
   "name": "vibe-workflows",
   "displayName": "Vibe Workflows",
   "description": "Self-contained workflow orchestration for development tasks - zero external dependencies",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "publisher": "soren-n",
   "icon": "images/vibe-icon.png",
   "repository": {
