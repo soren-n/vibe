@@ -11,7 +11,11 @@
  */
 
 import type { WorkflowOrchestrator } from './orchestrator';
-import type { EnhancedWorkflowSession, SessionManager } from './session';
+import type {
+  CurrentStepInfo,
+  EnhancedWorkflowSession,
+  SessionManager,
+} from './session';
 
 /**
  * Represents an alert about a session that needs attention
@@ -136,7 +140,11 @@ export class SessionMonitor {
       this.responseHistory.set(sessionId, []);
     }
 
-    const history = this.responseHistory.get(sessionId)!;
+    const history = this.responseHistory.get(sessionId);
+    if (!history) {
+      return null; // Should never happen due to the check above, but satisfies TypeScript
+    }
+    
     history.push({ response, timestamp: new Date() });
 
     // Keep only recent responses (last 5)
@@ -199,7 +207,7 @@ export class SessionMonitor {
         timestamp: a.timestamp.toISOString(),
         suggested_actions: a.suggested_actions,
       })),
-      session_details: activeSessions.map((s: any) => {
+      session_details: activeSessions.map((s: EnhancedWorkflowSession) => {
         const currentFrame = s.currentFrame;
         return {
           session_id: s.sessionId,
@@ -392,7 +400,7 @@ export class SessionMonitor {
    */
   private _formatCompletionReminder(
     session: EnhancedWorkflowSession,
-    currentStep: any
+    currentStep: CurrentStepInfo | null
   ): string {
     let stepInfo = '';
     if (currentStep && session.currentFrame) {
@@ -426,11 +434,11 @@ This ensures proper workflow completion and prevents orphaned sessions.
    */
   private _formatDormantReminder(
     session: EnhancedWorkflowSession,
-    currentStep: any
+    currentStep: CurrentStepInfo | null
   ): string {
     let stepInfo = '';
     if (currentStep) {
-      stepInfo = `Current step: ${currentStep.step_text ?? currentStep.message ?? 'N/A'}`;
+      stepInfo = `Current step: ${currentStep.step_text ?? 'N/A'}`;
     }
 
     return `
@@ -454,7 +462,7 @@ ${stepInfo}
    */
   private _formatStaleReminder(
     session: EnhancedWorkflowSession,
-    _currentStep: any
+    _currentStep: CurrentStepInfo | null
   ): string {
     return `
 **Stale Workflow Session**

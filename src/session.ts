@@ -20,6 +20,27 @@ export interface SessionConfig {
 }
 
 /**
+ * Workflow step object structure
+ */
+export interface WorkflowStepObject {
+  step_text: string;
+  command?: string;
+  working_dir?: string;
+}
+
+/**
+ * Current step information returned by getCurrentStep()
+ */
+export interface CurrentStepInfo {
+  workflow: string;
+  step_number: number;
+  total_steps: number;
+  step_text: string;
+  is_command: boolean;
+  workflow_depth: number;
+}
+
+/**
  * Represents a single workflow in the execution stack
  */
 export interface WorkflowFrame {
@@ -55,7 +76,7 @@ export interface EnhancedWorkflowSession {
 
   get currentFrame(): WorkflowFrame | null;
   get isComplete(): boolean;
-  getCurrentStep(): any | null;
+  getCurrentStep(): CurrentStepInfo | null;
   advanceStep(): boolean;
   backStep(): boolean;
   restartSession(): void;
@@ -172,7 +193,7 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     );
   }
 
-  getCurrentStep(): any | null {
+  getCurrentStep(): CurrentStepInfo | null {
     const currentFrame = this.currentFrame;
     if (!currentFrame || currentFrame.isComplete) {
       return null;

@@ -6,7 +6,7 @@
 import type { VibeConfig, Workflow, WorkflowPlanResult } from './models';
 import { loadAllWorkflows } from './workflows';
 import { SessionManager } from './session';
-import type { WorkflowStepObject } from './session';
+import type { CurrentStepInfo, WorkflowStepObject } from './session';
 import type { VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
 import { SessionMonitor } from './sessionMonitor';
@@ -36,7 +36,7 @@ export interface SessionResponse {
   error?: string;
   session_id?: string;
   prompt?: string;
-  current_step?: string | null;
+  current_step?: CurrentStepInfo | null;
   workflow_stack?: string[];
   is_complete?: boolean;
   created_at?: string;

@@ -34,6 +34,7 @@
     "dist",
     "coverage",
     "tests",
+    "scripts",
     "*.js",
     "vscode-extension",
     "mcp-server",

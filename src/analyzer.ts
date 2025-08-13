@@ -44,7 +44,10 @@ export class PromptAnalyzer {
   /**
    * Analyze a prompt and return matching workflow names
    */
-  async analyze(prompt: string, showAnalysis = true): Promise<string[]> {
+  async analyze(
+    prompt: string,
+    _showAnalysis: boolean = false
+  ): Promise<string[]> {
     const promptLower = prompt.toLowerCase();
 
     // First try built-in workflows (loaded from YAML files)
