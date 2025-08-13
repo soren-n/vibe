@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/soren-n/vibe-mcp/compare/v1.1.0...v1.1.1) (2025-08-13)
+
+### Bug Fixes
+
+- platform compatibility by removing unnecessary rollup dependency ([7dceaf9](https://github.com/soren-n/vibe-mcp/commit/7dceaf98a3c02decc24e479eea96b74769a3b1e5))
+
 ## [1.1.0](https://github.com/soren-n/vibe-mcp/compare/v1.0.0...v1.1.0) (2025-08-13)
 
 ### Features
