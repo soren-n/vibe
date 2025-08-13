@@ -6,7 +6,11 @@
 import { z } from 'zod';
 
 // Core ID types with proper validation
-export const sessionIdSchema = z.string().min(8).max(20).regex(/^[a-z0-9]+$/);
+export const sessionIdSchema = z
+  .string()
+  .min(8)
+  .max(20)
+  .regex(/^[a-z0-9]+$/);
 export type SessionId = z.infer<typeof sessionIdSchema>;
 
 // Workflow step can be simple string or structured object
@@ -16,10 +20,7 @@ export const workflowStepObjectSchema = z.object({
   workingDir: z.string().optional(),
 });
 
-export const workflowStepSchema = z.union([
-  z.string(),
-  workflowStepObjectSchema,
-]);
+export const workflowStepSchema = z.union([z.string(), workflowStepObjectSchema]);
 
 // Enhanced Workflow schema with proper validation
 export const workflowSchema = z.object({

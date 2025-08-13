@@ -10,7 +10,8 @@ const DEFAULT_SESSION_ID_LENGTH = 12;
 const DEFAULT_WORKFLOW_ID_LENGTH = 8;
 
 // Custom alphabets for different use cases
-const URL_SAFE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const URL_SAFE_ALPHABET =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const READABLE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; // No ambiguous chars
 
 // ID generators with custom alphabets
