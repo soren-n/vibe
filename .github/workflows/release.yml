@@ -42,11 +42,11 @@ jobs:
       - name: Install rollup dependencies (CI environment workaround)
         run: npm install @rollup/rollup-linux-x64-gnu
 
-      - name: Run quality checks (release-grade)
-        run: npm run quality:release
-
       - name: Build project
         run: npm run build
+
+      - name: Run quality checks (release-grade)
+        run: npm run quality:release
 
       - name: Validate CLI functionality
         run: |
