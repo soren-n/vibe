@@ -8,6 +8,17 @@ import { VibeConfig, VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
 import { loadAllWorkflows } from './workflows';
 import { getChecklistsArray } from './guidance/loader';
+
+// Read version from package.json
+function getVersion(): string {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const packageJson = require('../package.json');
+    return packageJson.version;
+  } catch (_error) {
+    return '1.0.0'; // fallback version
+  }
+}
 import { WorkflowOrchestrator } from './orchestrator';
 import { ProjectLinter } from './lint';
 
@@ -33,7 +44,7 @@ program
   .description(
     'Vibe - A CLI tool for vibe coding with intelligent workflow orchestration'
   )
-  .version('0.6.0');
+  .version(getVersion());
 
 program
   .command('init')
