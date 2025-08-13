@@ -8,10 +8,10 @@ Vibe is a workflow orchestration tool that analyzes natural language prompts and
 
 ### Core Components
 
-**PromptAnalyzer**: Analyzes prompts, matches workflow triggers, supports project-specific selection
-**WorkflowOrchestrator**: Plans execution order, generates step guidance, integrates validation
-**SessionManager**: Manages incremental execution, prevents token overflow, maintains state persistence
-**Configuration**: Detects project types, loads YAML workflows with Python fallback
+PromptAnalyzer: Analyzes prompts, matches workflow triggers, supports project-specific selection
+WorkflowOrchestrator: Plans execution order, generates step guidance, integrates validation
+SessionManager: Manages incremental execution, prevents token overflow, maintains state persistence
+Configuration: Detects project types, loads YAML workflows with Python fallback
 
 ### Execution Pipeline
 
@@ -19,22 +19,22 @@ Vibe is a workflow orchestration tool that analyzes natural language prompts and
 Prompt → Analysis → Planning → Session Management → Execution
 ```
 
-**Process**: Prompt triggers → Workflow selection → Step generation → Incremental execution → Completion
+Process: Prompt triggers → Workflow selection → Step generation → Incremental execution → Completion
 
 ## Design Principles
 
-**Unattended Operation**: Minimal user interaction after initial prompt
-**Session-Based Execution**: Discrete steps prevent token overflow in AI agents
-**YAML Workflow System**: External definitions enable code-independent updates
+Unattended Operation: Minimal user interaction after initial prompt
+Session-Based Execution: Discrete steps prevent token overflow in AI agents
+YAML Workflow System: External definitions enable code-independent updates
 
 ## Implementation Components
 
-**Core Components**:
+Core Components:
 
-- **Analyzer**: Prompt analysis and workflow matching
-- **Orchestrator**: Planning and execution guidance
-- **Session Manager**: State management and persistence
-- **Configuration**: Project detection and settings management
+- Analyzer: Prompt analysis and workflow matching
+- Orchestrator: Planning and execution guidance
+- Session Manager: State management and persistence
+- Configuration: Project detection and settings management
 
 ## Core Data Structures
 

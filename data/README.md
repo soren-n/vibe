@@ -2,9 +2,9 @@
 
 This directory contains YAML-based workflow definitions and checklists organized into separate subdirectories for better maintainability and discoverability.
 
-**Workflows**: Provide **guidance steps** rather than automated commands. Each workflow step is textual guidance that can include command suggestions, reminders, best practices, or any helpful advice. Users follow the guidance manually, maintaining full control over their development process.
+Workflows: Provide guidance steps rather than automated commands. Each workflow step is textual guidance that can include command suggestions, reminders, best practices, or any helpful advice. Users follow the guidance manually, maintaining full control over their development process.
 
-**Checklists**: Provide validation and verification tasks. Checklists offer structured verification points to ensure work quality and completeness.
+Checklists: Provide validation and verification tasks. Checklists offer structured verification points to ensure work quality and completeness.
 
 ## Directory Structure
 
@@ -25,50 +25,50 @@ Core project operations and general functionality:
 
 Core project operations and general functionality:
 
-- **Workflows**: analysis, validation, cleanup, help, refactoring operations
-- **Checklists**: quality verification, implementation validation
+- Workflows: analysis, validation, cleanup, help, refactoring operations
+- Checklists: quality verification, implementation validation
 
 ### development/
 
 Development process and Git workflow management:
 
-- **Workflows**: branch strategy, dependency updates, Git operations
-- **Checklists**: feature development, bug fixes, release validation
+- Workflows: branch strategy, dependency updates, Git operations
+- Checklists: feature development, bug fixes, release validation
 
 ### documentation/
 
 Documentation creation, maintenance, and quality:
 
-- **Workflows**: ADR management, documentation tasks, DDD workflow support
-- **Checklists**: documentation quality verification
+- Workflows: ADR management, documentation tasks, DDD workflow support
+- Checklists: documentation quality verification
 
 ### frontend/
 
 Frontend development and JavaScript/Node.js workflows:
 
-- **Workflows**: JavaScript building, development servers, quality checks
-- **Checklists**: frontend-specific validations
+- Workflows: JavaScript building, development servers, quality checks
+- Checklists: frontend-specific validations
 
 ### python/
 
 Python-specific development workflows:
 
-- **Workflows**: building, environment management, testing, type checking
-- **Checklists**: release readiness, analysis validation
+- Workflows: building, environment management, testing, type checking
+- Checklists: release readiness, analysis validation
 
 ### testing/
 
 Testing workflows and validation:
 
-- **Workflows**: comprehensive testing, dynamic test discovery
-- **Checklists**: test validation and verification
+- Workflows: comprehensive testing, dynamic test discovery
+- Checklists: test validation and verification
 
 ### misc/
 
 Miscellaneous utilities:
 
-- **Workflows**: image conversion and other utilities
-- **Checklists**: utility-specific validations
+- Workflows: image conversion and other utilities
+- Checklists: utility-specific validations
 
 ## File Structure
 
@@ -102,10 +102,10 @@ Both use `Path.rglob("*.yaml")` to scan all subdirectories automatically.
 
 Workflows and checklists follow a consistent naming pattern:
 
-- **Category prefix**: `python_`, `js_`, etc. for language-specific items
-- **Action suffix**: `_build`, `_test`, `_quality`, etc. for operation type
-- **Framework specific**: `react_dev`, `vue_dev` for framework items
-- **Generic names**: Core items use descriptive names without prefixes
+- Category prefix: `python_`, `js_`, etc. for language-specific items
+- Action suffix: `_build`, `_test`, `_quality`, etc. for operation type
+- Framework specific: `react_dev`, `vue_dev` for framework items
+- Generic names: Core items use descriptive names without prefixes
 
 ## Adding New Workflows and Checklists
 

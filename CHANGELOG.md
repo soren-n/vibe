@@ -9,7 +9,6 @@
 ### Features
 
 - **TypeScript Implementation**: Full TypeScript rewrite with improved type safety and performance
-- **Enhanced VS Code Extension**: Improved extension with better integration and features
 - **Workflow System**: Refined workflow orchestration with better error handling
 - **Session Management**: Enhanced session monitoring and management capabilities
 - **Checklist Integration**: Improved checklist system with better validation
@@ -112,7 +111,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Comprehensive research guidance fallback for unmatched queries
 - Dynamic workflow discovery with timestamp-based cache invalidation
-- VS Code extension with MCP integration
 - Universal project release workflows
 - Image conversion workflows with ImageMagick
 

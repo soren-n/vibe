@@ -10,21 +10,21 @@ The Vibe project uses a comprehensive test fixture system built on Vitest's `tes
 
 The main fixture system provides:
 
-- **`tempDir`**: Automatic temporary directory creation and cleanup
-- **`tempFile`**: Helper for creating temporary files within the temp directory
-- **`configTest`**: Specialized fixture for configuration testing with Vibe-specific utilities
-- **`createMockFileStructure`**: Utility for creating complex directory structures
+- `tempDir`: Automatic temporary directory creation and cleanup
+- `tempFile`: Helper for creating temporary files within the temp directory
+- `configTest`: Specialized fixture for configuration testing with Vibe-specific utilities
+- `createMockFileStructure`: Utility for creating complex directory structures
 
 ### 2. Test Helpers (`tests/utils/testHelpers.ts`)
 
 Additional utilities for common testing patterns:
 
-- **`TestFileManager`**: Explicit file/directory management with cleanup tracking
-- **`ProcessMocker`**: Mock process.cwd(), environment variables with automatic restoration
-- **`AsyncTestUtils`**: Utilities for async testing (waitFor, controllable promises)
-- **`TestDataBuilder`**: Factory methods for creating valid test data
-- **`ErrorSimulator`**: Tools for testing error scenarios and flaky conditions
-- **`PerformanceTestUtils`**: Performance measurement and assertion utilities
+- `TestFileManager`: Explicit file/directory management with cleanup tracking
+- `ProcessMocker`: Mock process.cwd(), environment variables with automatic restoration
+- `AsyncTestUtils`: Utilities for async testing (waitFor, controllable promises)
+- `TestDataBuilder`: Factory methods for creating valid test data
+- `ErrorSimulator`: Tools for testing error scenarios and flaky conditions
+- `PerformanceTestUtils`: Performance measurement and assertion utilities
 
 ## Usage Examples
 
@@ -101,7 +101,7 @@ test('should handle process mocking', () => {
 
 ### From Manual Cleanup Patterns
 
-**Before:**
+Before:
 
 ```typescript
 test('old pattern', () => {
@@ -121,7 +121,7 @@ test('old pattern', () => {
 });
 ```
 
-**After:**
+After:
 
 ```typescript
 vibeTest('new pattern', ({ tempDir }) => {
@@ -131,7 +131,7 @@ vibeTest('new pattern', ({ tempDir }) => {
 
 ### From Silent Error Handling
 
-**Before:**
+Before:
 
 ```typescript
 afterEach(() => {
@@ -143,7 +143,7 @@ afterEach(() => {
 });
 ```
 
-**After:**
+After:
 
 ```typescript
 // Fixtures handle errors appropriately with proper logging
@@ -152,12 +152,12 @@ afterEach(() => {
 
 ## Best Practices
 
-1. **Use Fixtures for All File Operations**: Always prefer fixtures over manual file creation
-2. **Leverage Specialized Fixtures**: Use `configTest` for configuration-related tests
-3. **Combine Utilities**: Use `TestFileManager` when you need explicit control over cleanup
-4. **Mock Properly**: Use `ProcessMocker` for environment and process state changes
-5. **Test Error Scenarios**: Use `ErrorSimulator` to test error handling
-6. **Performance Testing**: Use `PerformanceTestUtils` for timing-sensitive tests
+1. Use Fixtures for All File Operations: Always prefer fixtures over manual file creation
+2. Leverage Specialized Fixtures: Use `configTest` for configuration-related tests
+3. Combine Utilities: Use `TestFileManager` when you need explicit control over cleanup
+4. Mock Properly: Use `ProcessMocker` for environment and process state changes
+5. Test Error Scenarios: Use `ErrorSimulator` to test error handling
+6. Performance Testing: Use `PerformanceTestUtils` for timing-sensitive tests
 
 ## Configuration
 
@@ -181,10 +181,10 @@ export default defineConfig({
 
 ### Common Issues
 
-1. **Fixture not available**: Ensure you're importing from the correct fixture file
-2. **Cleanup not working**: Check that you're using the fixture system, not manual patterns
-3. **TypeScript errors**: Ensure proper typing when extending fixtures
-4. **Mock restoration issues**: Use `ProcessMocker` or ensure `restoreMocks: true` in config
+1. Fixture not available: Ensure you're importing from the correct fixture file
+2. Cleanup not working: Check that you're using the fixture system, not manual patterns
+3. TypeScript errors: Ensure proper typing when extending fixtures
+4. Mock restoration issues: Use `ProcessMocker` or ensure `restoreMocks: true` in config
 
 ### Debugging
 
