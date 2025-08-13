@@ -22,7 +22,7 @@ function runCommand(cmd: string[]): CommandResult {
     // Use direct CLI instead of npm run cli
     const cliCmd =
       cmd[0] === 'npm' && cmd[1] === 'run' && cmd[2] === 'cli'
-        ? ['node', 'dist/cli.js', ...cmd.slice(3)]
+        ? ['node', 'dist/src/cli.js', ...cmd.slice(3)]
         : cmd;
 
     // Use execSync with array to avoid shell escaping issues
