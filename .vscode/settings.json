@@ -1,11 +1,8 @@
 {
   "mcp.mcpServers": {
     "vibe-guide": {
-      "command": "node",
-      "args": [
-        "/Users/soren-n/Documents/workspace/vibe-mcp/dist/src/cli.js",
-        "mcp-server"
-      ],
+      "command": "npx",
+      "args": ["vibe-guide@latest", "mcp-server"],
       "env": {}
     }
   }

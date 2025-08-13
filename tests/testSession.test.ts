@@ -232,12 +232,12 @@ describe('WorkflowSession', () => {
     ]);
 
     const step1 = session.getCurrentStep();
-    expect(step1?.step_text).toContain('COMMAND:');
+    expect(step1?.step_text).toContain('Execute without interaction');
     expect(step1?.is_command).toBe(true);
 
     session.advanceStep();
     const step2 = session.getCurrentStep();
-    expect(step2?.step_text).toContain('GUIDANCE:');
+    expect(step2?.step_text).toContain('Verify and report status briefly');
     expect(step2?.is_command).toBe(false);
   });
 });

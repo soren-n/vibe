@@ -7,7 +7,8 @@
     "vibe": "dist/src/cli.js"
   },
   "scripts": {
-    "build": "tsc && npm run copy-data && npm run copy-package",
+    "build": "npm run clean && tsc --project tsconfig.json && npm run copy-data && npm run copy-package",
+    "build:fast": "tsc && npm run copy-data && npm run copy-package",
     "build:watch": "tsc --watch",
     "copy-data": "cp -r data dist/data 2>/dev/null || true",
     "copy-package": "cp package.json dist/package.json",
@@ -32,15 +33,10 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@mobily/ts-belt": "^3.13.1",
     "@modelcontextprotocol/sdk": "^1.17.2",
-    "@rollup/rollup-linux-x64-gnu": "^4.46.2",
-    "chokidar": "^4.0.1",
     "commander": "^12.0.0",
     "js-yaml": "^4.1.0",
-    "jsonschema": "^1.4.1",
     "nanoid": "^5.1.5",
-    "neverthrow": "^8.2.0",
     "picocolors": "^1.1.1",
     "zod": "^4.0.17"
   },

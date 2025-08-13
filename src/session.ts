@@ -1,26 +1,6 @@
 /**
- * Session management for workflow orchesexport interface WorkflowFrame {
-  workflowName: string;
-  steps: (string | WorkflowStepObject)[];
-  currentStep: number;
-  context: Record<string, unknown>;
-
-  get isComplete(): boolean;
-  get currentStepText(): string | null;
-  advance(): boolean;
-} TypeScr  static fromDict(data: Record<string, unknown>): WorkflowSessionImpl {
-    const workflowStack = data['workflowStack'] as Array<{
-      workflowName: string;
-      steps: (string | WorkflowStepObject)[];
-      currentStep: number;
-      context: Record<string, unknown>;
-    }>;
-
-    const frames = workflowStack.map(
-      (frameData) =>
-        new WorkflowFrameImpl(
-          frameData.workflowName,
-          frameData.steps,anslation of vibe/session.py and vibe/session_monitor.py
+ * Session management for workflow orchestration
+ * TypeScript translation of vibe/session.py and vibe/session_monitor.py
  */
 
 import * as fs from 'fs';
@@ -171,12 +151,14 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
   createdAt: string;
   lastAccessed: string;
   sessionConfig: SessionConfig | undefined;
+  vibeConfig: VibeConfigImpl | undefined;
 
   constructor(
     sessionId: string,
     prompt: string,
     workflowStack: WorkflowFrame[],
-    sessionConfig?: SessionConfig | undefined
+    sessionConfig?: SessionConfig | undefined,
+    vibeConfig?: VibeConfigImpl | undefined
   ) {
     this.sessionId = sessionId;
     this.prompt = prompt;
@@ -184,12 +166,14 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     this.createdAt = new Date().toISOString();
     this.lastAccessed = new Date().toISOString();
     this.sessionConfig = sessionConfig ?? undefined;
+    this.vibeConfig = vibeConfig ?? undefined;
   }
 
   static create(
     prompt: string,
     initialWorkflows: [string, (string | WorkflowStepObject)[]][],
-    sessionConfig?: SessionConfig
+    sessionConfig?: SessionConfig,
+    vibeConfig?: VibeConfigImpl
   ): WorkflowSessionImpl {
     const sessionId = generateSessionId();
 
@@ -197,7 +181,13 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
       ([workflowName, steps]) => new WorkflowFrameImpl(workflowName, steps, 0, {})
     );
 
-    return new WorkflowSessionImpl(sessionId, prompt, workflowStack, sessionConfig);
+    return new WorkflowSessionImpl(
+      sessionId,
+      prompt,
+      workflowStack,
+      sessionConfig,
+      vibeConfig
+    );
   }
 
   get currentFrame(): WorkflowFrame | null {
@@ -226,7 +216,7 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
       workflow: currentFrame.workflowName,
       step_number: currentFrame.currentStep + 1, // 1-based for display
       total_steps: currentFrame.steps.length,
-      step_text: this.formatStepForAgent(stepText, isCommand),
+      step_text: this.formatStepForAgent(stepText, isCommand, this.vibeConfig),
       is_command: isCommand,
       workflow_depth: this.workflowStack.length,
     };
@@ -354,11 +344,34 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     );
   }
 
-  private formatStepForAgent(stepText: string, isCommand: boolean): string {
-    if (isCommand) {
-      return `COMMAND: ${stepText}`;
+  private formatStepForAgent(
+    stepText: string,
+    isCommand: boolean,
+    _config?: VibeConfigImpl
+  ): string {
+    if (!stepText.trim()) {
+      return stepText;
     }
-    return `GUIDANCE: ${stepText}`;
+
+    // Default to enhanced format - users can configure this in their .vibe.yaml
+    let formattedText = stepText;
+
+    // Add enhanced prefix (always enabled by default)
+    if (isCommand) {
+      const prefix =
+        'Execute without interaction. Use quiet/yes flags. Report outcome concisely.';
+      formattedText = `${prefix} ${formattedText}`;
+    } else {
+      // For guidance/checklist items, use shorter prefix
+      const prefix = 'Verify and report status briefly.';
+      formattedText = `${prefix}\n\n${formattedText}`;
+    }
+
+    // Add enhanced suffix (always enabled by default)
+    const suffix = 'Analyze, Reflect, Plan, Execute.';
+    formattedText = `${formattedText} ${suffix}`;
+
+    return formattedText;
   }
 }
 
@@ -385,7 +398,12 @@ export class SessionManager {
     workflowSteps: [string, (string | WorkflowStepObject)[]][],
     sessionConfig?: SessionConfig
   ): EnhancedWorkflowSession {
-    const session = WorkflowSessionImpl.create(prompt, workflowSteps, sessionConfig);
+    const session = WorkflowSessionImpl.create(
+      prompt,
+      workflowSteps,
+      sessionConfig,
+      this.config
+    );
 
     this.sessions.set(session.sessionId, session);
     this.saveSession(session);
@@ -584,7 +602,10 @@ export class SessionManager {
       const sessionData = JSON.parse(data);
 
       // Use the fromDict method for proper reconstruction
-      return WorkflowSessionImpl.fromDict(sessionData);
+      const session = WorkflowSessionImpl.fromDict(sessionData);
+      // Set the current config on the loaded session
+      session.vibeConfig = this.config;
+      return session;
     } catch (error) {
       console.error(`Failed to load session ${sessionId}:`, error);
       return null;

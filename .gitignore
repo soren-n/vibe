@@ -65,6 +65,7 @@ yarn-debug.log*
 yarn-error.log*
 .pytest_cache/
 cover/
+coverage/
 
 # Translations
 *.mo

@@ -30,9 +30,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Install Rollup native dependencies
-        run: npm install @rollup/rollup-linux-x64-gnu --save-optional || true
-
       - name: Run TypeScript type checking
         run: npm run type-check
 
@@ -72,9 +69,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Install Rollup native dependencies
-        run: npm install @rollup/rollup-linux-x64-gnu --save-optional || true
-
       - name: Run TypeScript compilation
         run: npm run build
 
@@ -83,17 +77,8 @@ jobs:
           ls -la dist/src/cli.js
           echo "CLI verification complete"
 
-      - name: Run tests with proper cleanup
-        run: |
-          # Handle rollup optional dependency issue
-          if npm test 2>&1 | grep -q "rollup-linux-x64-gnu"; then
-            echo "Detected rollup dependency issue, cleaning and retrying..."
-            rm -rf node_modules package-lock.json
-            npm install
-            npm test
-          else
-            npm test
-          fi
+      - name: Run tests
+        run: npm test
 
   workflow-validation:
     name: Workflow Validation
@@ -110,9 +95,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Rollup native dependencies
-        run: npm install @rollup/rollup-linux-x64-gnu --save-optional || true
 
       - name: Build project
         run: npm run build
