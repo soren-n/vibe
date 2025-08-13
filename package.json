@@ -2,16 +2,16 @@
   "name": "vibe-workflow",
   "version": "0.6.0",
   "description": "Intelligent workflow orchestrator for TypeScript development with natural language prompts",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "bin": {
-    "vibe": "dist/cli.js"
+    "vibe": "dist/src/cli.js"
   },
   "scripts": {
     "build": "tsc && npm run copy-data",
     "build:watch": "tsc --watch",
     "copy-data": "cp -r data dist/data 2>/dev/null || true",
     "dev": "tsx src/cli.ts",
-    "cli": "node dist/cli.js",
+    "cli": "node dist/src/cli.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
