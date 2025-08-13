@@ -11,6 +11,7 @@ Vibe analyzes natural language prompts and provides appropriate development work
 
 ## Installation
 
+P
 Configure Vibe as an MCP server in VS Code by adding the following to your `settings.json`:
 
 ```json
