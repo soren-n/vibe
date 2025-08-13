@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/soren-n/vibe-mcp/compare/v1.1.1...v1.2.0) (2025-08-13)
+
+### Features
+
+- implement proper MCP server with vibe-guide naming ([0303a65](https://github.com/soren-n/vibe-mcp/commit/0303a654c25f7a98212600437953319d135f7857))
+
 ## [1.1.1](https://github.com/soren-n/vibe-mcp/compare/v1.1.0...v1.1.1) (2025-08-13)
 
 ### Bug Fixes
