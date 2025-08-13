@@ -42,7 +42,7 @@ jobs:
       - name: Verify build outputs
         run: |
           ls -la dist/
-          ls -la dist/cli.js
+          ls -la dist/src/cli.js
           echo "Build verification complete"
 
       - name: Run tests
@@ -50,7 +50,7 @@ jobs:
 
       - name: Test Vibe CLI functionality
         run: |
-          node dist/cli.js --help
+          node dist/src/cli.js --help
 
   mcp-server-tests:
     name: MCP Server Testing
@@ -72,9 +72,9 @@ jobs:
       - name: Run TypeScript compilation
         run: npm run build
 
-      - name: Verify CLI build
+      - name: Verify build artifacts
         run: |
-          ls -la dist/cli.js
+          ls -la dist/src/cli.js
           echo "CLI verification complete"
 
       - name: Run tests with proper cleanup
@@ -114,4 +114,4 @@ jobs:
 
       - name: Test workflow commands
         run: |
-          node dist/cli.js --help
+          node dist/src/cli.js --help

@@ -12,7 +12,7 @@
     "copy-data": "cp -r data dist/data 2>/dev/null || true",
     "copy-package": "cp package.json dist/package.json",
     "dev": "tsx src/cli.ts",
-    "cli": "node dist/cli.js",
+    "cli": "node dist/src/cli.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
