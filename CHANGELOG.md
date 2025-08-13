@@ -1,3 +1,29 @@
+## [1.1.0](https://github.com/soren-n/vibe-mcp/compare/v1.0.0...v1.1.0) (2025-08-13)
+
+### Features
+
+- add test coverage support and fix deprecation warnings ([3dd025a](https://github.com/soren-n/vibe-mcp/commit/3dd025a4315eb215cb16d5839b9bec0fa905db95))
+- clean up project dependencies and fix test naming ([b8621b9](https://github.com/soren-n/vibe-mcp/commit/b8621b93010c0769ff3e8efd7c0b44ddd97b5493))
+- enhance CI/CD workflows and fix package.json paths ([c792cb1](https://github.com/soren-n/vibe-mcp/commit/c792cb178a4fab58cad1204bf277787619d8a30b))
+- implement comprehensive test fixture system ([0b8eee7](https://github.com/soren-n/vibe-mcp/commit/0b8eee7023f1244fce32afa4e4a25df33dabefac))
+
+### Bug Fixes
+
+- add missing build step to release workflow semantic-release job ([f8295c0](https://github.com/soren-n/vibe-mcp/commit/f8295c0da37cf640da26f42558a0fd2d856fc304))
+- add rollup dependency workaround to release workflow ([c33128d](https://github.com/soren-n/vibe-mcp/commit/c33128d68d0293c439869aaa9a550fc07d3643ca))
+- apply prettier formatting to analyzer, schemas, and ids modules ([f4d24a7](https://github.com/soren-n/vibe-mcp/commit/f4d24a70bb657f67d271de459d5376d0f2cd203e))
+- correct CLI command in release workflow validation ([5ed76ca](https://github.com/soren-n/vibe-mcp/commit/5ed76ca4a220e977b8f82e03f7c82ec8597e1042))
+- correct CLI path to dist/src/cli.js throughout CI workflow ([e90894b](https://github.com/soren-n/vibe-mcp/commit/e90894bf62fd6f8684cc3f4b64371010296695d7))
+- improve CI reliability and remove dependency cleanup issues ([0461277](https://github.com/soren-n/vibe-mcp/commit/046127774f60b9283cd22bef8a8943d6d03947f7))
+- improve session monitor test stability ([63ea107](https://github.com/soren-n/vibe-mcp/commit/63ea1070c17bbd4fde9fcb48f732d7bb3ad74aba))
+- move build step before quality checks in release workflow ([420c4ff](https://github.com/soren-n/vibe-mcp/commit/420c4ffe6ec52c8688f1985300d93ba00d46f0ca))
+- regenerate npm lockfile to resolve CI dependencies ([1d35f7e](https://github.com/soren-n/vibe-mcp/commit/1d35f7e66c09bc2eb83a740ff794e5f5ff99b1cd))
+- remove unsupported --format option from list-workflows command ([6d149ca](https://github.com/soren-n/vibe-mcp/commit/6d149ca0cc3d52e8d1727a7378509eaf7c216f86))
+- resolve CI issues with missing build step and rollup dependencies ([0f9545e](https://github.com/soren-n/vibe-mcp/commit/0f9545e6196fb962bc0104aca5c32976b7667769))
+- resolve CI issues with npm dependencies and CLI path ([22ca70e](https://github.com/soren-n/vibe-mcp/commit/22ca70ec37adb4addf07f9c9a0d00eabc1b6f1bf))
+- update CLI to read version dynamically from package.json ([df1befc](https://github.com/soren-n/vibe-mcp/commit/df1befcc1d55ab446b949be68fd1ea9ffa837b14))
+- update test file to use correct CLI path dist/src/cli.js ([06f795d](https://github.com/soren-n/vibe-mcp/commit/06f795dfd205b1e051cebd48a8f01efa8349ab9a))
+
 ## [1.0.0](https://github.com/soren-n/vibe/compare/v0.6.0...v1.0.0) (2025-08-13)
 
 ### Breaking Changes
