@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/soren-n/vibe-mcp/compare/v1.3.0...v1.3.1) (2025-08-13)
+
+### Bug Fixes
+
+- Add shebang line to CLI and improve data path resolution for npm package ([0e77cfe](https://github.com/soren-n/vibe-mcp/commit/0e77cfea72f2954132580b8833d2d08cd8f8e16d))
+- Clean JSON output by suppressing logging in production builds ([99ce57c](https://github.com/soren-n/vibe-mcp/commit/99ce57cd014887fd2038de3f47674229f371a68e))
+
 ## [1.3.0](https://github.com/soren-n/vibe-mcp/compare/v1.2.1...v1.3.0) (2025-08-13)
 
 ### Features
