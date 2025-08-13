@@ -1,6 +1,6 @@
 name: validate_format
 display_name: Validate .vibe.yaml configuration format
-description: Validate .vibe.yaml structure and basic syntax
+description: Validate .vibe.yaml structure and basic syntax.
 category: configuration
 triggers:
   - validate config
@@ -12,10 +12,10 @@ triggers:
   - validate configuration
 steps:
   - 'Create config if missing: `echo ''protocol_version: 1\nproject_type: "auto"'' >
-    .vibe.yaml`'
-  - 'Validation: `vibe check`'
-  - 'Check YAML syntax: `uv run python -c "import yaml; yaml.safe_load(open(''.vibe.yaml''))"`'
-  - 'Get setup help: `vibe guide "setup vibe project"`'
+    .vibe.yaml`.'
+  - 'Validation: `vibe check`.'
+  - 'Check YAML syntax: `uv run python -c "import yaml; yaml.safe_load(open(''.vibe.yaml''))"`.'
+  - 'Get setup help: `vibe guide "setup vibe project"`.'
 guidance: 'Goal: confirm .vibe.yaml exists, passes `vibe check`, and parses as YAML.
 
 

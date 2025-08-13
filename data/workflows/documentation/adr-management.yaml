@@ -1,5 +1,5 @@
 name: Architecture Decision Record (ADR) Creation and Management
-description: Execute ADR creation and maintenance processes for architectural decisions
+description: Execute ADR creation and maintenance processes for architectural decisions.
 triggers:
   - create adr
   - write adr
@@ -22,13 +22,13 @@ conditions:
   - When reviewing past decisions
 steps:
   - 'ADR structure creation: Run `mkdir -p docs/adr` and copy template to establish
-    framework'
+    framework.'
   - 'ADR listing: Run `ls docs/adr/` to determine next sequential number and review
-    decision history'
+    decision history.'
   - 'Create new ADR file: Copy template to `docs/adr/adr-XXX-decision-title.md` using
-    appropriate numbering'
-  - 'Context documentation: Write explanation of problem, constraints, and circumstances'
-  - 'Decision recording: Document chosen approach and provide reasoning'
-  - 'Implementation planning: Write actionable next steps and execution references'
-  - 'Status setting: Mark as Proposed, Accepted, Deprecated, or Superseded'
-  - 'Commit with changes: Include ADR in same commit as related code for traceability'
+    appropriate numbering.'
+  - 'Context documentation: Write explanation of problem, constraints, and circumstances.'
+  - 'Decision recording: Document chosen approach and provide reasoning.'
+  - 'Implementation planning: Write actionable next steps and execution references.'
+  - 'Status setting: Mark as Proposed, Accepted, Deprecated, or Superseded.'
+  - 'Commit with changes: Include ADR in same commit as related code for traceability.'

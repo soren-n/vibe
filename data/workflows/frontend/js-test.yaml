@@ -1,5 +1,5 @@
 name: js_test
-description: JavaScript testing
+description: JavaScript testing.
 triggers:
   - jest.*test
   - mocha.*test
@@ -12,11 +12,11 @@ triggers:
   - verify.*javascript.*tests
   - vitest
 steps:
-  - 'Test suite: `npm test`'
-  - 'Install test framework if missing: `npm install --save-dev jest`'
-  - 'Add test script to package.json if missing: `"test": "jest"`'
-  - 'With coverage: `npm test -- --coverage`'
-  - 'In watch mode: `npm test -- --watch`'
+  - 'Test suite: `npm test`.'
+  - 'Install test framework if missing: `npm install --save-dev jest`.'
+  - 'Add test script to package.json if missing: `"test": "jest"`.'
+  - 'With coverage: `npm test -- --coverage`.'
+  - 'In watch mode: `npm test -- --watch`.'
 dependencies:
   - js_quality
 project_types:
@@ -26,12 +26,12 @@ project_types:
 conditions:
   - file:package.json
 items:
-  - All test suites pass without failures
-  - Test coverage meets project requirements
-  - Critical functionality is adequately tested
-  - Edge cases and error conditions are covered
-  - Tests run efficiently without timeouts
-  - No flaky or intermittent test failures
-  - Test configuration is properly set up in package.json
-  - Continuous integration includes test execution
-  - Test results are clearly reported and actionable
+  - All test suites pass without failures.
+  - Test coverage meets project requirements.
+  - Critical functionality is adequately tested.
+  - Edge cases and error conditions are covered.
+  - Tests run efficiently without timeouts.
+  - No flaky or intermittent test failures.
+  - Test configuration is properly set up in package.json.
+  - Continuous integration includes test execution.
+  - Test results are clearly reported and actionable.

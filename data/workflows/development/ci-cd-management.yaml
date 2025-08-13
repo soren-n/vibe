@@ -1,5 +1,5 @@
 name: CI/CD Pipeline Setup and Execution
-description: Execute CI/CD pipeline setup and automation tasks
+description: Execute CI/CD pipeline setup and automation tasks.
 triggers:
   - setup ci cd
   - run ci pipeline

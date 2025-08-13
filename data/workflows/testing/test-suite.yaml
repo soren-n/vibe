@@ -1,5 +1,5 @@
 name: Test Suite Execution
-description: Execute complete test suite including unit, integration, and MCP tests
+description: Execute complete test suite including unit, integration, and MCP tests.
 triggers:
   - run all tests
   - execute tests

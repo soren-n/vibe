@@ -1,5 +1,5 @@
 name: implementation
-description: implementation
+description: implementation.
 triggers:
   - add
   - build
@@ -20,27 +20,27 @@ triggers:
   - validate.*implementation
   - verify.*feature
 steps:
-  - 'Create feature branch: `git checkout -b feature/feature-name`'
-  - 'Write failing test: Create test case for new functionality'
-  - 'Implement minimal code: Write just enough code to make test pass'
-  - 'Add type annotations: Include proper typing for new functions/classes'
-  - 'Tests: `uv run pytest tests/` or project-specific test command'
-  - 'Quality checks: `uv run ruff check . --fix && uv run ruff format .`'
-  - 'Update documentation: Add docstrings and update relevant docs'
-  - "Commit changes: `git add . && git commit -m 'feat: add [feature description]'`"
-  - 'Test integration: Verify changes work with existing codebase'
-  - 'Push branch: `git push origin feature/feature-name`'
+  - 'Create feature branch: `git checkout -b feature/feature-name`.'
+  - 'Write failing test: Create test case for new functionality.'
+  - 'Implement minimal code: Write just enough code to make test pass.'
+  - 'Add type annotations: Include proper typing for new functions/classes.'
+  - 'Tests: `uv run pytest tests/` or project-specific test command.'
+  - 'Quality checks: `uv run ruff check . --fix && uv run ruff format .`.'
+  - 'Update documentation: Add docstrings and update relevant docs.'
+  - "Commit changes: `git add . && git commit -m 'feat: add [feature description]'`."
+  - 'Test integration: Verify changes work with existing codebase.'
+  - 'Push branch: `git push origin feature/feature-name`.'
 dependencies: []
 project_types: []
 conditions: []
 items:
-  - All tests pass including new tests for the feature
-  - Code follows project style and linting standards
-  - Type annotations are complete and accurate
-  - Documentation is updated and comprehensive
-  - Feature works correctly with existing functionality
-  - Edge cases and error conditions are handled
-  - Performance impact is acceptable
-  - Security considerations have been addressed
-  - Code review requirements are met
-  - Commit messages are clear and descriptive
+  - All tests pass including new tests for the feature.
+  - Code follows project style and linting standards.
+  - Type annotations are complete and accurate.
+  - Documentation is updated and comprehensive.
+  - Feature works correctly with existing functionality.
+  - Edge cases and error conditions are handled.
+  - Performance impact is acceptable.
+  - Security considerations have been addressed.
+  - Code review requirements are met.
+  - Commit messages are clear and descriptive.

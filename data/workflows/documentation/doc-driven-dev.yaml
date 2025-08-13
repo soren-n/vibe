@@ -1,5 +1,5 @@
 name: Documentation-driven development workflow
-description: Documentation-driven development
+description: Documentation-driven development.
 triggers:
   - design documentation
   - design first
@@ -28,29 +28,29 @@ conditions:
   - When establishing project standards
 steps:
   - 'Create requirements document: Write `docs/requirements.md` with goals and success
-    criteria'
+    criteria.'
   - 'Design architecture: Create `docs/architecture.md` with component diagrams and
-    tech decisions'
-  - 'Specify APIs: Document endpoints in `docs/api.md` with schemas and examples'
-  - 'Model data: Create `docs/data-model.md` with entity relationships and validation'
-  - 'Map user workflows: Document user journeys in `docs/user-guide.md`'
-  - 'Create implementation plan: Break down tasks in `docs/implementation-plan.md`'
-  - 'Write tests from specs: Create test cases based on documented requirements'
-  - 'Set up review process: Schedule documentation reviews with stakeholders'
-  - 'Implement following docs: Build according to documented specifications'
-  - 'Update docs with learnings: Revise documentation based on implementation feedback'
-  - 'Validate examples: Test all documented examples and code snippets'
-  - 'Create final user guide: Complete end-to-end documentation'
+    tech decisions.'
+  - 'Specify APIs: Document endpoints in `docs/api.md` with schemas and examples.'
+  - 'Model data: Create `docs/data-model.md` with entity relationships and validation.'
+  - 'Map user workflows: Document user journeys in `docs/user-guide.md`.'
+  - 'Create implementation plan: Break down tasks in `docs/implementation-plan.md`.'
+  - 'Write tests from specs: Create test cases based on documented requirements.'
+  - 'Set up review process: Schedule documentation reviews with stakeholders.'
+  - 'Implement following docs: Build according to documented specifications.'
+  - 'Update docs with learnings: Revise documentation based on implementation feedback.'
+  - 'Validate examples: Test all documented examples and code snippets.'
+  - 'Create final user guide: Complete end-to-end documentation.'
 items:
-  - Requirements are clearly defined and documented
-  - Architecture design is comprehensive and reviewed
-  - API specifications are complete with examples
-  - Data models are documented with relationships
-  - User workflows are mapped and validated
-  - Implementation plan is detailed and actionable
-  - Tests are derived from documentation specifications
-  - Documentation quality meets established standards
-  - Implementation follows documented specifications
-  - Documentation is updated with implementation learnings
-  - All examples and code snippets work correctly
-  - Stakeholders have reviewed and approved documentation
+  - Requirements are clearly defined and documented.
+  - Architecture design is comprehensive and reviewed.
+  - API specifications are complete with examples.
+  - Data models are documented with relationships.
+  - User workflows are mapped and validated.
+  - Implementation plan is detailed and actionable.
+  - Tests are derived from documentation specifications.
+  - Documentation quality meets established standards.
+  - Implementation follows documented specifications.
+  - Documentation is updated with implementation learnings.
+  - All examples and code snippets work correctly.
+  - Stakeholders have reviewed and approved documentation.

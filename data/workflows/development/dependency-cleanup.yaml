@@ -1,24 +1,40 @@
-name: 'Dependency Cleanup and Minimization'
-description: 'Systematically reduce and clean up project dependencies'
+name: Dependency Cleanup and Minimization
+description: Systematically reduce and clean up project dependencies for improved
+  security and performance.
 triggers:
-  - 'clean dependencies'
-  - 'minimize dependencies'
-  - 'reduce dependencies'
-  - 'dependency cleanup'
-  - 'remove unused packages'
+  - clean dependencies
+  - minimize dependencies
+  - reduce dependencies
+  - dependency cleanup
+  - remove unused packages
+  - optimize dependencies
 steps:
-  - 'Create dependency backup: Document current dependencies in requirements.txt or similar before changes'
-  - 'Identify unused imports: Use `vulture`, `unimport`, or `autoflake` to find unused imports'
-  - "Remove unused packages: Uninstall packages that aren't imported anywhere in your codebase"
-  - 'Consolidate similar packages: Replace multiple packages with single alternatives (e.g., `requests` instead of `urllib3` + `certifi`)'
-  - 'Make dependencies optional: Convert non-critical dependencies to optional with try/except imports'
-  - 'Replace heavy packages: Substitute heavyweight dependencies with lighter alternatives'
-  - "Remove development dependencies: Ensure dev/test dependencies aren't in production requirements"
-  - 'Use built-in alternatives: Replace packages with Python standard library equivalents where possible'
-  - 'Pin important versions: Pin critical dependencies to avoid breaking changes'
-  - 'Test thoroughly: Run full test suite after each dependency removal'
-  - 'Update documentation: Update installation instructions and dependency documentation'
-  - 'Monitor impact: Track package size, startup time, and installation time improvements'
+  - 'Document current state: Create backup of package manifests (package.json, requirements.txt,
+    etc.) before changes.'
+  - 'Run security audit: Execute npm audit, pip-audit, or equivalent to identify vulnerabilities.'
+  - 'Analyze usage patterns: Use static analysis tools to identify unused imports and
+    dependencies.'
+  - 'Remove unused dependencies: Uninstall packages that are not imported or referenced
+    in the codebase.'
+  - 'Evaluate dev dependencies: Move development-only packages from production dependencies
+    to dev dependencies.'
+  - 'Consolidate overlapping packages: Replace multiple packages with single alternatives
+    that provide similar functionality.'
+  - 'Remove redundant tooling: Eliminate meta-packages when individual components are
+    already installed.'
+  - 'Replace heavyweight dependencies: Substitute large dependencies with lighter alternatives
+    where feasible.'
+  - 'Update CI workflows: Remove obsolete workarounds and installation steps for removed
+    dependencies.'
+  - 'Test functionality: Run complete test suite to verify no functionality is broken.'
+  - 'Verify build process: Ensure build and deployment processes work with reduced dependencies.'
+  - 'Update documentation: Revise installation instructions and dependency documentation.'
+  - 'Monitor metrics: Track improvements in installation time, bundle size, and security
+    posture.'
 dependencies: []
-project_types: ['python']
+project_types:
+  - python
+  - javascript
+  - typescript
+  - nodejs
 conditions: []

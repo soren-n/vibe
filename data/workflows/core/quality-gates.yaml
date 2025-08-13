@@ -1,5 +1,5 @@
 name: Automation and Quality Gates Setup
-description: Quality gate validation
+description: Quality gate validation.
 triggers:
   - automation validation
   - configure quality gates
@@ -26,9 +26,9 @@ steps:
     command: cd mcp-server && npm test && echo 'MCP automation validated'
     working_dir: .
 items:
-  - 'Pre-commit hooks installed: Git hooks are properly configured in .git/hooks/ directory'
+  - 'Pre-commit hooks installed: Git hooks are properly configured in .git/hooks/ directory.'
   - 'Quality checks operational: Automated linting, type checking, and testing execute
-    successfully'
-  - 'Git integration functional: Pre-commit hooks trigger automatically on commit attempts'
-  - 'MCP workflow automation validated: Server-side automation functionality works correctly'
-  - 'Quality gate enforcement active: All automated checks must pass before code integration'
+    successfully.'
+  - 'Git integration functional: Pre-commit hooks trigger automatically on commit attempts.'
+  - 'MCP workflow automation validated: Server-side automation functionality works correctly.'
+  - 'Quality gate enforcement active: All automated checks must pass before code integration.'

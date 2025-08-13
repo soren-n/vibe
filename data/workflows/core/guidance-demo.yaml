@@ -1,18 +1,18 @@
 name: Guidance Approach Demonstration
-description: Execute demonstration of Vibe's guidance-oriented development approach
+description: Execute demonstration of Vibe's guidance-oriented development approach.
 triggers:
   - demo guidance approach
   - show guidance method
   - execute guidance demo
 steps:
   - "Context discovery: Review project structure using `find . -name '*.py' -o -name
-    '*.js' -o -name '*.ts' | head -10`"
+    '*.js' -o -name '*.ts' | head -10`."
   - 'Project tests: Execute `uv run pytest -q` for Python or `npm test` for Node.js
-    projects'
+    projects.'
   - "Make focused commit: Execute `git add . && git commit -m 'Demo: guidance approach
-    implementation'`"
+    implementation'`."
   - 'Summarize progress: Provide brief status update with key accomplishments and next
-    steps'
+    steps.'
 project_types: []
 dependencies: []
 conditions: []

@@ -1,5 +1,5 @@
 name: Workflow Health Dashboard
-description: Display comprehensive workflow session health and provide recommendations
+description: Display comprehensive workflow session health and provide recommendations.
 triggers:
   - check workflow health
   - workflow dashboard
@@ -14,20 +14,21 @@ project_types:
   - go
   - general
 steps:
-  - 'Session overview: Use `list_workflow_sessions` to get basic session list'
-  - 'Health monitoring: Use `monitor_sessions` to get detailed health data and alerts'
-  - 'Alert review: Examine any alerts for dormant, stale, or forgotten completion patterns'
-  - 'Recommendation review: Check monitoring recommendations for suggested actions'
-  - 'Session details analysis: Review individual session details including timestamps and progress'
-  - 'Action planning: Based on alerts and recommendations, plan appropriate actions'
-  - 'Alert resolution: For any high-priority alerts, take recommended actions immediately'
-  - 'Documentation: Note any patterns or issues for future workflow management improvement'
+  - 'Session overview: Use `list_workflow_sessions` to get basic session list.'
+  - 'Health monitoring: Use `monitor_sessions` to get detailed health data and alerts.'
+  - 'Alert review: Examine any alerts for dormant, stale, or forgotten completion patterns.'
+  - 'Recommendation review: Check monitoring recommendations for suggested actions.'
+  - 'Session details analysis: Review individual session details including timestamps
+    and progress.'
+  - 'Action planning: Based on alerts and recommendations, plan appropriate actions.'
+  - 'Alert resolution: For any high-priority alerts, take recommended actions immediately.'
+  - 'Documentation: Note any patterns or issues for future workflow management improvement.'
 items:
-  - Current workflow session status is clearly understood
-  - All alerts and their severity levels have been reviewed
-  - Recommendations from monitoring system have been considered
-  - High-priority alerts have been addressed appropriately
-  - Session health dashboard shows green status or known acceptable issues
-  - Any dormant sessions have been evaluated for continuation or cleanup
-  - Workflow management patterns are being followed correctly
-  - Future workflow management improvements have been noted if applicable
+  - Current workflow session status is clearly understood.
+  - All alerts and their severity levels have been reviewed.
+  - Recommendations from monitoring system have been considered.
+  - High-priority alerts have been addressed appropriately.
+  - Session health dashboard shows green status or known acceptable issues.
+  - Any dormant sessions have been evaluated for continuation or cleanup.
+  - Workflow management patterns are being followed correctly.
+  - Future workflow management improvements have been noted if applicable.

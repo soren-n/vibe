@@ -1,31 +1,31 @@
-name: 'Release Validation'
-description: 'Checklist to verify project is ready for release'
+name: Release Validation
+description: Checklist to verify project is ready for release.
 triggers:
-  - 'validate release'
-  - 'check release readiness'
-  - 'verify release'
-  - 'pre-release check'
-  - 'release checklist'
+  - validate release
+  - check release readiness
+  - verify release
+  - pre-release check
+  - release checklist
 project_types:
-  - 'python'
-  - 'javascript'
-  - 'typescript'
-  - 'vscode_extension'
+  - python
+  - javascript
+  - typescript
+  - vscode_extension
 conditions: []
 dependencies: []
 items:
-  - 'All tests pass without errors'
-  - 'Version numbers are updated in all relevant files'
-  - 'Changelog is updated with new features and fixes'
-  - 'Documentation reflects current functionality'
-  - 'No critical security vulnerabilities present'
-  - 'Build process completes successfully'
-  - 'Dependencies are up to date and secure'
-  - 'License and copyright information is current'
-  - 'Release notes are prepared'
-  - 'Backup of current state exists'
-  - 'Target marketplace requirements are met'
-  - 'Installation instructions are accurate'
-  - 'All required assets and files are included'
-  - 'Quality gates pass in CI/CD pipeline'
-  - 'Manual testing of key functionality completed'
+  - All tests pass without errors.
+  - Version numbers are updated in all relevant files.
+  - Changelog is updated with new features and fixes.
+  - Documentation reflects current functionality.
+  - No critical security vulnerabilities present.
+  - Build process completes successfully.
+  - Dependencies are up to date and secure.
+  - License and copyright information is current.
+  - Release notes are prepared.
+  - Backup of current state exists.
+  - Target marketplace requirements are met.
+  - Installation instructions are accurate.
+  - All required assets and files are included.
+  - Quality gates pass in CI/CD pipeline.
+  - Manual testing of key functionality completed.

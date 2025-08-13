@@ -1,5 +1,5 @@
 name: next_steps
-description: Get suggestions for what to work on next
+description: Get suggestions for what to work on next.
 triggers:
   - what next
   - next steps
@@ -7,12 +7,12 @@ triggers:
   - recommendations
   - guidance
 steps:
-  - 'Check project status: `git status`'
-  - 'Show recent commits: `git log --oneline -5`'
+  - 'Check project status: `git status`.'
+  - 'Show recent commits: `git log --oneline -5`.'
   - 'List TODO comments: `grep -r ''TODO\|FIXME\|XXX'' --include=''*.py'' --include=''*.js''
-    --include=''*.ts'' . | head -5`'
-  - "Project analysis: `uv run vibe guide 'analyze project'`"
-  - "Update dependencies: `uv run vibe guide 'update dependencies'`"
-  - "Check documentation: `uv run vibe guide 'check docs'`"
-  - "Quality checks: `uv run vibe guide 'quality'`"
-  - "Tests: `uv run vibe guide 'test'`"
+    --include=''*.ts'' . | head -5`.'
+  - "Project analysis: `uv run vibe guide 'analyze project'`."
+  - "Update dependencies: `uv run vibe guide 'update dependencies'`."
+  - "Check documentation: `uv run vibe guide 'check docs'`."
+  - "Quality checks: `uv run vibe guide 'quality'`."
+  - "Tests: `uv run vibe guide 'test'`."

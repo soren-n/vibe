@@ -1,5 +1,5 @@
 name: Image Conversion with ImageMagick
-description: Image format conversion
+description: Image format conversion.
 triggers:
   - check.*image.*quality
   - convert image
@@ -14,23 +14,23 @@ project_types:
   - any
 steps:
   - 'Install ImageMagick: `brew install imagemagick` (macOS) or `sudo apt install imagemagick`
-    (Linux)'
-  - 'Convert image format: `magick input.png output.jpg`'
-  - 'Resize image: `magick input.jpg -resize 800x600 output.jpg`'
-  - 'Convert with quality setting: `magick input.png -quality 90 output.jpg`'
-  - 'Batch convert: `magick mogrify -format png *.jpg`'
-  - 'Optimize PNG: `magick input.png -strip -quality 75 output.png`'
-  - 'Clean up temporary files: `rm -f *_temp.*`'
+    (Linux).'
+  - 'Convert image format: `magick input.png output.jpg`.'
+  - 'Resize image: `magick input.jpg -resize 800x600 output.jpg`.'
+  - 'Convert with quality setting: `magick input.png -quality 90 output.jpg`.'
+  - 'Batch convert: `magick mogrify -format png *.jpg`.'
+  - 'Optimize PNG: `magick input.png -strip -quality 75 output.png`.'
+  - 'Clean up temporary files: `rm -f *_temp.*`.'
 items:
-  - ImageMagick is properly installed and accessible via command line
-  - Source image files exist and are in readable format
-  - Output format is appropriate for intended use case
-  - Image resolution meets project requirements
-  - Converted images maintain acceptable quality
-  - File sizes are optimized for intended distribution
-  - Color profiles are preserved or appropriately converted
-  - Transparency is handled correctly (for PNG/GIF)
-  - Batch conversions complete without errors
-  - Output directory structure is organized
-  - No temporary or intermediate files remain
-  - Converted images display correctly in target applications
+  - ImageMagick is properly installed and accessible via command line.
+  - Source image files exist and are in readable format.
+  - Output format is appropriate for intended use case.
+  - Image resolution meets project requirements.
+  - Converted images maintain acceptable quality.
+  - File sizes are optimized for intended distribution.
+  - Color profiles are preserved or appropriately converted.
+  - Transparency is handled correctly (for PNG/GIF).
+  - Batch conversions complete without errors.
+  - Output directory structure is organized.
+  - No temporary or intermediate files remain.
+  - Converted images display correctly in target applications.

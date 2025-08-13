@@ -1,5 +1,5 @@
 name: js_quality
-description: Run JavaScript/TypeScript code quality checks
+description: Run JavaScript/TypeScript code quality checks.
 triggers:
   - lint.*js
   - lint.*typescript
@@ -8,13 +8,13 @@ triggers:
   - format.*js
   - check.*js.*quality
 steps:
-  - 'Linting: `npm run lint` or `npx eslint .`'
-  - 'Format code: `npm run format` or `npx prettier --write .`'
-  - 'Install ESLint if missing: `npm install --save-dev eslint`'
-  - 'Install Prettier if missing: `npm install --save-dev prettier`'
-  - 'Setup lint script: Add `"lint": "eslint ."` to package.json scripts'
-  - 'Setup format script: Add `"format": "prettier --write ."` to package.json scripts'
-  - 'Type check: `npx tsc --noEmit` (TypeScript projects)'
+  - 'Linting: `npm run lint` or `npx eslint .`.'
+  - 'Format code: `npm run format` or `npx prettier --write .`.'
+  - 'Install ESLint if missing: `npm install --save-dev eslint`.'
+  - 'Install Prettier if missing: `npm install --save-dev prettier`.'
+  - 'Setup lint script: Add `"lint": "eslint ."` to package.json scripts.'
+  - 'Setup format script: Add `"format": "prettier --write ."` to package.json scripts.'
+  - 'Type check: `npx tsc --noEmit` (TypeScript projects).'
 project_types:
   - javascript
   - typescript

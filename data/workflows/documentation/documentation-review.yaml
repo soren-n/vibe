@@ -1,5 +1,5 @@
 name: Documentation review and improvement
-description: Documentation review process
+description: Documentation review process.
 triggers:
   - check docs
   - docs.*review.*done
@@ -28,27 +28,27 @@ conditions:
   - When onboarding new contributors
 steps:
   - "List documentation files: `find . -name '*.md' | grep -v node_modules | head
-    -20`"
+    -20`."
   - "Show docs structure: `ls -la docs/ README.md CONTRIBUTING.md 2>/dev/null || echo
-    'No docs directory found'`"
+    'No docs directory found'`."
   - 'Show recent file changes: `git log --oneline --since=''2 weeks ago'' --name-only
-    | grep -E ''\.(py|ts|js|rs|go|md)$'' | head -10`'
+    | grep -E ''\.(py|ts|js|rs|go|md)$'' | head -10`.'
   - 'Search for undocumented functions: `grep -r ''def \|function \|class '' --include=''*.py''
-    --include=''*.js'' --include=''*.ts'' . | head -10`'
-  - 'Update README sections: Edit README.md with current project status'
-  - 'Add missing docstrings: Document functions in code files'
-  - 'Test code examples: Run examples in documentation to verify they work'
-  - 'Update development guides: Revise setup and contribution instructions'
+    --include=''*.js'' --include=''*.ts'' . | head -10`.'
+  - 'Update README sections: Edit README.md with current project status.'
+  - 'Add missing docstrings: Document functions in code files.'
+  - 'Test code examples: Run examples in documentation to verify they work.'
+  - 'Update development guides: Revise setup and contribution instructions.'
 items:
-  - All documentation files have been catalogued
-  - Documentation structure is well-organized
-  - Recent code changes are reflected in documentation
-  - Public APIs have comprehensive documentation
-  - Architecture decisions are properly documented
-  - User-facing documentation is clear and complete
-  - Development setup instructions are accurate
-  - All documentation examples work correctly
-  - Coding standards and guidelines are documented
-  - Documentation follows established best practices
-  - Missing documentation has been identified and addressed
-  - Documentation quality meets project standards
+  - All documentation files have been catalogued.
+  - Documentation structure is well-organized.
+  - Recent code changes are reflected in documentation.
+  - Public APIs have comprehensive documentation.
+  - Architecture decisions are properly documented.
+  - User-facing documentation is clear and complete.
+  - Development setup instructions are accurate.
+  - All documentation examples work correctly.
+  - Coding standards and guidelines are documented.
+  - Documentation follows established best practices.
+  - Missing documentation has been identified and addressed.
+  - Documentation quality meets project standards.

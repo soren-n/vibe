@@ -1,5 +1,5 @@
 name: quality
-description: quality
+description: quality.
 triggers:
   - best practices
   - check
@@ -22,38 +22,38 @@ triggers:
   - validate quality
   - verify compliance
 steps:
-  - 'Python linting: `uv run ruff check .` (if Python project)'
-  - 'Auto-fix Python issues: `uv run ruff check . --fix` (if Python project)'
-  - 'Format Python code: `uv run ruff format .` (if Python project)'
+  - 'Python linting: `uv run ruff check .` (if Python project).'
+  - 'Auto-fix Python issues: `uv run ruff check . --fix` (if Python project).'
+  - 'Format Python code: `uv run ruff format .` (if Python project).'
   - 'Type check Python: `uv run mypy . --hide-error-context --no-error-summary` (if
-    Python project)'
-  - 'JavaScript linting: `npm run lint` (if Node.js project)'
-  - 'Format JavaScript code: `npm run format` (if Node.js project)'
-  - 'Tests: `uv run pytest -q` or `npm test`'
-  - 'Security scan: `uv run bandit -r .` or `npm audit`'
+    Python project).'
+  - 'JavaScript linting: `npm run lint` (if Node.js project).'
+  - 'Format JavaScript code: `npm run format` (if Node.js project).'
+  - 'Tests: `uv run pytest -q` or `npm test`.'
+  - 'Security scan: `uv run bandit -r .` or `npm audit`.'
 dependencies: []
 project_types: []
 conditions: []
 items:
-  - Type annotations are valid and mypy passes without errors
-  - Code follows professional language standards with no emojis or decorative formatting
-  - Documentation uses formal, accessible language appropriate for enterprise environments
-  - Public APIs have clear, professional documentation
-  - Dependencies have no known security vulnerabilities
-  - All automated quality checks pass before considering work complete
-  - Pre-commit hooks or CI/CD integration configured for ongoing quality assurance
-  - Documentation accurately reflects current code behavior and structure
-  - Tests provide adequate coverage for new functionality
-  - Security scans show no critical vulnerabilities
-  - Code follows consistent formatting standards across the project
-  - Complexity metrics are within acceptable thresholds
-  - Code follows consistent formatting standards
-  - All functions and classes have appropriate documentation
-  - No obvious security vulnerabilities present
-  - Error handling is implemented where needed
-  - Tests cover critical functionality
-  - No debugging code or print statements left in production code
-  - Dependencies are up to date and secure
-  - Code complexity is manageable and maintainable
-  - Performance considerations have been addressed
-  - Code is ready for deployment/merge
+  - Type annotations are valid and mypy passes without errors.
+  - Code follows professional language standards with no emojis or decorative formatting.
+  - Documentation uses formal, accessible language appropriate for enterprise environments.
+  - Public APIs have clear, professional documentation.
+  - Dependencies have no known security vulnerabilities.
+  - All automated quality checks pass before considering work complete.
+  - Pre-commit hooks or CI/CD integration configured for ongoing quality assurance.
+  - Documentation accurately reflects current code behavior and structure.
+  - Tests provide adequate coverage for new functionality.
+  - Security scans show no critical vulnerabilities.
+  - Code follows consistent formatting standards across the project.
+  - Complexity metrics are within acceptable thresholds.
+  - Code follows consistent formatting standards.
+  - All functions and classes have appropriate documentation.
+  - No obvious security vulnerabilities present.
+  - Error handling is implemented where needed.
+  - Tests cover critical functionality.
+  - No debugging code or print statements left in production code.
+  - Dependencies are up to date and secure.
+  - Code complexity is manageable and maintainable.
+  - Performance considerations have been addressed.
+  - Code is ready for deployment/merge.

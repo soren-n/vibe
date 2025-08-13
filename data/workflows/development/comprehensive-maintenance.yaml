@@ -1,0 +1,43 @@
+name: Comprehensive Project Maintenance
+description:
+  End-to-end project maintenance including dependencies, CI/CD, and infrastructure
+  cleanup.
+triggers:
+  - project maintenance
+  - comprehensive cleanup
+  - maintenance review
+  - project optimization
+  - infrastructure cleanup
+  - dependency and ci cleanup
+steps:
+  - 'Conduct security audit: Run security scanning tools to identify vulnerabilities
+    in dependencies.'
+  - 'Analyze dependency usage: Use static analysis to identify unused imports and dependencies.'
+  - 'Remove unused dependencies: Uninstall packages that are not referenced in the codebase.'
+  - 'Consolidate redundant packages: Replace multiple overlapping dependencies with
+    single alternatives.'
+  - 'Update package manifests: Clean and organize dependency declarations in package
+    files.'
+  - 'Review CI/CD workflows: Examine build scripts for obsolete steps and platform-specific
+    workarounds.'
+  - 'Remove deprecated CI workarounds: Eliminate obsolete installation steps and compatibility
+    fixes.'
+  - 'Clean build artifacts: Remove outdated build outputs and temporary distribution
+    files.'
+  - 'Update ignore patterns: Add appropriate file patterns to version control ignore
+    files.'
+  - 'Test core functionality: Execute comprehensive test suite to verify system integrity.'
+  - 'Validate build processes: Ensure all build and deployment processes work with changes.'
+  - 'Update documentation: Revise installation instructions and dependency documentation.'
+  - 'Measure improvements: Track metrics for security posture, build time, and installation
+    efficiency.'
+dependencies: []
+project_types:
+  - python
+  - javascript
+  - typescript
+  - nodejs
+  - java
+  - go
+  - ruby
+conditions: []

@@ -1,5 +1,6 @@
-name: cleanup
-description: cleanup
+name: Project Cleanup and Maintenance
+description: Comprehensive cleanup of temporary files, build artifacts, and development
+  remnants.
 triggers:
   - clean up
   - cleanup
@@ -10,27 +11,34 @@ triggers:
   - tidy up
   - validate.*cleanup
   - verify.*cleanup
+  - maintenance cleanup
 steps:
-  - "Find debug artifacts: `find . -name 'debug*' | grep -v node_modules | head -20`"
-  - "Find legacy files: `find . -name '*_new.*' -o -name 'new_*.*' | head -10`"
-  - "Find investigation docs: `find . -name 'DEBUG_*.md' -o -name 'debug-*.md'`"
-  - "Find temp/backup files: `find . -name '*.bak' -o -name '*backup*' -o -name
-    'temp-*'`"
-  - "Find editor temps: `find . -name '*.swp' -o -name '*.swo' -o -name '*~'`"
-  - "Find and remove summary files: `find . -name '*SUMMARY*.md' -o -name '*UPDATE*.md'
-    | head -5 | xargs rm -f`"
-  - 'Clean build artifacts: `rm -rf dist/old-* build/temp-* *.vsix`'
-  - 'Check git status: `git status --porcelain`'
-  - 'Remove selected files: Delete confirmed temporary files'
-  - 'Update .gitignore: Add patterns for common temporary files'
+  - 'Identify debug artifacts: Locate debug files and temporary investigation materials.'
+  - 'Find legacy files: Search for backup files, versioned copies, and deprecated assets.'
+  - 'Locate temporary files: Identify editor temporary files, cache files, and system
+    artifacts.'
+  - 'Remove build artifacts: Clean outdated build outputs, temporary distributions,
+    and cached builds.'
+  - 'Clean dependency artifacts: Remove obsolete package installations and cached downloads.'
+  - 'Update ignore patterns: Add common temporary file patterns to version control ignore
+    files.'
+  - 'Verify git repository status: Ensure no important files are accidentally excluded.'
+  - 'Remove obsolete CI workarounds: Eliminate deprecated build steps and platform-specific
+    fixes.'
+  - 'Clean coverage reports: Remove outdated test coverage artifacts and temporary reports.'
+  - 'Update documentation: Remove investigation notes and temporary documentation files.'
+  - 'Validate functionality: Ensure cleanup has not affected core project functionality.'
 items:
-  - No debug or development artifacts remain
-  - Legacy and temporary files have been removed
-  - Investigation documents are cleaned up
-  - Backup and temporary files are deleted
-  - Editor temporary files are removed
-  - Build artifacts are cleaned
-  - Important files are still tracked in git
-  - .gitignore is updated with common temporary patterns
-  - Language standards are maintained (no emojis)
-  - Project structure is clean and organized
+  - Debug and investigation artifacts are removed.
+  - Legacy and backup files are cleaned up.
+  - Temporary and cache files are deleted.
+  - Build artifacts are properly managed.
+  - Version control ignore patterns are updated.
+  - CI/CD workflows are cleaned of obsolete steps.
+  - Project structure reflects current state.
+  - Editor temporary files are removed.
+  - Build artifacts are cleaned.
+  - Important files are still tracked in git.
+  - .gitignore is updated with common temporary patterns.
+  - Language standards are maintained (no emojis).
+  - Project structure is clean and organized.
