@@ -1,8 +1,8 @@
-# Vibe
+# Vibe Guide
 
-<div style="display: flex; align-items: center; gap: 16px;">
-  <img src="images/icon.png" alt="Vibe Icon" width="64" height="64">
-  <span>A Model Context Protocol server that provides structured workflow guidance for development projects.</span>
+<div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 20px 0;">
+  <img src="images/icon.png" alt="Vibe Guide Icon" width="256" height="256">
+  <p style="margin-top: 16px; max-width: 256px;">A Model Context Protocol server that provides structured workflow guidance for development projects.</p>
 </div>
 
 ## Overview
