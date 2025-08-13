@@ -26,7 +26,7 @@ describe('Monitoring System', () => {
 
     // Clean up temporary directory
     try {
-      await fs.rmdir(tempDir, { recursive: true });
+      await fs.rm(tempDir, { recursive: true, force: true });
     } catch (error) {
       // Directory might not exist or be empty
     }
