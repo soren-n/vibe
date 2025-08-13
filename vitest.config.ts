@@ -24,5 +24,12 @@ export default defineConfig({
     sequence: {
       hooks: 'list', // Run hooks in FIFO order for predictable cleanup
     },
+    // Use Node.js module resolution - avoid Vite/Rollup bundling
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
   },
 });
