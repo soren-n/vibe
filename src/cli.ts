@@ -8,6 +8,7 @@ import { VibeConfig, VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
 import { loadAllWorkflows } from './workflows';
 import { getChecklistsArray } from './guidance/loader';
+import type { Checklist } from './guidance/models';
 
 // Read version from package.json
 function getVersion(): string {
@@ -221,11 +222,11 @@ workflowsCommands
   .command('format')
   .description('Normalize and optionally rewrite YAML workflow files for consistency')
   .option('--rewrite', 'Rewrite files with normalized format')
-  .action((_options: any) => {
+  .action((_options: Record<string, unknown>) => {
     try {
       const workflows = loadAllWorkflows();
       console.log(`${Object.keys(workflows).length} workflows formatted`);
-      if (_options.rewrite) {
+      if (_options['rewrite']) {
         console.log('Files rewritten with normalized format');
       }
     } catch (error) {
@@ -245,11 +246,11 @@ mcpCommands
   .argument('<prompt>', 'The original prompt that triggered workflows')
   .option('-c, --config <path>', 'Config file path')
   .option('-t, --project-type <type>', 'Override project type detection')
-  .action(async (prompt: string, options: any) => {
+  .action(async (prompt: string, options: Record<string, unknown>) => {
     try {
-      const config = await VibeConfig.loadFromFile(options.config);
-      if (options.projectType) {
-        config.projectType = options.projectType;
+      const config = await VibeConfig.loadFromFile(options['config'] as string);
+      if (options['projectType']) {
+        config.projectType = options['projectType'] as string;
       }
 
       const orchestrator = createOrchestrator();
@@ -450,7 +451,7 @@ mcpCommands
     '-t, --project-type <type>',
     'Project type (typescript, javascript, python, rust, generic)'
   )
-  .action(async (_options: any) => {
+  .action(async (_options: Record<string, unknown>) => {
     try {
       const fs = await import('fs');
       const path = await import('path');
@@ -555,7 +556,7 @@ mcpCommands
   .description('Run checklist with JSON output for MCP')
   .argument('<name>', 'Name of the checklist to run')
   .option('--format <format>', 'Output format (json, simple)', 'json')
-  .action(async (name: string, options: any) => {
+  .action(async (name: string, options: Record<string, unknown>) => {
     try {
       const { getChecklistsArray } = await import('./guidance/loader');
       const checklists = getChecklistsArray();
@@ -573,7 +574,7 @@ mcpCommands
         checklist: checklist.name,
         message: 'Checklist execution completed',
         items_checked: checklist.items?.length || 0,
-        format: options.format,
+        format: options['format'],
       };
       console.log(JSON.stringify(result, null, 2));
     } catch (error) {
@@ -665,7 +666,7 @@ program
   .description('Get guidance for your prompt')
   .argument('<prompt>', 'The prompt to analyze')
   .option('--project-type <type>', 'Override project type detection')
-  .action(async (prompt: string, _options: any) => {
+  .action(async (prompt: string, _options: Record<string, unknown>) => {
     try {
       const config = new VibeConfigImpl();
       const analyzer = new PromptAnalyzer(config);
@@ -710,7 +711,7 @@ program
       const checklists = getChecklistsArray();
 
       console.log('Available checklists:');
-      checklists.forEach((checklist: any) => {
+      checklists.forEach((checklist: Checklist) => {
         console.log(`  ${checklist.name}`);
         console.log(`    Triggers: ${checklist.triggers.join(', ')}`);
         console.log(`    Items: ${checklist.items.length} items`);
@@ -734,12 +735,12 @@ lintCommands
     '--type <type>',
     'Filter by type (naming_convention, emoji_usage, unprofessional_language)'
   )
-  .action(async (_options: any) => {
+  .action(async (_options: Record<string, unknown>) => {
     try {
       const linter = new ProjectLinter();
       const results = await linter.lintProject('.');
 
-      if (_options.format === 'json') {
+      if (_options['format'] === 'json') {
         console.log(JSON.stringify(results, null, 2));
       } else {
         console.log(results);
@@ -760,12 +761,12 @@ lintCommands
     'Context for linting rules (general, step_message, documentation)',
     'general'
   )
-  .action(async (text: string, options: any) => {
+  .action(async (text: string, options: Record<string, unknown>) => {
     try {
       const linter = new ProjectLinter();
-      const results = linter.lintText(text, options.context);
+      const results = linter.lintText(text, options['context'] as string);
 
-      if (options.format === 'json') {
+      if (options['format'] === 'json') {
         console.log(JSON.stringify(results, null, 2));
       } else {
         console.log(results);
@@ -786,9 +787,9 @@ checklistsCmd
   .description('List available checklists')
   .option('--project-type <type>', 'Filter by project type')
   .option('--format <format>', 'Output format (json, simple)', 'simple')
-  .action(async (_options: any) => {
+  .action(async (_options: Record<string, unknown>) => {
     try {
-      const isJsonOutput = _options.format === 'json';
+      const isJsonOutput = _options['format'] === 'json';
 
       // Temporarily suppress console.log for JSON output
       const originalLog = console.log;
@@ -805,12 +806,12 @@ checklistsCmd
 
       let filtered = checklists;
 
-      if (_options.projectType) {
-        filtered = checklists.filter((checklist: any) => {
+      if (_options['projectType']) {
+        filtered = checklists.filter((checklist: Checklist) => {
           // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           return (
             !checklist.projectTypes ||
-            checklist.projectTypes.includes(_options.projectType) ||
+            checklist.projectTypes.includes(_options['projectType'] as string) ||
             checklist.projectTypes.includes('generic')
           );
         });
@@ -818,7 +819,7 @@ checklistsCmd
 
       if (isJsonOutput) {
         // Transform to match Python CLI format
-        const transformedChecklists = filtered.map((checklist: any) => ({
+        const transformedChecklists = filtered.map((checklist: Checklist) => ({
           name: checklist.name,
           description: checklist.description ?? 'No description available',
           triggers: checklist.triggers,
@@ -838,7 +839,7 @@ checklistsCmd
         );
       } else {
         console.log(`Found ${filtered.length} checklists:`);
-        filtered.forEach((checklist: any) => {
+        filtered.forEach((checklist: Checklist) => {
           console.log(`  ${checklist.name}: ${checklist.items.length} items`);
         });
       }
@@ -853,9 +854,9 @@ checklistsCmd
   .description('Show details of a specific checklist')
   .argument('<name>', 'Name of the checklist')
   .option('--format <format>', 'Output format (json, simple)', 'simple')
-  .action(async (name: string, options: any) => {
+  .action(async (name: string, options: Record<string, unknown>) => {
     try {
-      const isJsonOutput = options.format === 'json';
+      const isJsonOutput = options['format'] === 'json';
 
       // Temporarily suppress console.log for JSON output
       const originalLog = console.log;
@@ -870,7 +871,7 @@ checklistsCmd
         console.log = originalLog;
       }
 
-      const checklist = checklists.find((c: any) => c.name === name);
+      const checklist = checklists.find((c: Checklist) => c.name === name);
 
       if (!checklist) {
         console.error(`Checklist '${name}' not found`);
@@ -891,7 +892,7 @@ checklistsCmd
       } else {
         console.log(`Checklist: ${checklist.name}`);
         console.log(`Items: ${checklist.items.length}`);
-        checklist.items.forEach((item: any, index: any) => {
+        checklist.items.forEach((item: string, index: number) => {
           console.log(`  ${index + 1}. ${item}`);
         });
       }
@@ -906,9 +907,9 @@ checklistsCmd
   .description('Run a checklist')
   .argument('<name>', 'Name of the checklist to run')
   .option('--format <format>', 'Output format (json, simple)', 'simple')
-  .action(async (name: string, options: any) => {
+  .action(async (name: string, options: Record<string, unknown>) => {
     try {
-      const isJsonOutput = options.format === 'json';
+      const isJsonOutput = options['format'] === 'json';
 
       // Temporarily suppress console.log for JSON output
       const originalLog = console.log;
@@ -923,7 +924,7 @@ checklistsCmd
         console.log = originalLog;
       }
 
-      const checklist = checklists.find((c: any) => c.name === name);
+      const checklist = checklists.find((c: Checklist) => c.name === name);
 
       if (!checklist) {
         console.error(`Checklist '${name}' not found`);
@@ -938,7 +939,7 @@ checklistsCmd
               result: {
                 name: checklist.name,
                 status: 'completed',
-                items: checklist.items.map((item: any) => ({
+                items: checklist.items.map((item: string) => ({
                   item,
                   status: 'completed',
                 })),
@@ -950,7 +951,7 @@ checklistsCmd
         );
       } else {
         console.log(`Running checklist: ${checklist.name}`);
-        checklist.items.forEach((item: any, index: any) => {
+        checklist.items.forEach((item: string, index: number) => {
           console.log(`  ${index + 1}. ${item}`);
         });
         console.log('Checklist completed');

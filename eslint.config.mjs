@@ -106,6 +106,7 @@ export default tseslint.config(
       'python-legacy/',
       'src/archive/',
       'tests/',
+      'scripts/',
       '.venv/',
       'uv.lock',
       'pyproject.toml',

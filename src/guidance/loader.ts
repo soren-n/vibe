@@ -248,7 +248,7 @@ export class WorkflowLoader {
 
   private loadWorkflowFromYaml(yamlFile: string): Workflow | null {
     const content = fs.readFileSync(yamlFile, 'utf-8');
-    const data = yaml.load(content) as any;
+    const data = yaml.load(content) as Record<string, unknown>;
 
     if (!data) {
       return null;
@@ -256,7 +256,7 @@ export class WorkflowLoader {
 
     // Basic validation
     if (this.enableValidation) {
-      if (!data.name || !data.description) {
+      if (!data['name'] || !data['description']) {
         if (!this.quiet) {
           console.warn(
             `Warning: Invalid workflow format in ${yamlFile}: missing name or description`
@@ -268,22 +268,25 @@ export class WorkflowLoader {
 
     // Convert YAML data to Workflow instance with proper defaults
     const workflow: Workflow = {
-      name: data.name,
-      description: data.description,
-      triggers: data.triggers ?? [],
-      steps: data.steps ?? [],
-      dependencies: data.dependencies ?? [],
-      projectTypes: data.project_types ?? data.projectTypes ?? [],
-      conditions: data.conditions ?? [],
-      category: data.category,
+      name: data['name'] as string,
+      description: data['description'] as string,
+      triggers: (data['triggers'] ?? []) as string[],
+      steps: (data['steps'] ?? []) as string[],
+      dependencies: (data['dependencies'] ?? []) as string[],
+      projectTypes: (data['project_types'] ?? data['projectTypes'] ?? []) as string[],
+      conditions: (data['conditions'] ?? []) as string[],
     };
+
+    if (data['category']) {
+      workflow.category = data['category'] as string;
+    }
 
     return workflow;
   }
 
   private loadChecklistFromYaml(yamlFile: string): Checklist | null {
     const content = fs.readFileSync(yamlFile, 'utf-8');
-    const data = yaml.load(content) as any;
+    const data = yaml.load(content) as Record<string, unknown>;
 
     if (!data) {
       return null;
@@ -291,7 +294,7 @@ export class WorkflowLoader {
 
     // Basic validation
     if (this.enableValidation) {
-      if (!data.name) {
+      if (!data['name']) {
         if (!this.quiet) {
           console.warn(
             `Warning: Invalid checklist format in ${yamlFile}: missing name`
@@ -302,14 +305,14 @@ export class WorkflowLoader {
     }
 
     const checklist: Checklist = {
-      name: data.name,
-      description: data.description,
-      triggers: data.triggers ?? [],
-      items: data.items ?? [],
-      dependencies: data.dependencies ?? [],
-      projectTypes: data.project_types ?? data.projectTypes ?? [],
-      conditions: data.conditions ?? [],
-      checks: data.checks, // Backwards compatibility
+      name: data['name'] as string,
+      description: data['description'] as string,
+      triggers: (data['triggers'] ?? []) as string[],
+      items: (data['items'] ?? []) as string[],
+      dependencies: (data['dependencies'] ?? []) as string[],
+      projectTypes: (data['project_types'] ?? data['projectTypes'] ?? []) as string[],
+      conditions: (data['conditions'] ?? []) as string[],
+      checks: data['checks'] as string[], // Backwards compatibility
     };
 
     return checklist;

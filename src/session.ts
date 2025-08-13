@@ -1,6 +1,26 @@
 /**
- * Session management for workflow orchestration
- * TypeScript translation of vibe/session.py and vibe/session_monitor.py
+ * Session management for workflow orchesexport interface WorkflowFrame {
+  workflowName: string;
+  steps: (string | WorkflowStepObject)[];
+  currentStep: number;
+  context: Record<string, unknown>;
+
+  get isComplete(): boolean;
+  get currentStepText(): string | null;
+  advance(): boolean;
+} TypeScr  static fromDict(data: Record<string, unknown>): WorkflowSessionImpl {
+    const workflowStack = data['workflowStack'] as Array<{
+      workflowName: string;
+      steps: (string | WorkflowStepObject)[];
+      currentStep: number;
+      context: Record<string, unknown>;
+    }>;
+
+    const frames = workflowStack.map(
+      (frameData) =>
+        new WorkflowFrameImpl(
+          frameData.workflowName,
+          frameData.steps,anslation of vibe/session.py and vibe/session_monitor.py
  */
 
 import * as fs from 'fs';
@@ -47,7 +67,7 @@ export interface WorkflowFrame {
   workflowName: string;
   steps: (string | WorkflowStepObject)[];
   currentStep: number;
-  context: Record<string, any>;
+  context: Record<string, unknown>;
 
   get isComplete(): boolean;
   get currentStepText(): string | null;
@@ -84,9 +104,9 @@ export interface EnhancedWorkflowSession {
   pushWorkflow(
     workflowName: string,
     steps: (string | WorkflowStepObject)[],
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ): void;
-  toDict(): Record<string, any>;
+  toDict(): Record<string, unknown>;
 }
 
 /**
@@ -96,13 +116,13 @@ export class WorkflowFrameImpl implements WorkflowFrame {
   workflowName: string;
   steps: (string | WorkflowStepObject)[];
   currentStep: number;
-  context: Record<string, any>;
+  context: Record<string, unknown>;
 
   constructor(
     workflowName: string,
     steps: (string | WorkflowStepObject)[],
     currentStep = 0,
-    context: Record<string, any> = {}
+    context: Record<string, unknown> = {}
   ) {
     this.workflowName = workflowName;
     this.steps = steps;
@@ -271,14 +291,14 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
   pushWorkflow(
     workflowName: string,
     steps: (string | WorkflowStepObject)[],
-    context: Record<string, any> = {}
+    context: Record<string, unknown> = {}
   ): void {
     const frame = new WorkflowFrameImpl(workflowName, steps, 0, context);
     this.workflowStack.push(frame);
     this.lastAccessed = new Date().toISOString();
   }
 
-  toDict(): Record<string, any> {
+  toDict(): Record<string, unknown> {
     return {
       sessionId: this.sessionId,
       prompt: this.prompt,
@@ -294,26 +314,26 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     };
   }
 
-  static fromDict(data: Record<string, any>): WorkflowSessionImpl {
-    const workflowStack = data['workflowStack'].map(
-      (frameData: any) =>
+  static fromDict(data: Record<string, unknown>): WorkflowSessionImpl {
+    const workflowStack = (data['workflowStack'] as Array<Record<string, unknown>>).map(
+      (frameData: Record<string, unknown>) =>
         new WorkflowFrameImpl(
-          frameData.workflowName,
-          frameData.steps,
-          frameData.currentStep,
-          frameData.context
+          frameData['workflowName'] as string,
+          frameData['steps'] as (string | WorkflowStepObject)[],
+          frameData['currentStep'] as number,
+          frameData['context'] as Record<string, unknown>
         )
     );
 
     const session = new WorkflowSessionImpl(
-      data['sessionId'],
-      data['prompt'],
+      data['sessionId'] as string,
+      data['prompt'] as string,
       workflowStack,
-      data['sessionConfig'] ?? undefined
+      data['sessionConfig'] as SessionConfig | undefined
     );
 
-    session.createdAt = data['createdAt'];
-    session.lastAccessed = data['lastAccessed'];
+    session.createdAt = data['createdAt'] as string;
+    session.lastAccessed = data['lastAccessed'] as string;
 
     return session;
   }
@@ -480,7 +500,7 @@ export class SessionManager {
   /**
    * Get session health summary
    */
-  getSessionHealthSummary(): Record<string, any> {
+  getSessionHealthSummary(): Record<string, unknown> {
     const sessions = Array.from(this.sessions.values());
     const now = new Date();
 

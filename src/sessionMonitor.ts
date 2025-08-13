@@ -144,7 +144,7 @@ export class SessionMonitor {
     if (!history) {
       return null; // Should never happen due to the check above, but satisfies TypeScript
     }
-    
+
     history.push({ response, timestamp: new Date() });
 
     // Keep only recent responses (last 5)

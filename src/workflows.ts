@@ -8,15 +8,44 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import type { Checklist, Workflow } from './models';
 
+// YAML data interfaces for type safety
+interface WorkflowYamlData {
+  name?: string;
+  description?: string;
+  triggers?: string[];
+  steps?: (string | { step_text: string; command?: string; working_dir?: string })[];
+  category?: string;
+  tags?: string[];
+  projectTypes?: string[];
+  project_types?: string[];
+  priority?: number;
+  enabled?: boolean;
+  dependencies?: string[];
+  conditions?: string[];
+  [key: string]: unknown;
+}
+
+interface ChecklistYamlData {
+  name?: string;
+  description?: string;
+  triggers?: string[];
+  items?: string[];
+  dependencies?: string[];
+  projectTypes?: string[];
+  project_types?: string[];
+  conditions?: string[];
+  [key: string]: unknown;
+}
+
 // Cache for loaded workflows and checklists
 let workflowCache: Record<string, Workflow> | null = null;
 let checklistCache: Record<string, Checklist> | null = null;
 
 // Simple logging interface
 interface Logger {
-  warn(message: string, details?: any): void;
-  error(message: string, details?: any): void;
-  info(message: string, details?: any): void;
+  warn(message: string, details?: unknown): void;
+  error(message: string, details?: unknown): void;
+  info(message: string, details?: unknown): void;
 }
 
 const logger: Logger = {
@@ -56,7 +85,7 @@ function loadWorkflowFile(
 ): Workflow | null {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
-    const data = yaml.load(content) as any;
+    const data = yaml.load(content) as WorkflowYamlData;
 
     // Validate required fields
     if (!data.name) {
@@ -73,9 +102,7 @@ function loadWorkflowFile(
       dependencies: data.dependencies ?? [],
       projectTypes: data.project_types ?? data.projectTypes ?? ['generic'],
       conditions: data.conditions ?? [],
-      ...((data.category ?? categoryFromPath)
-        ? { category: data.category ?? categoryFromPath }
-        : {}),
+      category: data.category ?? categoryFromPath ?? 'misc',
     };
 
     return workflow;
@@ -224,7 +251,7 @@ function loadChecklistFile(
 ): Checklist | null {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
-    const data = yaml.load(content) as any;
+    const data = yaml.load(content) as ChecklistYamlData;
 
     // Convert YAML structure to our Checklist interface
     const checklist: Checklist = {

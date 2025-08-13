@@ -81,99 +81,123 @@ export class VibeConfigImpl implements VibeConfig {
     if (actualConfigPath && fs.existsSync(actualConfigPath)) {
       try {
         const data =
-          (yaml.load(fs.readFileSync(actualConfigPath, 'utf-8')) as any) ?? {};
+          (yaml.load(fs.readFileSync(actualConfigPath, 'utf-8')) as Record<
+            string,
+            unknown
+          >) ?? {};
 
         // Carefully merge configuration sections to preserve defaults
-        if (data.projectType || data.project_type) {
-          config.projectType = data.projectType ?? data.project_type;
+        if (data['projectType'] || data['project_type']) {
+          config.projectType = (data['projectType'] ?? data['project_type']) as string;
         }
 
-        if (data.workflows && typeof data.workflows === 'object') {
+        if (data['workflows'] && typeof data['workflows'] === 'object') {
           // Merge workflow configs, preserving defaults and adding new ones
-          for (const [name, workflowConfig] of Object.entries(data.workflows)) {
+          for (const [name, workflowConfig] of Object.entries(
+            data['workflows'] as Record<string, unknown>
+          )) {
             if (typeof workflowConfig === 'object' && workflowConfig !== null) {
-              const wfConfig = workflowConfig as any;
-              config.workflows[name] = {
-                enabled: wfConfig.enabled !== undefined ? wfConfig.enabled : true,
-                priority: wfConfig.priority !== undefined ? wfConfig.priority : 1,
-                triggers: Array.isArray(wfConfig.triggers)
-                  ? wfConfig.triggers
-                  : undefined,
-                description: wfConfig.description ?? undefined,
-                steps: Array.isArray(wfConfig.steps) ? wfConfig.steps : undefined,
-                commands: Array.isArray(wfConfig.commands)
-                  ? wfConfig.commands
-                  : undefined,
-                dependencies: Array.isArray(wfConfig.dependencies)
-                  ? wfConfig.dependencies
-                  : undefined,
+              const wfConfig = workflowConfig as Record<string, unknown>;
+              const newWorkflowConfig: WorkflowConfig = {
+                enabled:
+                  wfConfig['enabled'] !== undefined
+                    ? (wfConfig['enabled'] as boolean)
+                    : true,
+                priority:
+                  wfConfig['priority'] !== undefined
+                    ? (wfConfig['priority'] as number)
+                    : 1,
               };
+
+              if (Array.isArray(wfConfig['triggers'])) {
+                newWorkflowConfig.triggers = wfConfig['triggers'] as string[];
+              }
+              if (wfConfig['description']) {
+                newWorkflowConfig.description = wfConfig['description'] as string;
+              }
+              if (Array.isArray(wfConfig['steps'])) {
+                newWorkflowConfig.steps = wfConfig['steps'] as string[];
+              }
+              if (Array.isArray(wfConfig['commands'])) {
+                newWorkflowConfig.commands = wfConfig['commands'] as string[];
+              }
+              if (Array.isArray(wfConfig['dependencies'])) {
+                newWorkflowConfig.dependencies = wfConfig['dependencies'] as string[];
+              }
+
+              config.workflows[name] = newWorkflowConfig;
             }
           }
         }
 
-        if (data.projectTypes || data.project_types) {
-          const projectTypesData = data.projectTypes ?? data.project_types;
+        if (data['projectTypes'] || data['project_types']) {
+          const projectTypesData = (data['projectTypes'] ??
+            data['project_types']) as Record<string, unknown>;
           // Merge project type configs, preserving defaults
           for (const [name, typeConfig] of Object.entries(projectTypesData)) {
             if (typeof typeConfig === 'object' && typeConfig !== null) {
+              const typeCfg = typeConfig as Record<string, unknown>;
               config.projectTypes[name] = {
-                workflows: Array.isArray((typeConfig as any).workflows)
-                  ? (typeConfig as any).workflows
+                workflows: Array.isArray(typeCfg['workflows'])
+                  ? (typeCfg['workflows'] as string[])
                   : [],
-                tools: Array.isArray((typeConfig as any).tools)
-                  ? (typeConfig as any).tools
+                tools: Array.isArray(typeCfg['tools'])
+                  ? (typeCfg['tools'] as string[])
                   : [],
               };
             }
           }
         }
 
-        if (data.lint && typeof data.lint === 'object') {
+        if (data['lint'] && typeof data['lint'] === 'object') {
           // Merge lint config carefully to preserve defaults
-          const lintData = data.lint as any;
+          const lintData = data['lint'] as Record<string, unknown>;
           config.lint = {
             checkEmojis:
-              lintData.checkEmojis !== undefined
-                ? lintData.checkEmojis
+              lintData['checkEmojis'] !== undefined
+                ? (lintData['checkEmojis'] as boolean)
                 : config.lint.checkEmojis,
             checkProfessionalLanguage:
-              lintData.checkProfessionalLanguage !== undefined
-                ? lintData.checkProfessionalLanguage
+              lintData['checkProfessionalLanguage'] !== undefined
+                ? (lintData['checkProfessionalLanguage'] as boolean)
                 : config.lint.checkProfessionalLanguage,
-            allowInformalLanguage: Array.isArray(lintData.allowInformalLanguage)
-              ? lintData.allowInformalLanguage
+            allowInformalLanguage: Array.isArray(lintData['allowInformalLanguage'])
+              ? (lintData['allowInformalLanguage'] as string[])
               : config.lint.allowInformalLanguage,
-            excludePatterns: Array.isArray(lintData.excludePatterns)
-              ? lintData.excludePatterns
+            excludePatterns: Array.isArray(lintData['excludePatterns'])
+              ? (lintData['excludePatterns'] as string[])
               : config.lint.excludePatterns,
             namingConventions:
-              lintData.namingConventions &&
-              typeof lintData.namingConventions === 'object'
-                ? { ...config.lint.namingConventions, ...lintData.namingConventions }
+              lintData['namingConventions'] &&
+              typeof lintData['namingConventions'] === 'object'
+                ? {
+                    ...config.lint.namingConventions,
+                    ...(lintData['namingConventions'] as Record<string, string>),
+                  }
                 : config.lint.namingConventions,
-            directoryNaming: lintData.directoryNaming ?? config.lint.directoryNaming,
+            directoryNaming:
+              (lintData['directoryNaming'] as string) ?? config.lint.directoryNaming,
             maxStepMessageLength:
-              lintData.maxStepMessageLength !== undefined
-                ? lintData.maxStepMessageLength
+              lintData['maxStepMessageLength'] !== undefined
+                ? (lintData['maxStepMessageLength'] as number)
                 : config.lint.maxStepMessageLength,
-            unprofessionalPatterns: Array.isArray(lintData.unprofessionalPatterns)
-              ? lintData.unprofessionalPatterns
+            unprofessionalPatterns: Array.isArray(lintData['unprofessionalPatterns'])
+              ? (lintData['unprofessionalPatterns'] as string[])
               : config.lint.unprofessionalPatterns,
           };
         }
 
-        if (data.session && typeof data.session === 'object') {
+        if (data['session'] && typeof data['session'] === 'object') {
           // Merge session config
-          const sessionData = data.session as any;
+          const sessionData = data['session'] as Record<string, unknown>;
           config.session = {
             maxSessions:
-              sessionData.maxSessions !== undefined
-                ? sessionData.maxSessions
+              sessionData['maxSessions'] !== undefined
+                ? (sessionData['maxSessions'] as number)
                 : config.session.maxSessions,
             sessionTimeout:
-              sessionData.sessionTimeout !== undefined
-                ? sessionData.sessionTimeout
+              sessionData['sessionTimeout'] !== undefined
+                ? (sessionData['sessionTimeout'] as number)
                 : config.session.sessionTimeout,
           };
         }
