@@ -9,6 +9,7 @@ import { PromptAnalyzer } from './analyzer';
 import { loadAllWorkflows } from './workflows';
 import { getChecklistsArray } from './guidance/loader';
 import type { Checklist } from './guidance/models';
+import { VibeMCPServer } from './mcp-server';
 
 // Read version from package.json
 function getVersion(): string {
@@ -958,6 +959,19 @@ checklistsCmd
       }
     } catch (error) {
       console.error('Error running checklist:', error);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('mcp-server')
+  .description('Run as MCP server (stdio)')
+  .action(async () => {
+    try {
+      const server = new VibeMCPServer();
+      await server.run();
+    } catch (error) {
+      console.error('Failed to start MCP server:', error);
       process.exit(1);
     }
   });
