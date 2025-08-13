@@ -18,8 +18,9 @@ Configure Vibe as an MCP server in VS Code by adding the following to your `sett
   "mcp.mcpServers": {
     "vibe-guide": {
       "command": "npx",
-      "args": ["vibe-guide@latest"],
-      "env": {}
+      "args": ["vibe-guide@latest", "mcp-server"],
+      "env": {},
+      "cwd": "${workspaceFolder}"
     }
   }
 }
