@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/soren-n/vibe-mcp/compare/v1.2.0...v1.2.1) (2025-08-13)
+
+### Bug Fixes
+
+- ensure all workflow steps and checklist items end with periods ([ead6117](https://github.com/soren-n/vibe-mcp/commit/ead611758ad3a703434cf4837c46339f5be56d32))
+
 ## [1.2.0](https://github.com/soren-n/vibe-mcp/compare/v1.1.1...v1.2.0) (2025-08-13)
 
 ### Features
