@@ -1,3 +1,17 @@
+## [1.3.0](https://github.com/soren-n/vibe-mcp/compare/v1.2.1...v1.3.0) (2025-08-13)
+
+### Features
+
+- add comprehensive dependency quality gate system ([1ec3e10](https://github.com/soren-n/vibe-mcp/commit/1ec3e10a0a7aaba24d425d9c7dff538d6ea4dfe8))
+- add knip dependency validation to git commit hooks ([5559f64](https://github.com/soren-n/vibe-mcp/commit/5559f64428fe3270e5e81caf972da5e72d3e7cd9))
+
+### Bug Fixes
+
+- apply Rollup workaround to release workflow ([15f1781](https://github.com/soren-n/vibe-mcp/commit/15f17812b31e6e23b88c1364d0522c0e7a588769))
+- **ci:** resolve Rollup platform dependency issues in GitHub Actions ([5716f81](https://github.com/soren-n/vibe-mcp/commit/5716f81624b394ca071f94a1a53b1268e3f346fc))
+- resolve Rollup dependency issue in CI by configuring Vitest to use Node.js forks ([d870328](https://github.com/soren-n/vibe-mcp/commit/d870328ec6721da859a77464559e38585ef24a8a))
+- Resolve Vitest/Rollup dependency issue in CI ([f017db3](https://github.com/soren-n/vibe-mcp/commit/f017db30adda519483bda6f81780e60ef26b8e6f))
+
 ## [1.2.1](https://github.com/soren-n/vibe-mcp/compare/v1.2.0...v1.2.1) (2025-08-13)
 
 ### Bug Fixes
