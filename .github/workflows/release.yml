@@ -52,7 +52,7 @@ jobs:
         run: |
           node dist/src/cli.js --help
           node dist/src/cli.js checklists list --format json
-          node dist/src/cli.js list-workflows --format json
+          node dist/src/cli.js list-workflows
 
   semantic-release:
     name: Semantic Release
