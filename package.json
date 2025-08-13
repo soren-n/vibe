@@ -102,6 +102,9 @@
     ],
     "*.{json,md,yaml,yml}": [
       "prettier --write"
+    ],
+    "package.json": [
+      "bash -c 'knip --include dependencies --reporter compact --no-exit-code'"
     ]
   }
 }
