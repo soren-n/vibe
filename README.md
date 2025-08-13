@@ -1,6 +1,9 @@
 # Vibe
 
-A Model Context Protocol server that provides structured workflow guidance for development projects.
+<div style="display: flex; align-items: center; gap: 16px;">
+  <img src="images/icon.png" alt="Vibe Icon" width="64" height="64">
+  <span>A Model Context Protocol server that provides structured workflow guidance for development projects.</span>
+</div>
 
 ## Overview
 
