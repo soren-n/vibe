@@ -26,11 +26,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies with cleanup
+      - name: Install dependencies
         run: |
-          npm cache clean --force
-          rm -rf node_modules package-lock.json 2>/dev/null || true
-          npm install --force
+          npm ci
 
       - name: Run TypeScript type checking
         run: npm run type-check
@@ -41,12 +39,18 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Verify build outputs
+        run: |
+          ls -la dist/
+          ls -la dist/cli.js
+          echo "Build verification complete"
+
       - name: Run tests
         run: npm test
 
       - name: Test Vibe CLI functionality
         run: |
-          node dist/src/cli.js --help
+          node dist/cli.js --help
 
   mcp-server-tests:
     name: MCP Server Testing
@@ -61,14 +65,17 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies with cleanup
+      - name: Install dependencies
         run: |
-          npm cache clean --force
-          rm -rf node_modules package-lock.json 2>/dev/null || true
-          npm install --force
+          npm ci
 
       - name: Run TypeScript compilation
         run: npm run build
+
+      - name: Verify CLI build
+        run: |
+          ls -la dist/cli.js
+          echo "CLI verification complete"
 
       - name: Run tests with proper cleanup
         run: npm test
@@ -107,5 +114,4 @@ jobs:
 
       - name: Test workflow commands
         run: |
-          npm run build
-          node dist/src/cli.js --help
+          node dist/cli.js --help
