@@ -1,7 +1,5 @@
 {
-  "branches": [
-    "main"
-  ],
+  "branches": ["main"],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -22,19 +20,22 @@
       }
     ],
     [
+      "@semantic-release/npm",
+      {
+        "npmPublish": true
+      }
+    ],
+    [
       "@semantic-release/exec",
       {
-        "prepareCmd": "python scripts/sync_versions.py ${nextRelease.version}",
-        "publishCmd": "uv build && cd vscode-extension && npm run package && npm run publish"
+        "prepareCmd": "node scripts/sync_versions.js ${nextRelease.version} && npm run build && mkdir -p vscode-extension/bundled && cp dist/src/cli.js vscode-extension/bundled/mcp-server.js && cp -r data vscode-extension/data && cd vscode-extension && npm ci && npm run compile && npm run package",
+        "publishCmd": "cd vscode-extension && npm run publish"
       }
     ],
     [
       "@semantic-release/github",
       {
-        "assets": [
-          "dist/*",
-          "vscode-extension/*.vsix"
-        ]
+        "assets": ["dist/*", "vscode-extension/*.vsix"]
       }
     ],
     [
@@ -42,6 +43,8 @@
       {
         "assets": [
           "CHANGELOG.md",
+          "package.json",
+          "package-lock.json",
           "vscode-extension/package.json",
           "vscode-extension/package-lock.json"
         ],

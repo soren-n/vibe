@@ -1,20 +1,20 @@
 name: Release Pipeline
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (e.g. 0.6.1)'
-        required: true
+        required: false
         type: string
       pre-release:
         description: 'Create a pre-release'
         required: false
         type: boolean
         default: false
-  push:
-    tags:
-      - 'v*'
 
 jobs:
   validate:
@@ -47,93 +47,23 @@ jobs:
           node dist/src/cli.js checklists list --format json
           node dist/src/cli.js workflows list --format json
 
-  build-extension:
-    name: Build VS Code Extension
+  semantic-release:
+    name: Semantic Release
     runs-on: ubuntu-latest
     needs: validate
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install main dependencies
-        run: npm ci
-
-      - name: Build main project
-        run: npm run build
-
-      - name: Install extension dependencies
-        run: |
-          cd vscode-extension
-          npm ci
-
-      - name: Copy bundled MCP servers to extension
-        run: |
-          mkdir -p vscode-extension/bundled
-          cp dist/src/cli.js vscode-extension/bundled/mcp-server.js
-
-      - name: Update extension data
-        run: |
-          cp -r data vscode-extension/data
-
-      - name: Build extension
-        run: |
-          cd vscode-extension
-          npm run compile
-
-      - name: Package extension
-        run: |
-          cd vscode-extension
-          npm run package
-
-      - name: Upload extension artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: vscode-extension
-          path: vscode-extension/*.vsix
-
-  release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    needs: [validate, build-extension]
-    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') }}
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: marketplace
 
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download extension artifact
-        uses: actions/download-artifact@v4
         with:
-          name: vscode-extension
-          path: ./
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
-          name: Release ${{ github.event.inputs.version || github.ref_name }}
-          prerelease: ${{ github.event.inputs.pre-release || false }}
-          files: |
-            *.vsix
-          generate_release_notes: true
-
-  publish-extension:
-    name: Publish to VS Code Marketplace
-    runs-on: ubuntu-latest
-    needs: [validate, build-extension]
-    if: ${{ github.event_name == 'workflow_dispatch' && !github.event.inputs.pre-release }}
-    environment: marketplace
-
-    steps:
-      - uses: actions/checkout@v4
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -141,30 +71,27 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install main dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build main project
-        run: npm run build
+      - name: Install semantic-release dependencies
+        run: npm install --save-dev semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec
 
-      - name: Install extension dependencies
+      - name: Configure Git
         run: |
-          cd vscode-extension
-          npm ci
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Copy bundled MCP servers to extension
+      - name: Manual version override (if dispatched)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version
         run: |
-          mkdir -p vscode-extension/bundled
-          cp dist/src/cli.js vscode-extension/bundled/mcp-server.js
+          # Update package.json with manual version
+          node scripts/sync_versions.js ${{ github.event.inputs.version }}
+          git add package.json vscode-extension/package.json
+          git commit -m "chore: manual version update to ${{ github.event.inputs.version }}"
 
-      - name: Update extension data
-        run: |
-          cp -r data vscode-extension/data
-
-      - name: Build and publish extension
-        run: |
-          cd vscode-extension
-          npm run compile
-          npm run publish
+      - name: Run semantic release
+        run: npx semantic-release
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
