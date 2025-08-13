@@ -1,0 +1,10 @@
+{
+  "mcp.mcpServers": {
+    "vibe-guide": {
+      "command": "npm",
+      "args": ["run", "dev"],
+      "env": {},
+      "cwd": "/Users/soren-n/Documents/workspace/vibe-mcp"
+    }
+  }
+}
