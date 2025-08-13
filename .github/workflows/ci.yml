@@ -6,6 +6,10 @@ on:
   push:
     branches: [main, develop, feature/*]
 
+# Reduce noise from CI failures
+env:
+  CI: true
+
 jobs:
   quality-checks:
     name: Code Quality & Testing
