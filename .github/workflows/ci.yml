@@ -10,6 +10,8 @@ on:
 env:
   CI: true
   VITEST_SKIP_INSTALL_CHECKS: 1
+  VITE_OPTIMIZED_DEPS: false
+  ROLLUP_NO_BUNDLED: true
 
 jobs:
   quality-checks:
@@ -29,7 +31,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Run TypeScript type checking
         run: npm run type-check
@@ -68,7 +72,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Run TypeScript compilation
         run: npm run build
@@ -95,7 +101,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Build project
         run: npm run build

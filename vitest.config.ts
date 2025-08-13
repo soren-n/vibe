@@ -18,6 +18,8 @@ export default defineConfig({
     typecheck: {
       enabled: true,
     },
+    // Add GitHub Actions reporter when in CI
+    reporters: process.env['GITHUB_ACTIONS'] ? ['dot', 'github-actions'] : ['default'],
     // Increase timeout for tests that involve file operations
     testTimeout: 10000,
     // Configure test sequencing to avoid conflicts
@@ -29,13 +31,6 @@ export default defineConfig({
     poolOptions: {
       forks: {
         singleFork: true,
-      },
-    },
-    // Externalize all dependencies to prevent bundling
-    server: {
-      deps: {
-        external: [/.*\/node_modules\/.*/], // Force all node_modules to be external
-        fallbackCJS: false, // Don't try to bundle ESM packages
       },
     },
   },
