@@ -9,7 +9,7 @@ import { SessionManager } from './session';
 import type { WorkflowStepObject } from './session';
 import type { VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
-import { SessionMonitor } from './session_monitor';
+import { SessionMonitor } from './sessionMonitor';
 
 export interface PlanRequest {
   query: string;
@@ -790,7 +790,7 @@ export class WorkflowOrchestrator {
       );
     }
 
-    if (statusSummary.total_active_sessions === 0) {
+    if (statusSummary['total_active_sessions'] === 0) {
       recommendations.push('No active workflow sessions detected.');
     }
 

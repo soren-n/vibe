@@ -236,9 +236,9 @@ workflows:
     steps:
       - '🏗️ BUILD APPLICATION'
       - 'python -m build'
-      - '🧪 RUN TESTS'
+      - 'Run tests'
       - 'pytest tests/ --cov=app'
-      - '🚀 DEPLOY TO STAGING'
+      - 'Deploy to staging'
       - 'ansible-playbook deploy/staging.yml'
     dependencies:
       - 'python'
@@ -253,11 +253,11 @@ workflows:
       - 'migrate database'
       - 'apply.*migration'
     steps:
-      - '📊 BACKUP DATABASE'
+      - 'Backup database'
       - 'pg_dump app_db > backup_$(date +%Y%m%d).sql'
-      - '🔄 APPLY MIGRATIONS'
+      - 'Apply migrations'
       - 'python manage.py migrate'
-      - '✅ VERIFY MIGRATION'
+      - 'Verify migration'
       - 'python manage.py check --database=default'
 
 # Project linting configuration

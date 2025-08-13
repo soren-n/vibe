@@ -1,27 +1,27 @@
-# Vibe Coding Philosophy
+# Workflow Design Philosophy
 
-## Autonomous Operation Principle
+## Unattended Operation Principle
 
-**Vibe enforces autonomous AI agent operation requiring zero user input beyond the initial prompt.**
+**Vibe executes workflows without requiring user input beyond the initial prompt.**
 
 ### Requirements
 
-- AI agents operate independently after task assignment
-- Workflows execute without user confirmation
+- Workflows operate independently after task assignment
+- Execution proceeds without user confirmation
 - No interactive prompts or manual interventions
-- Complete task autonomy with automated validation
+- Complete task execution with automated validation
 
 ## Implementation Standards
 
-### Autonomous Patterns
+### Unattended Patterns
 
 ```
-# ✅ Autonomous: Informational output
-output("🔍 ANALYZING PROJECT STRUCTURE")
-output("📊 VALIDATING DEPENDENCIES AUTOMATICALLY")
+# Recommended: Informational output
+output("Analyzing project structure")
+output("Validating dependencies automatically")
 
-# ❌ Interactive: User-dependent prompts
-output("❓ WHICH BRANCH SHOULD BE USED?")
+# Avoid: User-dependent prompts
+output("Which branch should be used?")
 input("Do you want to continue? (y/n)")
 ```
 

@@ -5,7 +5,7 @@
 import { execSync } from 'child_process';
 import { getChecklist, getChecklists } from '../src/guidance/loader';
 import { Checklist } from '../src/guidance/models';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 
 interface CommandResult {
   success: boolean;

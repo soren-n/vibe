@@ -99,22 +99,22 @@ export class SessionMonitor {
    */
   async checkSessionHealth(): Promise<SessionAlert[]> {
     const alerts: SessionAlert[] = [];
-    const activeSessions = await this._getActiveSessions();
+    const activeSessions = await this.getActiveSessions();
 
     for (const session of activeSessions) {
       // Check for dormant sessions
-      if (this._isSessionDormant(session)) {
-        alerts.push(this._createDormantAlert(session));
+      if (this.isSessionDormant(session)) {
+        alerts.push(this.createDormantAlert(session));
       }
 
       // Check for stale sessions
-      if (this._isSessionStale(session)) {
-        alerts.push(this._createStaleAlert(session));
+      if (this.isSessionStale(session)) {
+        alerts.push(this.createStaleAlert(session));
       }
 
       // Check for sessions that should be auto-archived
-      if (this._shouldAutoArchive(session)) {
-        alerts.push(this._createArchiveAlert(session));
+      if (this.shouldAutoArchive(session)) {
+        alerts.push(this.createArchiveAlert(session));
       }
     }
 
@@ -182,7 +182,7 @@ export class SessionMonitor {
    * Get a summary of all session statuses for monitoring dashboard
    */
   async getSessionStatusSummary(): Promise<SessionStatusSummary> {
-    const activeSessions = await this._getActiveSessions();
+    const activeSessions = await this.getActiveSessions();
     const alerts = await this.checkSessionHealth();
 
     return {
@@ -199,7 +199,7 @@ export class SessionMonitor {
         timestamp: a.timestamp.toISOString(),
         suggested_actions: a.suggested_actions,
       })),
-      session_details: activeSessions.map(s => {
+      session_details: activeSessions.map((s: any) => {
         const currentFrame = s.currentFrame;
         return {
           session_id: s.sessionId,
@@ -219,10 +219,10 @@ export class SessionMonitor {
    */
   async cleanupStaleSessions(): Promise<string[]> {
     const cleanedSessions: string[] = [];
-    const activeSessions = await this._getActiveSessions();
+    const activeSessions = await this.getActiveSessions();
 
     for (const session of activeSessions) {
-      if (this._shouldAutoArchive(session)) {
+      if (this.shouldAutoArchive(session)) {
         console.log(`Auto-archiving stale session ${session.sessionId}`);
         await this.sessionManager.archiveSession(session.sessionId);
         cleanedSessions.push(session.sessionId);
@@ -237,7 +237,7 @@ export class SessionMonitor {
   /**
    * Get all currently active workflow sessions
    */
-  private async _getActiveSessions(): Promise<EnhancedWorkflowSession[]> {
+  private async getActiveSessions(): Promise<EnhancedWorkflowSession[]> {
     const sessions: EnhancedWorkflowSession[] = [];
     const sessionIds = await this.sessionManager.listActiveSessions();
 
@@ -254,7 +254,7 @@ export class SessionMonitor {
   /**
    * Check if a session is dormant (inactive for dormant_threshold_minutes)
    */
-  private _isSessionDormant(session: EnhancedWorkflowSession): boolean {
+  private isSessionDormant(session: EnhancedWorkflowSession): boolean {
     const threshold = new Date(Date.now() - this.dormantThresholdMinutes * 60 * 1000);
     const lastAccessed = new Date(session.lastAccessed);
     return lastAccessed < threshold;
@@ -263,7 +263,7 @@ export class SessionMonitor {
   /**
    * Check if a session is stale (inactive for stale_threshold_minutes)
    */
-  private _isSessionStale(session: EnhancedWorkflowSession): boolean {
+  private isSessionStale(session: EnhancedWorkflowSession): boolean {
     const threshold = new Date(Date.now() - this.staleThresholdMinutes * 60 * 1000);
     const lastAccessed = new Date(session.lastAccessed);
     return lastAccessed < threshold;
@@ -272,7 +272,7 @@ export class SessionMonitor {
   /**
    * Check if a session should be automatically archived
    */
-  private _shouldAutoArchive(session: EnhancedWorkflowSession): boolean {
+  private shouldAutoArchive(session: EnhancedWorkflowSession): boolean {
     const threshold = new Date(Date.now() - this.maxSessionAgeHours * 60 * 60 * 1000);
     const createdAt = new Date(session.createdAt);
     return createdAt < threshold;
@@ -307,7 +307,7 @@ export class SessionMonitor {
   /**
    * Create an alert for a dormant session
    */
-  private _createDormantAlert(session: EnhancedWorkflowSession): SessionAlert {
+  private createDormantAlert(session: EnhancedWorkflowSession): SessionAlert {
     const minutesInactive =
       (Date.now() - new Date(session.lastAccessed).getTime()) / (1000 * 60);
 
@@ -328,7 +328,7 @@ export class SessionMonitor {
   /**
    * Create an alert for a stale session
    */
-  private _createStaleAlert(session: EnhancedWorkflowSession): SessionAlert {
+  private createStaleAlert(session: EnhancedWorkflowSession): SessionAlert {
     const minutesInactive =
       (Date.now() - new Date(session.lastAccessed).getTime()) / (1000 * 60);
 
@@ -349,7 +349,7 @@ export class SessionMonitor {
   /**
    * Create an alert for a session that should be archived
    */
-  private _createArchiveAlert(session: EnhancedWorkflowSession): SessionAlert {
+  private createArchiveAlert(session: EnhancedWorkflowSession): SessionAlert {
     const hoursOld =
       (Date.now() - new Date(session.createdAt).getTime()) / (1000 * 60 * 60);
 

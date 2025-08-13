@@ -105,19 +105,19 @@ Use this checklist to recreate the Vibe system from the documentation.
 ### Command Structure
 
 - [ ] Main CLI group with click framework
-- [ ] Smart command detection vs prompt handling
+- [ ] Command detection vs prompt handling
 - [ ] Command groups: `workflows`, `mcp`, `lint`, `checklists`
 - [ ] Individual commands: `run`, `init`, `guide`, `check`, etc.
 - [ ] Argument parsing and option handling
 
-### Smart Prompt Detection
+### Prompt Detection
 
 - [ ] Known command detection
 - [ ] Automatic prompt handling for unknown commands
 - [ ] Option parsing and prompt extraction
 - [ ] Integration with main workflow processing
 
-## Advanced Features
+## Additional Features
 
 ### Session Monitoring
 
@@ -204,7 +204,7 @@ Use this checklist to recreate the Vibe system from the documentation.
 3. **Session System**: SessionManager with persistence
 4. **Guidance System**: YAML loading and registries
 5. **CLI Interface**: Command routing and argument parsing
-6. **Advanced Features**: Monitoring, linting, error handling
+6. **Additional Features**: Monitoring, linting, error handling
 7. **Integration**: Component wiring and testing
 
 Each section includes specific implementation details in the corresponding API documentation files. Follow the schemas for exact data structure requirements and the implementation guides for integration patterns.

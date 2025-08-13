@@ -1,8 +1,8 @@
-# Vibe: AI Workflow Orchestrator
+# Vibe: Workflow Orchestrator
 
 ## Overview
 
-Vibe is an autonomous AI workflow orchestrator that analyzes natural language prompts and executes development workflows without user intervention. The system enforces the "vibe coding" philosophy of complete autonomous operation.
+Vibe is a workflow orchestration tool that analyzes natural language prompts and executes development workflows. The system provides step-by-step guidance for development tasks without requiring user interaction during execution.
 
 ## Architecture
 
@@ -16,14 +16,14 @@ Vibe is an autonomous AI workflow orchestrator that analyzes natural language pr
 ### Execution Pipeline
 
 ```
-Prompt → Analysis → Planning → Session Management → Autonomous Execution
+Prompt → Analysis → Planning → Session Management → Execution
 ```
 
-**Process**: Prompt triggers → Workflow selection → Step generation → Incremental execution → Autonomous completion
+**Process**: Prompt triggers → Workflow selection → Step generation → Incremental execution → Completion
 
 ## Design Principles
 
-**Autonomous Operation**: Zero user interaction after initial prompt
+**Unattended Operation**: Minimal user interaction after initial prompt
 **Session-Based Execution**: Discrete steps prevent token overflow in AI agents
 **YAML Workflow System**: External definitions enable code-independent updates
 
@@ -84,7 +84,7 @@ The API documentation provides complete interface specifications including:
 - **[Configuration](api/configuration.md)** - Project detection and configuration management
 - **[Core Data Models](api/models.md)** - Complete data structure specifications
 - **[Workflow Registry](api/workflow-registry.md)** - YAML loading with hot reloading support
-- **[Project Detection](api/project-detection.md)** - Intelligent framework and language detection
+- **[Project Detection](api/project-detection.md)** - Framework and language detection
 - **[CLI Interface](api/cli.md)** - Command routing and user interaction patterns
 - **[Session Monitoring](api/session-monitoring.md)** - AI agent completion tracking and intervention
 - **[Lint System](api/lint.md)** - Code quality and professional language validation

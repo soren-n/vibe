@@ -6,6 +6,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { VibeConfigImpl } from './config';
+import { generateSessionId } from './utils/ids';
 
 /**
  * Session configuration interface matching Python SessionConfig
@@ -149,7 +150,7 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     initialWorkflows: [string, (string | WorkflowStepObject)[]][],
     sessionConfig?: SessionConfig
   ): WorkflowSessionImpl {
-    const sessionId = Math.random().toString(36).substring(2, 10);
+    const sessionId = generateSessionId();
 
     const workflowStack: WorkflowFrame[] = initialWorkflows.map(
       ([workflowName, steps]) => new WorkflowFrameImpl(workflowName, steps, 0, {})
@@ -178,13 +179,13 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     }
 
     const stepText = currentFrame.currentStepText ?? '';
-    const isCommand = this._isCommandStep(stepText);
+    const isCommand = this.isCommandStep(stepText);
 
     return {
       workflow: currentFrame.workflowName,
       step_number: currentFrame.currentStep + 1, // 1-based for display
       total_steps: currentFrame.steps.length,
-      step_text: this._formatStepForAgent(stepText, isCommand),
+      step_text: this.formatStepForAgent(stepText, isCommand),
       is_command: isCommand,
       workflow_depth: this.workflowStack.length,
     };
@@ -273,7 +274,7 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
   }
 
   static fromDict(data: Record<string, any>): WorkflowSessionImpl {
-    const workflowStack = data.workflowStack.map(
+    const workflowStack = data['workflowStack'].map(
       (frameData: any) =>
         new WorkflowFrameImpl(
           frameData.workflowName,
@@ -284,19 +285,19 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     );
 
     const session = new WorkflowSessionImpl(
-      data.sessionId,
-      data.prompt,
+      data['sessionId'],
+      data['prompt'],
       workflowStack,
-      data.sessionConfig ?? undefined
+      data['sessionConfig'] ?? undefined
     );
 
-    session.createdAt = data.createdAt;
-    session.lastAccessed = data.lastAccessed;
+    session.createdAt = data['createdAt'];
+    session.lastAccessed = data['lastAccessed'];
 
     return session;
   }
 
-  private _isCommandStep(stepText: string): boolean {
+  private isCommandStep(stepText: string): boolean {
     // Simple heuristic - can be improved
     const commandIndicators = [
       'run ',
@@ -312,7 +313,7 @@ export class WorkflowSessionImpl implements EnhancedWorkflowSession {
     );
   }
 
-  private _formatStepForAgent(stepText: string, isCommand: boolean): string {
+  private formatStepForAgent(stepText: string, isCommand: boolean): string {
     if (isCommand) {
       return `COMMAND: ${stepText}`;
     }

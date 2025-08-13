@@ -102,12 +102,12 @@ triggers:
 
 ```yaml
 steps:
-  - '🔍 ANALYZE AUTHENTICATION LOGS'
+  - 'Analyze authentication logs'
   - 'Check recent authentication failures in application logs'
   - "grep -i 'auth\\|login' logs/*.log | tail -50"
-  - '📊 IDENTIFY FAILURE PATTERNS'
+  - 'Identify failure patterns'
   - 'Look for common error messages or timing patterns'
-  - '🔧 TEST AUTHENTICATION FLOW'
+  - 'Test authentication flow'
   - 'Manually test login with known good credentials'
 ```
 
@@ -165,19 +165,19 @@ triggers:
   - 'auth.*error'
   - 'user.*cannot.*login'
 steps:
-  - '🔍 ANALYZE AUTHENTICATION LOGS'
+  - 'Analyze authentication logs'
   - 'Examine recent authentication failures and error patterns'
   - "grep -i 'auth\\|login\\|fail' logs/*.log | tail -100"
-  - '📊 CHECK AUTHENTICATION SERVICE STATUS'
+  - 'Check authentication service status'
   - 'Verify authentication service health and connectivity'
   - 'curl -s http://localhost:8080/auth/health | jq .'
-  - '🔧 TEST AUTHENTICATION FLOW'
+  - 'Test authentication flow'
   - 'Manually test authentication with known good credentials'
   - 'python scripts/test_auth.py --user test@example.com'
-  - '🗄️ VALIDATE DATABASE CONNECTIONS'
+  - 'Validate database connections'
   - 'Check user database connectivity and data integrity'
   - 'python -c "from auth import db; print(db.test_connection())"'
-  - '⚙️ REVIEW AUTHENTICATION CONFIGURATION'
+  - 'Review authentication configuration'
   - 'Verify authentication settings and environment variables'
   - 'env | grep -i auth'
   - 'cat config/auth.yaml'

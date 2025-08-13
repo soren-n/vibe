@@ -2,7 +2,7 @@
  * Session management functionality tests
  */
 
-import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import {

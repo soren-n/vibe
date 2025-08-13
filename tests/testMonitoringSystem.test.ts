@@ -2,7 +2,7 @@
  * Test file for monitoring system - TypeScript translation of test_monitoring_system.py
  */
 
-import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

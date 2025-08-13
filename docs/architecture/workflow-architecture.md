@@ -78,7 +78,7 @@ conditions: [string] # Optional: Execution conditions
 **Validation Errors**: Log issues, skip incomplete workflows
 **System Failure**: Graceful fallback to Python implementations
 
-## Advanced Features
+## Additional Features
 
 ### Hot Reloading
 
@@ -107,6 +107,6 @@ validate_workflow_data(workflow_dict)  # Structural validation
 ## Future Enhancements
 
 - **Workflow Dependencies**: Support for workflow composition
-- **Conditional Logic**: More sophisticated condition evaluation
+- **Conditional Logic**: More detailed condition evaluation
 - **Template System**: Variable substitution in workflow commands
 ```

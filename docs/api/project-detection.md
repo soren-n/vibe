@@ -6,11 +6,11 @@ The project detection system automatically identifies project types, frameworks,
 
 ### ProjectDetector
 
-Primary class for intelligent project type detection with comprehensive framework support.
+Primary class for project type detection with comprehensive framework support.
 
 ```python
 class ProjectDetector:
-    """Intelligent project type detection based on files, dependencies, and structure."""
+    """Project type detection based on files, dependencies, and structure."""
 
     def __init__(self, project_path: str = "."):
         """Initialize the project detector with a given path."""
@@ -459,7 +459,7 @@ all_types = detector.detect_all_project_types()
 print(f"All types: {all_types}")
 ```
 
-### Advanced Usage
+### Extended Usage
 
 ```python
 # Detect specific frameworks

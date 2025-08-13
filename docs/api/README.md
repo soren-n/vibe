@@ -17,7 +17,7 @@ This directory contains comprehensive API documentation for all Vibe components.
 ## Guidance System
 
 - [Workflow Registry](workflow-registry.md) - YAML workflow loading and caching with hot reloading
-- [Project Detection](project-detection.md) - Intelligent project type detection algorithms
+- [Project Detection](project-detection.md) - Project type detection algorithms
 
 ## Quality Assurance
 
@@ -25,7 +25,7 @@ This directory contains comprehensive API documentation for all Vibe components.
 
 ## CLI Interface
 
-- [Command Interface](cli.md) - Command-line interface structure and smart routing
+- [Command Interface](cli.md) - Command-line interface structure and routing
 - [Session Monitoring](session-monitoring.md) - AI agent workflow completion tracking and intervention
 
 ## Implementation Completeness

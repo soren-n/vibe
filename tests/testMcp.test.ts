@@ -2,7 +2,7 @@
  * Test file for MCP workflow functionality - TypeScript translation of test_mcp.py
  */
 
-import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Checklist, VibeConfig, Workflow } from '../src/models';

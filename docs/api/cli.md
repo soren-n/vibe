@@ -1,6 +1,6 @@
 # CLI Interface API Reference
 
-The CLI interface provides command-line access to Vibe's workflow orchestration capabilities with smart command routing and user-friendly options.
+The CLI interface provides command-line access to Vibe's workflow orchestration capabilities with command routing and user-friendly options.
 
 ## Core Commands
 
@@ -148,7 +148,7 @@ def init(project_type: str | None, output_json: bool = False) -> None:
 
 ### guide
 
-Provides intelligent guidance based on natural language requests.
+Provides guidance based on natural language requests.
 
 ```bash
 vibe guide "guidance request" [options]
@@ -347,7 +347,7 @@ vibe checklists [subcommand] [options]
 @click.option("--version", "-v", is_flag=True, help="Show version and exit")
 @click.pass_context
 def cli(ctx: click.Context, version: bool) -> None:
-    """Vibe: Intelligent workflow orchestrator for vibe coding.
+    """Vibe: Workflow orchestrator for vibe coding.
 
     Analyzes your prompts and executes appropriate development workflows.
     """
@@ -381,7 +381,12 @@ The CLI includes intelligent command routing that treats unknown arguments as pr
 
 ```python
 def main() -> None:
-    """Main entry point with smart command detection."""
+    ### Command Detection
+
+The CLI includes command routing that treats unknown arguments as prompts:
+
+```python
+    """Main entry point with command detection."""
     args = sys.argv[1:]
 
     # Handle different argument scenarios

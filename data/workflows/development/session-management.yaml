@@ -1,4 +1,4 @@
-name: Enhanced Session Management with Workflow Completion Checks
+name: Session Management with Workflow Completion Checks
 description: session management that detects and handles incomplete workflows
 triggers:
   - complete session

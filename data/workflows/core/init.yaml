@@ -86,5 +86,5 @@ steps:
   - 'Enable VS Code Agent Mode - Ensure agent mode is enabled in VS Code settings: `"chat.agent.enabled": true`'
   - 'Connect MCP Tools - Install Vibe MCP extension and configure it to access workflow tools'
   - "Explore available workflows with `vibe list-workflows` to see what's available"
-  - 'Next steps: Try `vibe guide "setup github ai integration"` for advanced AI integration'
+  - 'Next steps: Try `vibe guide "setup github ai integration"` for extended AI integration'
   - 'Remember: Vibe workflows provide guidance for development tasks - use them throughout your development process!'
