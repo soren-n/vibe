@@ -418,6 +418,12 @@ describe('SessionMonitor Comprehensive Tests', () => {
     });
 
     test('performance with many sessions', async () => {
+      // Clear any existing sessions first to ensure clean test state
+      const existingSessions = sessionManager.listActiveSessions();
+      for (const sessionId of existingSessions) {
+        sessionManager.archiveSession(sessionId);
+      }
+
       // Create multiple sessions to test performance
       const sessions: EnhancedWorkflowSession[] = [];
       for (let i = 0; i < 50; i++) {
