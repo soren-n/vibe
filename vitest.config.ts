@@ -13,15 +13,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'dist/',
-        'coverage/',
-        'tests/',
-        '**/*.d.ts',
-        'vscode-extension/',
-        'scripts/',
-      ],
+      exclude: ['node_modules/', 'dist/', 'coverage/', 'tests/', '**/*.d.ts'],
     },
     typecheck: {
       enabled: true,

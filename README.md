@@ -1,13 +1,14 @@
 # vibe
 
-A CLI tool that assists you in vibe coding, essentially a scripted workflow system guiding your agent.
+A CLI tool and MCP server that provides intelligent workflow orchestration for AI-driven development automation.
 
 ## Overview
 
-Vibe is an intelligent workflow orchestrator that analyzes your natural language prompts and automatically executes the appropriate development workflows. It's designed to make "vibe coding" - that flow state of rapid, intuitive development - more structured and productive.
+Vibe is an intelligent workflow orchestrator that analyzes your natural language prompts and automatically executes the appropriate development workflows. It works both as a standalone CLI tool and as a Model Context Protocol (MCP) server for seamless AI agent integration.
 
 ## Key Features
 
+- **MCP Server Integration**: Works as an MCP server for AI agents and tools
 - **Intelligent Prompt Analysis**: Uses pattern matching to understand what you want to accomplish
 - **Workflow Orchestration**: Automatically executes workflows in the optimal order
 - **Project Type Detection**: Supports multiple project types (Python, Vue/TypeScript, etc.)
@@ -15,7 +16,7 @@ Vibe is an intelligent workflow orchestrator that analyzes your natural language
 - **Configurable**: Customize workflows and commands for your project needs
 - **Rich Output**: Beautiful, colored terminal output with progress indicators
 - **Extensible**: Plugin architecture for custom workflows and project types
-- **Automated Releases**: Full CI/CD pipeline with semantic versioning and marketplace publishing
+- **Step-by-step Execution**: Support for guided workflow execution with session management
 
 ## Installation
 
@@ -42,6 +43,36 @@ vibe "analyze the codebase structure"
 vibe "implement user authentication"
 vibe "run all tests and check quality"
 vibe "create a pull request"
+```
+
+## MCP Server Usage
+
+Vibe includes built-in MCP (Model Context Protocol) server functionality for AI agent integration:
+
+```bash
+# Start a new guided workflow session
+vibe mcp start "implement user authentication system"
+
+# Check session status
+vibe mcp status <session_id>
+
+# Advance to next step in workflow
+vibe mcp next <session_id>
+
+# Go back to previous step
+vibe mcp back <session_id>
+
+# List all active sessions
+vibe mcp list
+
+# Monitor session health and get alerts
+vibe mcp monitor-sessions
+
+# Initialize project with MCP-compatible output
+vibe mcp init
+
+# Run checklists with structured output
+vibe mcp run-checklist "Code Quality Validation"
 ```
 
 ## Workflow YAML Quality Tools

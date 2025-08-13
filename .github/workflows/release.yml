@@ -86,12 +86,12 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version
         run: |
           # Update package.json with manual version
-          node scripts/sync_versions.js ${{ github.event.inputs.version }}
-          git add package.json vscode-extension/package.json
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          git add package.json
           git commit -m "chore: manual version update to ${{ github.event.inputs.version }}"
 
       - name: Run semantic release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

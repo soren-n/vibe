@@ -1,7 +1,7 @@
 {
   "name": "vibe-workflow",
   "version": "1.0.0",
-  "description": "Intelligent workflow orchestrator for TypeScript development with natural language prompts",
+  "description": "Intelligent workflow orchestrator with MCP server for AI-driven development automation",
   "main": "dist/index.js",
   "bin": {
     "vibe": "dist/cli.js"
@@ -28,10 +28,7 @@
     "quality:fix": "npm run lint:fix && npm run format && npm run type-check && npm run test",
     "clean": "rm -rf dist coverage",
     "prepare": "husky install",
-    "prepack": "npm run build",
-    "parity-check": "npx tsx scripts/cli-parity-validator.ts",
-    "parity": "npx tsx scripts/parity-tracker.ts",
-    "migration:setup": "npm run build && npm run test && npm run parity-check"
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
@@ -87,7 +84,11 @@
     "orchestration",
     "cli",
     "development",
-    "automation"
+    "automation",
+    "mcp",
+    "model-context-protocol",
+    "ai-tools",
+    "productivity"
   ],
   "author": "Søren Nielsen",
   "license": "MIT",

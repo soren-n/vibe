@@ -28,26 +28,19 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "node scripts/sync_versions.js ${nextRelease.version} && npm run build && mkdir -p vscode-extension/bundled && cp dist/src/cli.js vscode-extension/bundled/mcp-server.js && cp -r data vscode-extension/data && cd vscode-extension && npm ci && npm run compile && npm run package",
-        "publishCmd": "cd vscode-extension && npm run publish"
+        "prepareCmd": "npm run build"
       }
     ],
     [
       "@semantic-release/github",
       {
-        "assets": ["dist/*", "vscode-extension/*.vsix"]
+        "assets": ["dist/*"]
       }
     ],
     [
       "@semantic-release/git",
       {
-        "assets": [
-          "CHANGELOG.md",
-          "package.json",
-          "package-lock.json",
-          "vscode-extension/package.json",
-          "vscode-extension/package-lock.json"
-        ],
+        "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]

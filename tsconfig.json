@@ -34,9 +34,7 @@
     "dist",
     "coverage",
     "tests",
-    "scripts",
     "*.js",
-    "vscode-extension",
     "mcp-server",
     "python-legacy",
     "src/archive"

@@ -38,16 +38,16 @@ describe('Monitoring System', () => {
     // Test that we can at least verify the file structure exists
     // In TypeScript version, this would be testing the compiled system
 
-    // Check if the vscode-extension directory exists
-    const vscodeExtensionPath = path.join(process.cwd(), 'vscode-extension');
+    // Check if the main source directory exists
+    const srcPath = path.join(process.cwd(), 'src');
 
     try {
-      const stats = await fs.stat(vscodeExtensionPath);
+      const stats = await fs.stat(srcPath);
       expect(stats.isDirectory()).toBe(true);
-      console.log('✅ VSCode extension directory exists');
+      console.log('✅ Source directory exists');
     } catch (error) {
       console.log(
-        '⚠️ VSCode extension directory not found - this may be expected in some test environments'
+        '⚠️ Source directory not found - this should not happen in test environments'
       );
     }
 
