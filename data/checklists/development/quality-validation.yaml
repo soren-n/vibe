@@ -1,0 +1,29 @@
+name: Quality Validation Checklist
+description: Validation checklist for comprehensive quality checks including dependency analysis
+triggers:
+  - quality validation
+  - quality check
+  - comprehensive validation
+  - code quality
+project_types:
+  - typescript
+  - javascript
+  - nodejs
+conditions: []
+dependencies: []
+items:
+  - All code quality rules pass without errors or warnings.
+  - Code formatting follows project standards consistently.
+  - Language compilation succeeds without errors.
+  - All tests pass successfully with expected coverage.
+  - No unused dependencies are detected by analysis tools.
+  - No unused exports exist in the codebase.
+  - No unused files are present in the project.
+  - Build process completes successfully.
+  - No security vulnerabilities in dependencies.
+  - Package.json scripts function correctly.
+  - Configuration files are valid and properly formatted.
+  - Documentation is up to date with any changes.
+  - Quality checks can be reproduced consistently.
+  - Team coding standards are maintained.
+  - CI/CD pipeline compatibility is verified.

@@ -1,0 +1,41 @@
+name: 'Dependency Quality Gate'
+description: 'Comprehensive quality gate that includes unused dependency detection as part of code quality validation'
+category: 'development'
+project_types:
+  - 'typescript'
+  - 'javascript'
+  - 'nodejs'
+
+steps:
+  - 'Run security audit to check for known vulnerabilities in dependencies'
+  - 'Check for unused dependencies, exports, and files'
+  - 'Run code quality and style checks'
+  - 'Verify code follows consistent formatting standards'
+  - 'Verify type safety and compilation'
+  - 'Execute all unit and integration tests'
+  - 'Ensure project builds successfully'
+
+validation_checklist: 'dependency-quality-gate-validation'
+success_criteria:
+  - 'No security vulnerabilities in dependencies'
+  - 'No unused dependencies detected'
+  - 'Code passes all quality checks'
+  - 'Code is properly formatted'
+  - 'No compilation errors'
+  - 'All tests pass'
+  - 'Project builds successfully'
+
+failure_handling:
+  - 'Review security audit results and update vulnerable packages'
+  - 'Use automated tools to remove unused dependencies'
+  - 'Use automated tools to fix code quality issues'
+  - 'Use automated tools to fix formatting issues'
+  - 'Address compilation errors manually'
+  - 'Fix failing tests'
+  - 'Resolve build errors'
+
+post_steps:
+  - 'Document any dependency exceptions in configuration if needed'
+  - 'Update documentation if dependency changes affect setup instructions'
+  - 'Consider running this quality gate in CI/CD pipeline'
+dependencies: []

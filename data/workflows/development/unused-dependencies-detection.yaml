@@ -1,0 +1,31 @@
+name: 'Unused Dependencies Detection'
+description: 'Detect and analyze unused dependencies, exports, and files in TypeScript/JavaScript projects'
+category: 'development'
+project_types:
+  - 'typescript'
+  - 'javascript'
+  - 'nodejs'
+
+steps:
+  - 'Install dependency analysis tool as development dependency if not already available'
+  - 'Check for existing analysis tool configuration file or note that defaults will be used'
+  - 'Analyze project for unused dependencies and development dependencies'
+  - 'Analyze project for unused exports and type definitions'
+  - 'Analyze project for unused source files'
+  - 'Generate comprehensive summary report of findings'
+  - 'Create detailed report for further analysis'
+  - 'Review available automated cleanup options'
+
+validation_checklist: 'unused-dependencies-validation'
+success_criteria:
+  - 'Analysis tool successfully analyzes the project'
+  - 'No critical unused dependencies remain'
+  - 'Unused exports are documented or removed'
+  - 'No completely unused files exist'
+
+post_steps:
+  - 'Review detailed analysis report'
+  - 'Consider running automated cleanup for safe changes'
+  - 'Update ignore patterns to exclude analysis reports if desired'
+  - 'Document any intentionally unused dependencies in configuration'
+dependencies: []

@@ -1,0 +1,22 @@
+name: 'Quality Validation'
+description: 'Run comprehensive quality checks including unused dependency detection'
+category: 'development'
+project_types:
+  - 'typescript'
+  - 'javascript'
+  - 'nodejs'
+
+steps:
+  - 'Execute comprehensive quality checks including code quality, formatting, type safety, tests, and dependency validation'
+
+validation_checklist: 'quality-validation'
+success_criteria:
+  - 'All quality checks pass successfully'
+  - 'No unused dependencies detected'
+  - 'Code meets style and formatting standards'
+
+post_steps:
+  - 'Address any failing quality checks'
+  - 'Review dependency analysis results'
+  - 'Consider running auto-fix for safe changes'
+dependencies: []

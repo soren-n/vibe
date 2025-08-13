@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/cli.ts", "src/mcp-server.ts", "src/**/*.test.ts"],
+  "project": ["src/**/*.ts", "tests/**/*.ts"],
+  "ignore": ["dist/**", "coverage/**"],
+  "ignoreDependencies": ["@types/node", "typescript", "tsx"],
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "exports": "warn",
+    "types": "warn"
+  }
+}
