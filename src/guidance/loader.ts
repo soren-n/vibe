@@ -40,22 +40,40 @@ export class WorkflowLoader {
   }
 
   private getDataPath(): string {
-    // In development, look for data directory
+    // Try to find data directory in various locations
     const possiblePaths = [
-      path.join(__dirname, '../../data'), // Development path
-      path.join(__dirname, '../data'), // Built path
-      path.join(process.cwd(), 'data'), // Current directory
-      path.join(__dirname, 'data'), // Same directory as bundle
-      path.join(process.cwd(), 'vibe/data'), // Original Python path
+      // When running from TypeScript source (development)
+      path.join(__dirname, '../../data'),
+      // When running from compiled JS in dist/src/guidance/ -> dist/data/
+      path.join(__dirname, '../../data'),
+      // When running from compiled JS in dist/src/ -> dist/data/
+      path.join(__dirname, '../data'),
+      // When running from different build structures
+      path.join(__dirname, 'data'),
+      // When data is in current working directory
+      path.join(process.cwd(), 'data'),
+      // Legacy Python structure
+      path.join(process.cwd(), 'vibe/data'),
     ];
 
     for (const dataPath of possiblePaths) {
       if (fs.existsSync(dataPath)) {
+        if (!this.quiet) {
+          // Only log in development/debug mode
+          const isDev = __dirname.includes('/src/');
+          if (isDev) {
+            console.log(`[Workflows] Using data directory: ${dataPath}`);
+          }
+        }
         return dataPath;
       }
     }
 
-    throw new Error('Could not find data directory with YAML files');
+    // Provide more helpful error message
+    const tried = possiblePaths.map(p => `  - ${p}`).join('\n');
+    throw new Error(
+      `Could not find data directory with YAML files. Tried:\n${tried}\n\nCurrent __dirname: ${__dirname}\nCurrent process.cwd(): ${process.cwd()}`
+    );
   }
 
   private getFileTimestamp(filePath: string): number {

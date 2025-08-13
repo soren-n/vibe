@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * CLI interface for Vibe
  * TypeScript translation of vibe/cli/main.py

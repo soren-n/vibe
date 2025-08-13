@@ -3,7 +3,8 @@
     "vibe-guide": {
       "command": "npx",
       "args": ["vibe-guide@latest", "mcp-server"],
-      "env": {}
+      "env": {},
+      "cwd": "${workspaceFolder}"
     }
   }
 }
