@@ -31,5 +31,12 @@ export default defineConfig({
         singleFork: true,
       },
     },
+    // Externalize all dependencies to prevent bundling
+    server: {
+      deps: {
+        external: [/.*\/node_modules\/.*/], // Force all node_modules to be external
+        fallbackCJS: false, // Don't try to bundle ESM packages
+      },
+    },
   },
 });
