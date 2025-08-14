@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/soren-n/vibe-mcp/compare/v1.3.1...v1.4.0) (2025-08-14)
+
+### Bug Fixes
+
+- add missing conventional-changelog-conventionalcommits dependency ([bfee550](https://github.com/soren-n/vibe-mcp/commit/bfee550d76fee4d6fbe66f0609f3face2cc27d69))
+- disable committerDate in release notes to resolve Invalid time value error ([ffb8ccc](https://github.com/soren-n/vibe-mcp/commit/ffb8ccc5544d5d87be0c1bfc186f8a46a16d1e9d))
+- switch to angular preset to avoid committerDate error ([fe0938c](https://github.com/soren-n/vibe-mcp/commit/fe0938cc0367d479e4b894f7eaa87d13461a1e3d))
+
+### Features
+
+- ensure sessions are stored in user's project .vibe directory ([6987f4c](https://github.com/soren-n/vibe-mcp/commit/6987f4c042a8dc8e63627644c0465570e4fbbc57))
+
 ## [1.3.1](https://github.com/soren-n/vibe-mcp/compare/v1.3.0...v1.3.1) (2025-08-13)
 
 ### Bug Fixes
