@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/soren-n/vibe-mcp/compare/v1.4.0...v1.5.0) (2025-08-14)
+
+### Bug Fixes
+
+- use angular preset for commit-analyzer to match release-notes-generator ([967c58b](https://github.com/soren-n/vibe-mcp/commit/967c58b932fb1eab4928edda7fad87c12dac49cf))
+
+### Features
+
+- improve MCP server error handling and clean up codebase ([538c215](https://github.com/soren-n/vibe-mcp/commit/538c215b4e3a26d366dcaeabe4c7d4996d67bb18))
+
 # [1.4.0](https://github.com/soren-n/vibe-mcp/compare/v1.3.1...v1.4.0) (2025-08-14)
 
 ### Bug Fixes
