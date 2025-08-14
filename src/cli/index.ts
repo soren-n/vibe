@@ -40,15 +40,9 @@ export {
 export { handleLintRun } from './lint-commands';
 
 // Generic Commands
-export { handleGuide, handleConfigShow, handleConfigInit } from './generic-commands';
+export { handleGuide, handleConfigShow } from './generic-commands';
 
 // Utilities
-export {
-  createSuccessResponse,
-  createErrorResponse,
-  withErrorHandling,
-  withSuppressedOutput,
-  getVersion,
-} from './utils';
+export { withErrorHandling, getVersion } from './utils';
 
 export type { CLIResult, CLISuccessResult, CLIErrorResult } from './utils';

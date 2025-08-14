@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "vibe-guide": {
+      "type": "stdio",
+      "command": "npm",
+      "args": ["run", "mcp-server"],
+      "cwd": "/Users/soren-n/Documents/workspace/vibe-mcp",
+      "env": {}
+    }
+  }
+}

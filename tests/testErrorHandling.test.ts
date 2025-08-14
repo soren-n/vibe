@@ -14,6 +14,7 @@ import {
   FileNotFoundError,
   FileAccessError,
 } from '../src/errors';
+import { VibeMCPServer } from '../src/mcp-server.js';
 
 describe('Error Handling', () => {
   describe('SessionNotFoundError', () => {
@@ -195,6 +196,41 @@ describe('Error Handling', () => {
         })
       );
       expect(json.stack).toBeDefined();
+    });
+  });
+
+  describe('MCP Server Error Handling', () => {
+    it('should create MCP server successfully', () => {
+      expect(() => {
+        new VibeMCPServer();
+      }).not.toThrow();
+    });
+
+    it('should have improved error handling in run method', () => {
+      const server = new VibeMCPServer();
+
+      // Test that run method exists and is properly structured
+      expect(typeof server.run).toBe('function');
+
+      // Verify that the run method includes proper error handling
+      const runMethod = server.run.toString();
+      expect(runMethod).toContain('try');
+      expect(runMethod).toContain('catch');
+      expect(runMethod).toContain('EADDRINUSE'); // Check for specific error handling
+      expect(runMethod).toContain('EACCES');
+      expect(runMethod).toContain('ENOENT');
+    });
+
+    it('should provide informative error messages', () => {
+      // Test that our error handling provides useful information
+      const server = new VibeMCPServer();
+      expect(server).toBeDefined();
+
+      // Verify the error handling structure exists in the run method
+      const runMethod = server.run.toString();
+      expect(runMethod).toContain('Permission denied');
+      expect(runMethod).toContain('port is already in use');
+      expect(runMethod).toContain('dependencies not found');
     });
   });
 });

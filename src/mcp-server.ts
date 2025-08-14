@@ -36,33 +36,66 @@ class VibeMCPServer {
   private environmentHandlers: EnvironmentHandlers;
 
   constructor() {
-    this.server = new Server(
-      {
-        name: 'vibe-guide',
-        version: '1.1.1',
-      },
-      {
-        capabilities: {
-          tools: {},
+    try {
+      // Initialize MCP Server
+      this.server = new Server(
+        {
+          name: 'vibe-guide',
+          version: '1.1.1',
         },
-      }
-    );
+        {
+          capabilities: {
+            tools: {},
+          },
+        }
+      );
+    } catch (error) {
+      throw new Error(
+        `Failed to initialize MCP Server: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
 
-    // Initialize components
-    const config = new VibeConfigImpl();
-    this.orchestrator = new WorkflowOrchestrator(config);
-    this.linter = new ProjectLinter(createLintConfig());
+    try {
+      // Initialize configuration
+      const config = new VibeConfigImpl();
+      this.orchestrator = new WorkflowOrchestrator(config);
+    } catch (error) {
+      throw new Error(
+        `Failed to initialize configuration or workflow orchestrator: ${error instanceof Error ? error.message : String(error)}. Check if vibe.yaml configuration is valid and workflow files are accessible.`
+      );
+    }
 
-    // Initialize handlers
-    this.workflowHandlers = new WorkflowHandlers(this.orchestrator);
-    this.checklistHandlers = new ChecklistHandlers();
-    this.lintHandlers = new LintHandlers(this.linter);
-    this.sessionHandlers = new SessionHandlers();
-    this.queryHandlers = new QueryHandlers(this.orchestrator);
-    this.environmentHandlers = new EnvironmentHandlers();
+    try {
+      // Initialize linter
+      this.linter = new ProjectLinter(createLintConfig());
+    } catch (error) {
+      throw new Error(
+        `Failed to initialize project linter: ${error instanceof Error ? error.message : String(error)}. Check if lint configuration files are valid.`
+      );
+    }
 
-    this.setupTools();
-    this.setupHandlers();
+    try {
+      // Initialize handlers
+      this.workflowHandlers = new WorkflowHandlers(this.orchestrator);
+      this.checklistHandlers = new ChecklistHandlers();
+      this.lintHandlers = new LintHandlers(this.linter);
+      this.sessionHandlers = new SessionHandlers();
+      this.queryHandlers = new QueryHandlers(this.orchestrator);
+      this.environmentHandlers = new EnvironmentHandlers();
+    } catch (error) {
+      throw new Error(
+        `Failed to initialize command handlers: ${error instanceof Error ? error.message : String(error)}. This may indicate missing dependencies or file system permissions issues.`
+      );
+    }
+
+    try {
+      this.setupTools();
+      this.setupHandlers();
+    } catch (error) {
+      throw new Error(
+        `Failed to setup MCP tools and handlers: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
   private setupTools(): void {
@@ -704,9 +737,31 @@ class VibeMCPServer {
   }
 
   async run(): Promise<void> {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('Vibe MCP Server running on stdio');
+    try {
+      const transport = new StdioServerTransport();
+      await this.server.connect(transport);
+      console.error('Vibe MCP Server running on stdio');
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message.includes('EADDRINUSE')) {
+          throw new Error(
+            `MCP server port is already in use. Another instance might be running.`
+          );
+        } else if (error.message.includes('EACCES')) {
+          throw new Error(
+            `Permission denied when starting MCP server. Check file system permissions.`
+          );
+        } else if (error.message.includes('ENOENT')) {
+          throw new Error(
+            `MCP server dependencies not found. Ensure all required files and dependencies are available.`
+          );
+        } else {
+          throw new Error(`Failed to start MCP server transport: ${error.message}`);
+        }
+      } else {
+        throw new Error(`Failed to start MCP server: ${String(error)}`);
+      }
+    }
   }
 }
 
@@ -715,9 +770,74 @@ export { VibeMCPServer };
 
 // If this file is run directly, start the server
 if (require.main === module) {
-  const server = new VibeMCPServer();
-  server.run().catch(error => {
-    console.error('Failed to start MCP server:', error);
+  try {
+    const server = new VibeMCPServer();
+    server.run().catch(error => {
+      console.error('🔴 MCP Server Runtime Failed:');
+      console.error('═══════════════════════════════');
+
+      if (error instanceof Error) {
+        console.error(`Error: ${error.message}`);
+
+        // Provide additional troubleshooting guidance
+        console.error('\n💡 Troubleshooting Tips:');
+        if (error.message.includes('transport')) {
+          console.error('• Check if another MCP server instance is running');
+          console.error('• Verify stdio transport is available');
+          console.error('• Check process permissions');
+        } else {
+          console.error('• Ensure vibe is properly installed: uv sync');
+          console.error('• Check if all dependencies are available');
+          console.error('• Verify project structure is intact');
+        }
+
+        console.error('\n📖 For more help:');
+        console.error('• Run: uv run vibe --help');
+        console.error('• Check: docs/README.md');
+        console.error('• Report issues: https://github.com/soren-n/vibe-mcp/issues');
+      } else {
+        console.error(`Unexpected error: ${String(error)}`);
+      }
+
+      console.error('═══════════════════════════════');
+      process.exit(1);
+    });
+  } catch (error) {
+    console.error('🔴 MCP Server Initialization Failed:');
+    console.error('═══════════════════════════════');
+
+    if (error instanceof Error) {
+      console.error(`Error: ${error.message}`);
+
+      // Provide specific troubleshooting guidance based on error type
+      console.error('\n💡 Troubleshooting Tips:');
+      if (error.message.includes('configuration')) {
+        console.error('• Check if vibe.yaml exists and is valid');
+        console.error('• Verify workflow files in data/workflows/ are accessible');
+        console.error('• Run: uv run vibe lint to validate configuration');
+      } else if (error.message.includes('linter')) {
+        console.error('• Check if eslint or other lint configs are valid');
+        console.error('• Verify lint configuration files are properly formatted');
+      } else if (error.message.includes('handlers')) {
+        console.error('• Check file system permissions for vibe directories');
+        console.error('• Ensure all required dependencies are installed');
+        console.error('• Try: uv sync to reinstall dependencies');
+      } else {
+        console.error('• Ensure vibe is properly installed: uv sync');
+        console.error('• Check if all dependencies are available');
+        console.error('• Verify project structure is intact');
+        console.error('• Check file system permissions');
+      }
+
+      console.error('\n📖 For more help:');
+      console.error('• Run: uv run vibe --help');
+      console.error('• Check: docs/README.md');
+      console.error('• Report issues: https://github.com/soren-n/vibe-mcp/issues');
+    } else {
+      console.error(`Unexpected error: ${String(error)}`);
+    }
+
+    console.error('═══════════════════════════════');
     process.exit(1);
-  });
+  }
 }
