@@ -1,16 +1,16 @@
 import { getChecklistsArray } from '../guidance/loader.js';
 
-export interface ChecklistResult {
+interface ChecklistResult {
   success: boolean;
   checklist: unknown;
 }
 
-export interface ChecklistsResult {
+interface ChecklistsResult {
   success: boolean;
   checklists: unknown;
 }
 
-export interface RunChecklistResult {
+interface RunChecklistResult {
   success: boolean;
   name: string;
   status: string;

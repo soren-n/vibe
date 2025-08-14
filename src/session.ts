@@ -7,7 +7,6 @@ export type {
   CurrentStepInfo,
   EnhancedWorkflowSession,
   SessionConfig,
-  WorkflowFrame,
   WorkflowStepObject,
 } from './session/index.js';
 

@@ -6,7 +6,7 @@ import { WorkflowSessionImpl } from './workflow-session.js';
 /**
  * Legacy create method for test compatibility
  */
-export function createLegacySession(
+function createLegacySession(
   prompt: string,
   workflowData: Array<[string, (string | WorkflowStepObject)[]]>,
   sessionConfig?: SessionConfig

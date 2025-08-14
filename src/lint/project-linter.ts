@@ -10,7 +10,7 @@ import { type LintIssue, NamingConventionLinter } from './naming-convention.js';
 import { LanguageLinter } from './language-linter.js';
 import { type TextQualityIssue, TextQualityLinter } from './text-quality.js';
 
-export interface LintReport {
+interface LintReport {
   total_issues: number;
   issues_by_type: Record<string, number>;
   issues_by_severity: Record<string, number>;

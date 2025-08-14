@@ -8,11 +8,11 @@ export interface CLIResult {
   [key: string]: unknown;
 }
 
-export interface CLISuccessResult extends CLIResult {
+interface CLISuccessResult extends CLIResult {
   success: true;
 }
 
-export interface CLIErrorResult extends CLIResult {
+interface CLIErrorResult extends CLIResult {
   success: false;
   error: string;
 }
@@ -103,7 +103,7 @@ export function getVersion(): string {
 /**
  * Validates that a required argument is provided
  */
-export function validateRequired<T>(value: T | undefined, name: string): T {
+function _validateRequired<T>(value: T | undefined, name: string): T {
   if (value === undefined || value === null || value === '') {
     throw new Error(`Required argument '${name}' is missing`);
   }

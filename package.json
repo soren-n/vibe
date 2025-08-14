@@ -14,6 +14,7 @@
     "copy-package": "cp package.json dist/package.json",
     "dev": "tsx src/cli.ts",
     "cli": "node dist/src/cli.js",
+    "mcp-server": "tsx src/mcp-server.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

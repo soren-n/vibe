@@ -1,4 +1,4 @@
-export interface MonitoringResult {
+interface MonitoringResult {
   success: boolean;
   monitoring_data: {
     active_sessions: number;
@@ -7,12 +7,12 @@ export interface MonitoringResult {
   };
 }
 
-export interface CleanupResult {
+interface CleanupResult {
   success: boolean;
   cleaned_sessions: number;
 }
 
-export interface AnalysisResult {
+interface AnalysisResult {
   success: boolean;
   session_id: string;
   analysis: {

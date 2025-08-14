@@ -1,6 +1,6 @@
 import type { WorkflowOrchestrator } from '../orchestrator.js';
 
-export interface QueryWorkflowsResult {
+interface QueryWorkflowsResult {
   success: boolean;
   workflows?: {
     name: string;
@@ -11,7 +11,7 @@ export interface QueryWorkflowsResult {
   error?: string;
 }
 
-export interface QueryChecklistsResult {
+interface QueryChecklistsResult {
   success: boolean;
   checklists?: {
     name: string;
@@ -21,7 +21,7 @@ export interface QueryChecklistsResult {
   error?: string;
 }
 
-export interface AddToSessionResult {
+interface AddToSessionResult {
   success: boolean;
   session_id?: string;
   message?: string;

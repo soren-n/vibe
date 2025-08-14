@@ -13,7 +13,7 @@ export enum LogLevel {
   FATAL = 'fatal',
 }
 
-export interface LogContext {
+interface LogContext {
   operation?: string;
   sessionId?: string;
   workflowName?: string;
@@ -22,7 +22,7 @@ export interface LogContext {
   [key: string]: unknown;
 }
 
-export interface LogEntry {
+interface LogEntry {
   timestamp: string;
   level: LogLevel;
   message: string;
@@ -30,7 +30,7 @@ export interface LogEntry {
   error?: Record<string, unknown>;
 }
 
-export interface Logger {
+interface Logger {
   debug(message: string, context?: LogContext): void;
   info(message: string, context?: LogContext): void;
   warn(message: string, context?: LogContext): void;
@@ -150,7 +150,7 @@ class ConsoleLogger implements Logger {
 // Global logger instance
 let globalLogger: Logger = new ConsoleLogger(LogLevel.INFO);
 
-export function setLogger(logger: Logger): void {
+function _setLogger(logger: Logger): void {
   globalLogger = logger;
 }
 
@@ -168,11 +168,7 @@ export function getLogger(): Logger {
 }
 
 // Convenience functions for common logging patterns
-export function logOperation<T>(
-  operation: string,
-  fn: () => T,
-  context?: LogContext
-): T {
+function _logOperation<T>(operation: string, fn: () => T, context?: LogContext): T {
   const logger = getLogger();
   const startTime = Date.now();
 
@@ -221,7 +217,7 @@ export async function logAsyncOperation<T>(
 }
 
 // Retry mechanism with logging
-export interface RetryOptions {
+interface RetryOptions {
   maxAttempts: number;
   baseDelay: number;
   maxDelay: number;

@@ -3,24 +3,24 @@
  * Provides categorized error types with proper context and recovery strategies
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export enum ErrorCategory {
   VALIDATION = 'validation',
   WORKFLOW = 'workflow',
   SESSION = 'session',
   FILESYSTEM = 'filesystem',
-  NETWORK = 'network',
   CONFIGURATION = 'configuration',
   SYSTEM = 'system',
 }
 
 export enum ErrorSeverity {
-  LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
   CRITICAL = 'critical',
 }
 
-export interface ErrorContext {
+interface ErrorContext {
   operation?: string;
   resource?: string;
   sessionId?: string;
@@ -76,7 +76,7 @@ export abstract class VibeError extends Error {
 }
 
 // Validation Errors
-export class ValidationError extends VibeError {
+class ValidationError extends VibeError {
   constructor(message: string, context: ErrorContext = {}) {
     super(
       message,
@@ -88,7 +88,7 @@ export class ValidationError extends VibeError {
   }
 }
 
-export class SchemaValidationError extends ValidationError {
+class SchemaValidationError extends ValidationError {
   constructor(message: string, context: ErrorContext = {}) {
     super(`Schema validation failed: ${message}`, context);
     this.code = 'SCHEMA_INVALID';
@@ -96,7 +96,7 @@ export class SchemaValidationError extends ValidationError {
 }
 
 // Workflow Errors
-export class WorkflowError extends VibeError {
+class WorkflowError extends VibeError {
   constructor(message: string, context: ErrorContext = {}, retryable = false) {
     super(
       message,
@@ -109,14 +109,14 @@ export class WorkflowError extends VibeError {
   }
 }
 
-export class WorkflowNotFoundError extends WorkflowError {
+class WorkflowNotFoundError extends WorkflowError {
   constructor(workflowName: string, context: ErrorContext = {}) {
     super(`Workflow not found: ${workflowName}`, { ...context, workflowName });
     this.code = 'WORKFLOW_NOT_FOUND';
   }
 }
 
-export class WorkflowLoadError extends WorkflowError {
+class WorkflowLoadError extends WorkflowError {
   constructor(filePath: string, cause: Error, context: ErrorContext = {}) {
     super(`Failed to load workflow from ${filePath}: ${cause.message}`, {
       ...context,
@@ -127,7 +127,7 @@ export class WorkflowLoadError extends WorkflowError {
   }
 }
 
-export class WorkflowExecutionError extends WorkflowError {
+class WorkflowExecutionError extends WorkflowError {
   constructor(message: string, context: ErrorContext = {}) {
     super(`Workflow execution failed: ${message}`, context, true);
     this.code = 'WORKFLOW_EXECUTION_FAILED';
@@ -135,7 +135,7 @@ export class WorkflowExecutionError extends WorkflowError {
 }
 
 // Session Errors
-export class SessionError extends VibeError {
+class SessionError extends VibeError {
   constructor(message: string, context: ErrorContext = {}, retryable = false) {
     super(
       message,
@@ -155,14 +155,14 @@ export class SessionNotFoundError extends SessionError {
   }
 }
 
-export class SessionStateError extends SessionError {
+class SessionStateError extends SessionError {
   constructor(message: string, context: ErrorContext = {}) {
     super(`Session state error: ${message}`, context);
     this.code = 'SESSION_STATE_INVALID';
   }
 }
 
-export class SessionPersistenceError extends SessionError {
+class SessionPersistenceError extends SessionError {
   constructor(
     operation: string,
     sessionId: string,
@@ -222,7 +222,7 @@ export class FileAccessError extends FilesystemError {
 }
 
 // Configuration Errors
-export class ConfigurationError extends VibeError {
+class ConfigurationError extends VibeError {
   constructor(message: string, context: ErrorContext = {}) {
     super(
       message,
@@ -234,7 +234,7 @@ export class ConfigurationError extends VibeError {
   }
 }
 
-export class ConfigurationLoadError extends ConfigurationError {
+class ConfigurationLoadError extends ConfigurationError {
   constructor(configPath: string, cause: Error, context: ErrorContext = {}) {
     super(`Failed to load configuration from ${configPath}: ${cause.message}`, {
       ...context,
@@ -246,7 +246,7 @@ export class ConfigurationLoadError extends ConfigurationError {
 }
 
 // System Errors
-export class SystemError extends VibeError {
+class SystemError extends VibeError {
   constructor(message: string, context: ErrorContext = {}, retryable = false) {
     super(
       message,
@@ -259,7 +259,7 @@ export class SystemError extends VibeError {
   }
 }
 
-export class ResourceExhaustionError extends SystemError {
+class ResourceExhaustionError extends SystemError {
   constructor(resource: string, context: ErrorContext = {}) {
     super(`Resource exhaustion: ${resource}`, { ...context, resource });
     this.code = 'RESOURCE_EXHAUSTED';

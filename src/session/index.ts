@@ -2,7 +2,6 @@ export type {
   CurrentStepInfo,
   EnhancedWorkflowSession,
   SessionConfig,
-  WorkflowFrame,
   WorkflowStepObject,
 } from './types.js';
 

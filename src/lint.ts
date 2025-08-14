@@ -46,7 +46,7 @@ export function createLintConfig(overrides?: Partial<LintConfig>): LintConfig {
 }
 
 // Re-export all classes and interfaces from the modules
-export { type LintIssue, NamingConventionLinter } from './lint/naming-convention.js';
+export { NamingConventionLinter } from './lint/naming-convention.js';
 export { LanguageLinter } from './lint/language-linter.js';
-export { type TextQualityIssue, TextQualityLinter } from './lint/text-quality.js';
-export { type LintReport, ProjectLinter } from './lint/project-linter.js';
+export { TextQualityLinter } from './lint/text-quality.js';
+export { ProjectLinter } from './lint/project-linter.js';

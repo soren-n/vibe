@@ -175,7 +175,7 @@ export async function loadFromFile(configPath?: string): Promise<LoadedConfig> {
   return config;
 }
 
-export function findConfigFile(): string | null {
+function findConfigFile(): string | null {
   const currentDir = process.cwd();
   const configNames = ['.vibe.yaml', 'vibe.yaml', '.vibe.yml', 'vibe.yml'];
 

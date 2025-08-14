@@ -1,23 +1,23 @@
 import type { WorkflowOrchestrator } from '../orchestrator.js';
 
-export interface WorkflowResult {
+interface WorkflowResult {
   success: boolean;
   result?: unknown;
 }
 
-export interface WorkflowStatusResult {
+interface WorkflowStatusResult {
   success: boolean;
   status: unknown;
 }
 
-export interface StartWorkflowResult {
+interface StartWorkflowResult {
   success: boolean;
   session_id: string;
   workflow: unknown;
   current_step: unknown;
 }
 
-export interface ListSessionsResult {
+interface ListSessionsResult {
   success: boolean;
   sessions: unknown;
 }

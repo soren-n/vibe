@@ -147,7 +147,7 @@ export async function handleMCPList(): Promise<CLIResult> {
 /**
  * Handles MCP check command
  */
-export async function handleMCPCheck(): Promise<CLIResult> {
+async function _handleMCPCheck(): Promise<CLIResult> {
   const config = await VibeConfig.loadFromFile();
   const projectType = await config.detectProjectType();
 
@@ -171,9 +171,7 @@ export async function handleMCPCheck(): Promise<CLIResult> {
 /**
  * Handles MCP init command
  */
-export async function handleMCPInit(_options: {
-  projectType?: string;
-}): Promise<CLIResult> {
+async function _handleMCPInit(_options: { projectType?: string }): Promise<CLIResult> {
   return safeFileOperation(async () => {
     const fs = await import('fs');
     const path = await import('path');
@@ -201,7 +199,7 @@ export async function handleMCPInit(_options: {
 /**
  * Handles MCP list-checklists command
  */
-export async function handleMCPListChecklists(): Promise<CLIResult> {
+async function _handleMCPListChecklists(): Promise<CLIResult> {
   const checklists = withSuppressedOutput(() => getChecklistsArray(true));
 
   const result = checklists.map(checklist => ({
@@ -218,7 +216,7 @@ export async function handleMCPListChecklists(): Promise<CLIResult> {
 /**
  * Handles MCP show-checklist command
  */
-export async function handleMCPShowChecklist(name: string): Promise<CLIResult> {
+async function _handleMCPShowChecklist(name: string): Promise<CLIResult> {
   const checklists = withSuppressedOutput(() => getChecklistsArray(true));
   const checklist = checklists.find(c => c.name === name);
 
@@ -240,7 +238,7 @@ export async function handleMCPShowChecklist(name: string): Promise<CLIResult> {
 /**
  * Handles MCP run-checklist command
  */
-export async function handleMCPRunChecklist(
+async function _handleMCPRunChecklist(
   name: string,
   options: { format?: string }
 ): Promise<CLIResult> {
@@ -262,7 +260,7 @@ export async function handleMCPRunChecklist(
 /**
  * Handles MCP monitor-sessions command
  */
-export async function handleMCPMonitorSessions(): Promise<CLIResult> {
+async function _handleMCPMonitorSessions(): Promise<CLIResult> {
   return createSuccessResponse({
     sessions: [],
     alerts: [],
@@ -273,7 +271,7 @@ export async function handleMCPMonitorSessions(): Promise<CLIResult> {
 /**
  * Handles MCP cleanup-sessions command
  */
-export async function handleMCPCleanupSessions(): Promise<CLIResult> {
+async function _handleMCPCleanupSessions(): Promise<CLIResult> {
   return createSuccessResponse({
     cleaned_sessions: [],
     message: 'No sessions needed cleanup',
@@ -283,7 +281,7 @@ export async function handleMCPCleanupSessions(): Promise<CLIResult> {
 /**
  * Handles MCP analyze-response command
  */
-export async function handleMCPAnalyzeResponse(
+async function _handleMCPAnalyzeResponse(
   sessionId: string,
   _responseText: string
 ): Promise<CLIResult> {

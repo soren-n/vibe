@@ -95,9 +95,7 @@ export async function handleConfigShow(options: {
 /**
  * Handles config init command
  */
-export async function handleConfigInit(options: {
-  format?: string;
-}): Promise<CLIResult> {
+async function _handleConfigInit(options: { format?: string }): Promise<CLIResult> {
   try {
     const isJsonOutput = options.format === 'json';
     const configPath = 'vibe.config.js';

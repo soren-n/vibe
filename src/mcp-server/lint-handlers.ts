@@ -1,6 +1,6 @@
 import type { ProjectLinter } from '../lint.js';
 
-export interface LintResult {
+interface LintResult {
   success: boolean;
   result: unknown;
 }

@@ -44,5 +44,3 @@ export { handleGuide, handleConfigShow } from './generic-commands';
 
 // Utilities
 export { withErrorHandling, getVersion } from './utils';
-
-export type { CLIResult, CLISuccessResult, CLIErrorResult } from './utils';

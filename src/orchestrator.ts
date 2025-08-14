@@ -12,27 +12,27 @@ import type { VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
 import { SessionMonitor } from './sessionMonitor';
 
-export interface PlanRequest {
+interface PlanRequest {
   query: string;
   projectType?: string;
   config?: VibeConfig;
 }
 
-export interface SessionInfo {
+interface SessionInfo {
   sessionId: string;
   prompt: string;
   createdAt: string;
   isComplete: boolean;
 }
 
-export interface MonitoringStatusSummary {
+interface MonitoringStatusSummary {
   dormant_sessions: number;
   stale_sessions: number;
   forgotten_completions: number;
   [key: string]: unknown;
 }
 
-export interface SessionResponse {
+interface SessionResponse {
   success: boolean;
   error?: string;
   session_id?: string;
@@ -70,12 +70,12 @@ export interface SessionResponse {
   suggested_actions?: string[];
 }
 
-export interface WorkflowStep {
+interface WorkflowStep {
   type: string;
   actions: (string | unknown)[];
 }
 
-export interface WorkflowPlan {
+interface WorkflowPlan {
   workflow: Workflow;
   confidence: number;
   reasoning: string;
@@ -90,7 +90,7 @@ export interface ExecutionPlanStep {
   reasoning: string;
 }
 
-export interface SessionAlert {
+interface SessionAlert {
   session_id: string;
   alert_type: string;
   message: string;

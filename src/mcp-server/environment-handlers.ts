@@ -1,9 +1,9 @@
-export interface EnvironmentResult {
+interface EnvironmentResult {
   success: boolean;
   message: string;
 }
 
-export interface InitResult {
+interface InitResult {
   success: boolean;
   message: string;
   project_type?: string;

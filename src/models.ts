@@ -67,7 +67,7 @@ export interface WorkflowPlanResult {
 /**
  * Execution plan step structure
  */
-export interface ExecutionPlanStep {
+interface ExecutionPlanStep {
   type: 'workflow' | 'checklist';
   name: string;
   title: string;
