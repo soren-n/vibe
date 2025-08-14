@@ -11,21 +11,23 @@ Vibe analyzes natural language prompts and provides appropriate development work
 
 ## Installation
 
-P
-Configure Vibe as an MCP server in VS Code by adding the following to your `settings.json`:
+Configure Vibe as an MCP server in VS Code by creating `.vscode/mcp.json` in your workspace:
 
 ```json
 {
-  "mcp.mcpServers": {
+  "servers": {
     "vibe-guide": {
+      "type": "stdio",
       "command": "npx",
       "args": ["vibe-guide@latest", "mcp-server"],
-      "env": {},
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "env": {}
     }
   }
 }
 ```
+
+**Note**: After creating this file, restart VS Code to enable the MCP integration.
 
 ## Usage
 
