@@ -4,6 +4,32 @@
 # Run lint-staged for formatting and linting
 npx lint-staged
 
+# Check for emojis in staged source code files
+echo "🔍 Checking for emojis in staged source code..."
+
+# Get staged files and create temp directory for checking
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -n "$staged_files" ]; then
+    temp_dir=$(mktemp -d)
+    trap "rm -rf $temp_dir" EXIT
+
+    # Copy staged content to temp directory
+    for file in $staged_files; do
+        if [ -f "$file" ]; then
+            mkdir -p "$temp_dir/$(dirname "$file")"
+            git show ":$file" > "$temp_dir/$file" 2>/dev/null || continue
+        fi
+    done
+
+    # Run emoji check on staged content
+    if ! uv run python scripts/check-emojis.py "$temp_dir" --exclude "*.md" --exclude "*.txt" --exclude "*.rst"; then
+        echo "❌ Emoji check failed - emojis found in staged source code"
+        echo "Please remove emojis from source code before committing"
+        exit 1
+    fi
+    echo "✅ Emoji check passed"
+fi
+
 # Ensure all tests pass before committing
 npm test
 
