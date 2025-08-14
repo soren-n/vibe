@@ -1,3 +1,9 @@
+# [1.6.0](https://github.com/soren-n/vibe-mcp/compare/v1.5.0...v1.6.0) (2025-08-14)
+
+### Features
+
+- enhance MCP integration and streamline codebase ([4a115e9](https://github.com/soren-n/vibe-mcp/commit/4a115e9ffd6088d881349f431ac5a90dfacdd219))
+
 # [1.5.0](https://github.com/soren-n/vibe-mcp/compare/v1.4.0...v1.5.0) (2025-08-14)
 
 ### Bug Fixes
