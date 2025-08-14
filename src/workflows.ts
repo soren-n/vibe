@@ -222,24 +222,10 @@ export function loadAllWorkflows(): Record<string, Workflow> {
 }
 
 /**
- * Get core workflows (backward compatibility)
- */
-export function getCoreWorkflows(): Record<string, Workflow> {
-  return loadAllWorkflows();
-}
-
-/**
  * Clear the workflow cache (useful for testing or hot reloading)
  */
 export function clearWorkflowCache(): void {
   workflowCache = null;
-}
-
-/**
- * Clear the checklist cache (useful for testing or hot reloading)
- */
-export function clearChecklistCache(): void {
-  checklistCache = null;
 }
 
 /**
@@ -335,11 +321,4 @@ export function loadAllChecklists(quiet = false): Record<string, Checklist> {
     checklistCache = {};
     return checklistCache;
   }
-}
-
-/**
- * Get core checklists (backward compatibility)
- */
-export function getCoreChecklists(): Record<string, Checklist> {
-  return loadAllChecklists();
 }

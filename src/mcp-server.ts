@@ -12,13 +12,28 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { WorkflowOrchestrator } from './orchestrator.js';
 import { VibeConfigImpl } from './config.js';
-import { getChecklistsArray } from './guidance/loader.js';
-import { ProjectLinter } from './lint.js';
+import { ProjectLinter, createLintConfig } from './lint.js';
+import {
+  ChecklistHandlers,
+  EnvironmentHandlers,
+  LintHandlers,
+  QueryHandlers,
+  SessionHandlers,
+  WorkflowHandlers,
+} from './mcp-server/index.js';
 
 class VibeMCPServer {
   private server: Server;
   private orchestrator: WorkflowOrchestrator;
   private linter: ProjectLinter;
+
+  // Handler instances
+  private workflowHandlers: WorkflowHandlers;
+  private checklistHandlers: ChecklistHandlers;
+  private lintHandlers: LintHandlers;
+  private sessionHandlers: SessionHandlers;
+  private queryHandlers: QueryHandlers;
+  private environmentHandlers: EnvironmentHandlers;
 
   constructor() {
     this.server = new Server(
@@ -36,7 +51,15 @@ class VibeMCPServer {
     // Initialize components
     const config = new VibeConfigImpl();
     this.orchestrator = new WorkflowOrchestrator(config);
-    this.linter = new ProjectLinter();
+    this.linter = new ProjectLinter(createLintConfig());
+
+    // Initialize handlers
+    this.workflowHandlers = new WorkflowHandlers(this.orchestrator);
+    this.checklistHandlers = new ChecklistHandlers();
+    this.lintHandlers = new LintHandlers(this.linter);
+    this.sessionHandlers = new SessionHandlers();
+    this.queryHandlers = new QueryHandlers(this.orchestrator);
+    this.environmentHandlers = new EnvironmentHandlers();
 
     this.setupTools();
     this.setupHandlers();
@@ -265,6 +288,72 @@ class VibeMCPServer {
           required: ['session_id', 'response_text'],
         },
       },
+      {
+        name: 'query_workflows',
+        description: 'Query available workflows by pattern or category',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            pattern: {
+              type: 'string',
+              description: 'Search pattern to filter workflows',
+            },
+            category: {
+              type: 'string',
+              description: 'Category to filter workflows',
+            },
+          },
+        },
+      },
+      {
+        name: 'query_checklists',
+        description: 'Query available checklists by pattern',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            pattern: {
+              type: 'string',
+              description: 'Search pattern to filter checklists',
+            },
+          },
+        },
+      },
+      {
+        name: 'add_workflow_to_session',
+        description: 'Add a workflow to an existing session (nested execution)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            session_id: {
+              type: 'string',
+              description: 'The session ID to add the workflow to',
+            },
+            workflow_name: {
+              type: 'string',
+              description: 'Name of the workflow to add',
+            },
+          },
+          required: ['session_id', 'workflow_name'],
+        },
+      },
+      {
+        name: 'add_checklist_to_session',
+        description: 'Add a checklist to an existing session (nested execution)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            session_id: {
+              type: 'string',
+              description: 'The session ID to add the checklist to',
+            },
+            checklist_name: {
+              type: 'string',
+              description: 'Name of the checklist to add',
+            },
+          },
+          required: ['session_id', 'checklist_name'],
+        },
+      },
     ];
 
     // Register tools with the server
@@ -358,6 +447,31 @@ class VibeMCPServer {
             );
             break;
 
+          case 'query_workflows':
+            result = await this.queryWorkflows(
+              args?.['pattern'] as string,
+              args?.['category'] as string
+            );
+            break;
+
+          case 'query_checklists':
+            result = await this.queryChecklists(args?.['pattern'] as string);
+            break;
+
+          case 'add_workflow_to_session':
+            result = await this.addWorkflowToSession(
+              args?.['session_id'] as string,
+              args?.['workflow_name'] as string
+            );
+            break;
+
+          case 'add_checklist_to_session':
+            result = await this.addChecklistToSession(
+              args?.['session_id'] as string,
+              args?.['checklist_name'] as string
+            );
+            break;
+
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -391,103 +505,66 @@ class VibeMCPServer {
     });
   }
 
-  // Tool implementation methods
+  // Tool implementation methods - delegate to handlers
   private async startWorkflow(
     prompt: string,
-    _interactive: boolean = false
+    interactive: boolean = false
   ): Promise<{
     success: boolean;
     session_id: string;
     workflow: unknown;
     current_step: unknown;
   }> {
-    const result = this.orchestrator.startSession(prompt);
-    if (!result.success) {
-      throw new Error(result.error ?? 'Failed to start session');
-    }
-    return {
-      success: true,
-      session_id: result.session_id ?? '',
-      workflow: result.workflow_stack,
-      current_step: result.current_step,
-    };
+    return this.workflowHandlers.startWorkflow(prompt, interactive);
   }
 
   private async getWorkflowStatus(sessionId: string): Promise<{
     success: boolean;
     status: unknown;
   }> {
-    const status = this.orchestrator.getSessionStatus(sessionId);
-    return {
-      success: true,
-      status,
-    };
+    return this.workflowHandlers.getWorkflowStatus(sessionId);
   }
 
   private async advanceWorkflow(sessionId: string): Promise<{
     success: boolean;
-    result: unknown;
+    result?: unknown;
   }> {
-    const result = this.orchestrator.advanceSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
+    return this.workflowHandlers.advanceWorkflow(sessionId);
   }
 
   private async backWorkflow(sessionId: string): Promise<{
     success: boolean;
-    result: unknown;
+    result?: unknown;
   }> {
-    const result = this.orchestrator.backSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
+    return this.workflowHandlers.backWorkflow(sessionId);
   }
 
   private async breakWorkflow(sessionId: string): Promise<{
     success: boolean;
-    result: unknown;
+    result?: unknown;
   }> {
-    const result = this.orchestrator.breakSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
+    return this.workflowHandlers.breakWorkflow(sessionId);
   }
 
   private async restartWorkflow(sessionId: string): Promise<{
     success: boolean;
-    result: unknown;
+    result?: unknown;
   }> {
-    const result = this.orchestrator.restartSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
+    return this.workflowHandlers.restartWorkflow(sessionId);
   }
 
   private async listWorkflowSessions(): Promise<{
     success: boolean;
     sessions: unknown;
   }> {
-    const sessions = this.orchestrator.sessionManagerInstance.listSessions();
-    return {
-      success: true,
-      sessions,
-    };
+    return this.workflowHandlers.listWorkflowSessions();
   }
 
   private async checkVibeEnvironment(): Promise<{
     success: boolean;
     message: string;
   }> {
-    // Use existing check functionality
-    return {
-      success: true,
-      message: 'Environment check completed',
-    };
+    return this.environmentHandlers.checkVibeEnvironment();
   }
 
   private async initVibeProject(projectType?: string): Promise<{
@@ -495,40 +572,21 @@ class VibeMCPServer {
     message: string;
     project_type?: string;
   }> {
-    // Use existing init functionality
-    return {
-      success: true,
-      message: 'Project initialized',
-      ...(projectType ? { project_type: projectType } : {}),
-    };
+    return this.environmentHandlers.initVibeProject(projectType);
   }
 
   private async listChecklists(): Promise<{
     success: boolean;
     checklists: unknown;
   }> {
-    const checklists = getChecklistsArray(true);
-    return {
-      success: true,
-      checklists,
-    };
+    return this.checklistHandlers.listChecklists();
   }
 
   private async getChecklist(name: string): Promise<{
     success: boolean;
     checklist: unknown;
   }> {
-    const checklists = getChecklistsArray(true);
-    const checklist = checklists.find(c => c.name === name);
-
-    if (!checklist) {
-      throw new Error(`Checklist '${name}' not found`);
-    }
-
-    return {
-      success: true,
-      checklist,
-    };
+    return this.checklistHandlers.getChecklist(name);
   }
 
   private async runChecklist(name: string): Promise<{
@@ -537,33 +595,14 @@ class VibeMCPServer {
     status: string;
     items: Array<{ item: string; status: string }>;
   }> {
-    const checklists = getChecklistsArray(true);
-    const checklist = checklists.find(c => c.name === name);
-
-    if (!checklist) {
-      throw new Error(`Checklist '${name}' not found`);
-    }
-
-    return {
-      success: true,
-      name: checklist.name,
-      status: 'completed',
-      items: checklist.items.map(item => ({
-        item,
-        status: 'completed',
-      })),
-    };
+    return this.checklistHandlers.runChecklist(name);
   }
 
-  private async lintProject(_fix: boolean = false): Promise<{
+  private async lintProject(fix: boolean = false): Promise<{
     success: boolean;
     result: unknown;
   }> {
-    const result = this.linter.lintProject('.', undefined, undefined);
-    return {
-      success: true,
-      result,
-    };
+    return this.lintHandlers.lintProject(fix);
   }
 
   private async lintText(
@@ -573,11 +612,7 @@ class VibeMCPServer {
     success: boolean;
     result: unknown;
   }> {
-    const result = await this.linter.lintText(text, type);
-    return {
-      success: true,
-      result,
-    };
+    return this.lintHandlers.lintText(text, type);
   }
 
   private async monitorSessions(): Promise<{
@@ -588,31 +623,19 @@ class VibeMCPServer {
       alerts: unknown[];
     };
   }> {
-    // Placeholder for session monitoring
-    return {
-      success: true,
-      monitoring_data: {
-        active_sessions: 0,
-        dormant_sessions: 0,
-        alerts: [],
-      },
-    };
+    return this.sessionHandlers.monitorSessions();
   }
 
   private async cleanupStaleSessions(): Promise<{
     success: boolean;
     cleaned_sessions: number;
   }> {
-    // Placeholder for session cleanup
-    return {
-      success: true,
-      cleaned_sessions: 0,
-    };
+    return this.sessionHandlers.cleanupStaleSessions();
   }
 
   private async analyzeAgentResponse(
     sessionId: string,
-    _responseText: string
+    responseText: string
   ): Promise<{
     success: boolean;
     session_id: string;
@@ -621,15 +644,63 @@ class VibeMCPServer {
       suggestions: unknown[];
     };
   }> {
-    // Placeholder for agent response analysis
-    return {
-      success: true,
-      session_id: sessionId,
-      analysis: {
-        patterns_detected: [],
-        suggestions: [],
-      },
-    };
+    return this.sessionHandlers.analyzeAgentResponse(sessionId, responseText);
+  }
+
+  private async queryWorkflows(
+    pattern?: string,
+    category?: string
+  ): Promise<{
+    success: boolean;
+    workflows?: {
+      name: string;
+      description: string;
+      category: string | undefined;
+      triggers: string[];
+    }[];
+    error?: string;
+  }> {
+    return this.queryHandlers.queryWorkflows(pattern, category);
+  }
+
+  private async queryChecklists(pattern?: string): Promise<{
+    success: boolean;
+    checklists?: {
+      name: string;
+      description: string | undefined;
+      triggers: string[];
+    }[];
+    error?: string;
+  }> {
+    return this.queryHandlers.queryChecklists(pattern);
+  }
+
+  private async addWorkflowToSession(
+    sessionId: string,
+    workflowName: string
+  ): Promise<{
+    success: boolean;
+    session_id?: string;
+    message?: string;
+    current_step?: unknown;
+    workflow_stack?: string[];
+    error?: string;
+  }> {
+    return this.queryHandlers.addWorkflowToSession(sessionId, workflowName);
+  }
+
+  private async addChecklistToSession(
+    sessionId: string,
+    checklistName: string
+  ): Promise<{
+    success: boolean;
+    session_id?: string;
+    message?: string;
+    current_step?: unknown;
+    workflow_stack?: string[];
+    error?: string;
+  }> {
+    return this.queryHandlers.addChecklistToSession(sessionId, checklistName);
   }
 
   async run(): Promise<void> {

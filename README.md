@@ -41,10 +41,27 @@ Vibe automatically detects project type and adapts its recommendations according
 
 ## Features
 
-- MCP server integration for AI agent compatibility
-- Pattern-based prompt analysis for workflow recommendations
-- Structured workflow guidance with session management
-- Project type detection and adaptation
-- Quality checklist validation
-- Cross-platform compatibility
-- Configurable workflow definitions
+- **MCP server integration** for AI agent compatibility
+- **Pattern-based prompt analysis** for workflow recommendations
+- **Structured workflow guidance** with session management
+- **Nested workflow execution** - agents can dynamically add workflows and checklists to running sessions
+- **Workflow discovery** - query available workflows and checklists by pattern or category
+- **Persistent session state** - work continues across agent runs with full context preservation
+- **Project type detection** and adaptation
+- **Quality checklist validation**
+- **Cross-platform compatibility**
+- **Configurable workflow definitions**
+- **Local execution** - runs safely on user's machine, no server required
+
+### Nested Workflow Capabilities
+
+Agents can now:
+
+- **Query workflows**: `query_workflows(pattern, category)` to discover relevant workflows
+- **Query checklists**: `query_checklists(pattern)` to find validation checklists
+- **Add workflows to sessions**: `add_workflow_to_session(session_id, workflow_name)` for dynamic composition
+- **Add checklists to sessions**: `add_checklist_to_session(session_id, checklist_name)` for nested validation
+- **Build execution trees**: Create nested workflow hierarchies that persist across agent runs
+- **Reduce token usage**: Follow structured plans instead of thinking from scratch
+
+This enables agents to compose complex workflows dynamically while maintaining persistent progress tracking.

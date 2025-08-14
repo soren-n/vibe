@@ -7,10 +7,6 @@ import type { VibeConfigImpl } from './config';
 import { loadAllChecklists, loadAllWorkflows } from './workflows';
 import type { Checklist, Workflow } from './models';
 
-export interface AnalysisOptions {
-  showAnalysis?: boolean;
-}
-
 export class PromptAnalyzer {
   private config: VibeConfigImpl;
   private allWorkflows: Record<string, Workflow>;

@@ -4,9 +4,10 @@
  */
 
 import type { VibeConfig, Workflow, WorkflowPlanResult } from './models';
-import { loadAllWorkflows } from './workflows';
+import type { Checklist } from './guidance/models';
+import { loadAllChecklists, loadAllWorkflows } from './workflows';
 import { SessionManager } from './session';
-import type { CurrentStepInfo, WorkflowStepObject } from './session';
+import type { CurrentStepInfo, WorkflowFrameImpl, WorkflowStepObject } from './session';
 import type { VibeConfigImpl } from './config';
 import { PromptAnalyzer } from './analyzer';
 import { SessionMonitor } from './sessionMonitor';
@@ -111,6 +112,29 @@ export class WorkflowOrchestrator {
     this.sessionManager = new SessionManager(config);
     this.analyzer = new PromptAnalyzer(config);
     this.sessionMonitor = new SessionMonitor(this);
+
+    // Attempt to load existing sessions
+    this.loadExistingSessions().catch(() => {
+      // Ignore errors during initialization
+    });
+  }
+
+  /**
+   * Load existing sessions from disk
+   */
+  private async loadExistingSessions(): Promise<void> {
+    try {
+      await this.sessionManager.loadSessionsAsync();
+    } catch (_error) {
+      // Ignore errors - sessions may not exist yet
+    }
+  }
+
+  /**
+   * Ensure sessions are loaded before accessing them
+   */
+  private async ensureSessionsLoaded(): Promise<void> {
+    await this.loadExistingSessions();
   }
 
   /**
@@ -340,6 +364,11 @@ export class WorkflowOrchestrator {
         continueOnError: false,
       });
 
+      // Save session to disk asynchronously (don't wait)
+      this.sessionManager.saveSessionAsync(session).catch(() => {
+        // Ignore save errors for now
+      });
+
       // Get first step
       const currentStep = session.getCurrentStep();
 
@@ -357,9 +386,9 @@ export class WorkflowOrchestrator {
   }
 
   /**
-   * Get the current status of a workflow session
+   * Get session status (sync version for compatibility)
    */
-  getSessionStatus(sessionId: string): SessionResponse {
+  getSessionStatusSync(sessionId: string): SessionResponse {
     const session = this.sessionManager.loadSession(sessionId);
     if (!session) {
       return { success: false, error: `Session ${sessionId} not found` };
@@ -380,9 +409,74 @@ export class WorkflowOrchestrator {
   }
 
   /**
+   * Get the current status of a workflow session
+   */
+  getSessionStatus(sessionId: string): SessionResponse {
+    return this.getSessionStatusSync(sessionId);
+  }
+
+  /**
+   * Get the current status of a workflow session (async)
+   */
+  async getSessionStatusAsync(sessionId: string): Promise<SessionResponse> {
+    await this.ensureSessionsLoaded();
+
+    const session = this.sessionManager.loadSession(sessionId);
+    if (!session) {
+      return { success: false, error: `Session ${sessionId} not found` };
+    }
+
+    const currentStep = session.getCurrentStep();
+
+    return {
+      success: true,
+      session_id: session.sessionId,
+      prompt: session.prompt,
+      current_step: currentStep,
+      workflow_stack: session.workflowStack.map(frame => frame.workflowName),
+      is_complete: session.isComplete,
+      created_at: session.createdAt,
+      last_accessed: session.lastAccessed,
+    };
+  }
+
+  /**
+   * Advance session (sync version for compatibility)
+   */
+  advanceSessionSync(sessionId: string): SessionResponse {
+    const session = this.sessionManager.loadSession(sessionId);
+    if (!session) {
+      return { success: false, error: `Session ${sessionId} not found` };
+    }
+
+    session.advanceStep();
+    this.sessionManager.saveSession(session);
+
+    return {
+      success: true,
+      session_id: session.sessionId,
+      prompt: session.prompt,
+      current_step: session.getCurrentStep(),
+      workflow_stack: session.workflowStack.map(frame => frame.workflowName),
+      is_complete: session.isComplete,
+      created_at: session.createdAt,
+      last_accessed: session.lastAccessed,
+    };
+  }
+
+  /**
    * Mark current step as complete and advance to next step
    */
   advanceSession(sessionId: string): SessionResponse {
+    return this.advanceSessionSync(sessionId);
+  }
+
+  /**
+   * Mark current step as complete and advance to next step (async)
+   */
+  async advanceSessionAsync(sessionId: string): Promise<SessionResponse> {
+    await this.ensureSessionsLoaded();
+
     const session = this.sessionManager.loadSession(sessionId);
     if (!session) {
       return { success: false, error: `Session ${sessionId} not found` };
@@ -394,6 +488,11 @@ export class WorkflowOrchestrator {
     // Save updated session
     if (hasNext) {
       this.sessionManager.saveSession(session);
+      // Also save to disk
+      this.sessionManager.saveSessionAsync(session).catch(() => {
+        // Ignore save errors
+      });
+
       const currentStep = session.getCurrentStep();
 
       return {
@@ -795,5 +894,180 @@ export class WorkflowOrchestrator {
     }
 
     return recommendations;
+  }
+
+  /**
+   * Query workflows by pattern or category
+   */
+  queryWorkflows(
+    pattern?: string,
+    category?: string
+  ): { success: boolean; workflows?: Workflow[]; error?: string } {
+    try {
+      let workflows = Object.values(this.workflows);
+
+      // Filter by pattern if provided
+      if (pattern) {
+        const lowerPattern = pattern.toLowerCase();
+        workflows = workflows.filter(
+          workflow =>
+            workflow.name.toLowerCase().includes(lowerPattern) ||
+            workflow.description.toLowerCase().includes(lowerPattern) ||
+            workflow.triggers.some(trigger =>
+              trigger.toLowerCase().includes(lowerPattern)
+            )
+        );
+      }
+
+      // Filter by category if provided
+      if (category) {
+        workflows = workflows.filter(
+          workflow => workflow.category?.toLowerCase() === category.toLowerCase()
+        );
+      }
+
+      return {
+        success: true,
+        workflows: workflows,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to query workflows: ${String(error)}`,
+      };
+    }
+  }
+
+  /**
+   * Query checklists by pattern
+   */
+  queryChecklists(pattern?: string): {
+    success: boolean;
+    checklists?: Checklist[];
+    error?: string;
+  } {
+    try {
+      const allChecklists = loadAllChecklists(true); // quiet mode
+      const checklists = Object.values(allChecklists) as Checklist[];
+
+      let filteredChecklists = checklists;
+
+      // Filter by pattern if provided
+      if (pattern) {
+        const lowerPattern = pattern.toLowerCase();
+        filteredChecklists = checklists.filter(
+          (checklist: Checklist) =>
+            (checklist.name?.toLowerCase().includes(lowerPattern) ?? false) ||
+            (checklist.description?.toLowerCase().includes(lowerPattern) ?? false)
+        );
+      }
+
+      return {
+        success: true,
+        checklists: filteredChecklists,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to query checklists: ${String(error)}`,
+      };
+    }
+  }
+
+  /**
+   * Add a workflow to an existing session
+   */
+  addWorkflowToSession(
+    sessionId: string,
+    workflowName: string
+  ): {
+    success: boolean;
+    session_id?: string;
+    message?: string;
+    workflow_stack?: string[];
+    error?: string;
+  } {
+    try {
+      const session = this.sessionManager.loadSession(sessionId);
+      if (!session) {
+        return { success: false, error: `Session ${sessionId} not found` };
+      }
+
+      const workflow = this.workflows[workflowName];
+      if (!workflow) {
+        return { success: false, error: `Workflow ${workflowName} not found` };
+      }
+
+      // Add workflow to session
+      session.pushWorkflow(workflowName, workflow.steps);
+      this.sessionManager.saveSession(session);
+
+      return {
+        success: true,
+        session_id: sessionId,
+        message: `Added workflow ${workflowName} to session`,
+        workflow_stack: session.workflowStack.map(
+          (item: WorkflowFrameImpl) => item.workflowName
+        ),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to add workflow to session: ${String(error)}`,
+      };
+    }
+  }
+
+  /**
+   * Add a checklist to an existing session
+   */
+  addChecklistToSession(
+    sessionId: string,
+    checklistName: string
+  ): {
+    success: boolean;
+    session_id?: string;
+    message?: string;
+    workflow_stack?: string[];
+    error?: string;
+  } {
+    try {
+      const session = this.sessionManager.loadSession(sessionId);
+      if (!session) {
+        return { success: false, error: `Session ${sessionId} not found` };
+      }
+
+      // Validate that the checklist exists
+      const allChecklists = loadAllChecklists(true);
+      const checklistExists = Object.values(allChecklists).some(
+        checklist => checklist.name === checklistName
+      );
+
+      if (!checklistExists) {
+        return { success: false, error: `Checklist ${checklistName} not found` };
+      }
+
+      // Create a simple checklist workflow steps
+      const checklistSteps = [`Execute ${checklistName} checklist items`];
+
+      // Add checklist as a workflow to session
+      const checklistWorkflowName = `checklist:${checklistName}`;
+      session.pushWorkflow(checklistWorkflowName, checklistSteps);
+      this.sessionManager.saveSession(session);
+
+      return {
+        success: true,
+        session_id: sessionId,
+        message: `Added checklist ${checklistName} to session`,
+        workflow_stack: session.workflowStack.map(
+          (item: WorkflowFrameImpl) => item.workflowName
+        ),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to add checklist to session: ${String(error)}`,
+      };
+    }
   }
 }

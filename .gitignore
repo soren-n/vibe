@@ -225,3 +225,16 @@ __marimo__/
 # Vibe session directories
 .vibe/
 .vibe_sessions/
+
+# Development artifacts and temporary files (added for cleanup)
+debug-*.js
+debug-*.ts
+test-*.js
+test-*.ts
+test-sessions-*/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej

@@ -24,7 +24,7 @@ interface LoaderOptions {
 /**
  * Enhanced workflow loader with caching, validation, and hot reloading capabilities
  */
-export class WorkflowLoader {
+class WorkflowLoader {
   private dataDir: string;
   private workflowsDir: string;
   private checklistsDir: string;
@@ -384,22 +384,9 @@ export function getChecklists(quiet = false): Record<string, Checklist> {
   return defaultLoader.loadChecklists();
 }
 
-export function getWorkflows(quiet = false): Record<string, Workflow> {
-  if (quiet) {
-    const loader = new WorkflowLoader({ quiet: true });
-    return loader.loadWorkflows();
-  }
-  return defaultLoader.loadWorkflows();
-}
-
 export function getChecklist(name: string): Checklist | null {
   const checklists = getChecklists();
   return checklists[name] ?? null;
-}
-
-export function getWorkflow(name: string): Workflow | null {
-  const workflows = getWorkflows();
-  return workflows[name] ?? null;
 }
 
 export function getChecklistsArray(quiet = false): Checklist[] {
@@ -407,19 +394,6 @@ export function getChecklistsArray(quiet = false): Checklist[] {
   return Object.values(checklists).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function getWorkflowsArray(quiet = false): Workflow[] {
-  const workflows = getWorkflows(quiet);
-  return Object.values(workflows).sort((a, b) => a.name.localeCompare(b.name));
-}
-
 export function clearChecklistCache(): void {
-  defaultLoader.clearCaches();
-}
-
-export function clearWorkflowCache(): void {
-  defaultLoader.clearCaches();
-}
-
-export function clearAllCaches(): void {
   defaultLoader.clearCaches();
 }

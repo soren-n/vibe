@@ -14,7 +14,7 @@ class SessionManager:
 
 ## Constructor Parameters
 
-- `session_dir: str` - Directory for session persistence (default: ".vibe/sessions")
+- `session_dir: str` - Directory for session persistence (default: ".vibe/sessions" in user's project directory)
 
 ## Properties
 

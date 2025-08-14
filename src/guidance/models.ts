@@ -58,29 +58,3 @@ export interface Checklist {
   conditions?: string[];
   checks?: string[]; // Backwards compatibility
 }
-
-/**
- * Helper functions to create instances with default values (mimicking Python's __post_init__)
- */
-export function createWorkflow(
-  data: Partial<Workflow> &
-    Pick<Workflow, 'name' | 'description' | 'triggers' | 'steps'>
-): Workflow {
-  return {
-    dependencies: [],
-    projectTypes: [],
-    conditions: [],
-    ...data,
-  };
-}
-
-export function createChecklist(
-  data: Partial<Checklist> & Pick<Checklist, 'name' | 'triggers' | 'items'>
-): Checklist {
-  return {
-    dependencies: [],
-    projectTypes: [],
-    conditions: [],
-    ...data,
-  };
-}

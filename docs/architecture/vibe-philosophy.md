@@ -1,5 +1,16 @@
 # Workflow Design Philosophy
 
+## User-Installable Tool Principle
+
+**Vibe is a user-installable MCP tool that runs locally on user machines, not a deployed service.**
+
+### Deployment Context
+
+- Users download and install Vibe on their local machines
+- Execution happens in user's local environment with their file system
+- No server infrastructure, monitoring, or web deployment concerns
+- Focus on user safety, file system security, and local execution reliability
+
 ## Unattended Operation Principle
 
 **Vibe executes workflows without requiring user input beyond the initial prompt.**

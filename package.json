@@ -35,31 +35,21 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
     "@modelcontextprotocol/sdk": "^1.17.2",
     "commander": "^12.0.0",
     "js-yaml": "^4.1.0",
-    "nanoid": "^5.1.5",
-    "picocolors": "^1.1.1",
-    "zod": "^4.0.17"
+    "nanoid": "^5.1.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^11.1.0",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^9.2.6",
-    "@semantic-release/release-notes-generator": "^12.1.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.9.1",
-    "@typescript-eslint/eslint-plugin": "^8.15.0",
-    "@typescript-eslint/parser": "^8.15.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
-    "conventional-changelog-conventionalcommits": "^7.0.2",
     "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
     "husky": "^9.1.7",
     "knip": "^5.62.0",
     "lint-staged": "^15.2.10",

@@ -85,10 +85,23 @@ This document defines the complete schema for Vibe project configuration files (
           'type': 'object',
           'properties':
             {
-              'auto_advance': { 'type': 'boolean' },
-              'max_session_age_hours': { 'type': 'integer', 'minimum': 1 },
-              'enable_monitoring': { 'type': 'boolean' },
-              'checkpoint_frequency': { 'type': 'integer', 'minimum': 1 },
+              'maxSessions':
+                {
+                  'type': 'integer',
+                  'minimum': 1,
+                  'description': 'Maximum number of concurrent sessions',
+                },
+              'sessionTimeout':
+                {
+                  'type': 'integer',
+                  'minimum': 1000,
+                  'description': 'Session timeout in milliseconds',
+                },
+              'sessionDir':
+                {
+                  'type': 'string',
+                  'description': 'Custom directory for session storage (default: .vibe/sessions)',
+                },
             },
         },
     },
@@ -277,8 +290,9 @@ lint:
 
 # Session behavior configuration
 session:
-  auto_advance: false
-  max_session_age_hours: 24
+  maxSessions: 10
+  sessionTimeout: 3600000 # 1 hour in milliseconds
+  sessionDir: .vibe/sessions # Custom session storage directory (optional)
   enable_monitoring: true
   checkpoint_frequency: 10
 

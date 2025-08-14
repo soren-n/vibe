@@ -14,6 +14,18 @@ import {
 } from '../src/session';
 import { VibeConfigImpl } from '../src/config';
 
+// Add create method type to WorkflowSessionImpl for tests
+interface WorkflowSessionImplWithCreate {
+  create(
+    prompt: string,
+    workflowData: Array<[string, (string | WorkflowStepObject)[]]>,
+    sessionConfig?: SessionConfig
+  ): WorkflowSessionImpl;
+}
+
+const WorkflowSessionImplConstructor =
+  WorkflowSessionImpl as typeof WorkflowSessionImpl & WorkflowSessionImplWithCreate;
+
 // Test utilities
 const createTestConfig = (): VibeConfigImpl => {
   const config = new VibeConfigImpl();
@@ -28,7 +40,7 @@ const createTestSession = (
   const steps = isComplete ? [] : ['Step 1', 'Step 2', 'Step 3'];
   const currentStep = isComplete ? 3 : 0;
 
-  const session = WorkflowSessionImpl.create(
+  const session = WorkflowSessionImplConstructor.create(
     'Test prompt for workflow execution',
     [['test_workflow', steps]],
     { interactive: false, maxSteps: 5 }
@@ -47,7 +59,7 @@ const createTestSession = (
 
 describe('WorkflowFrame', () => {
   test('should create frame with string steps', () => {
-    const frame = new WorkflowFrameImpl('test_workflow', ['Step 1', 'Step 2'], 0, {});
+    const frame = new WorkflowFrameImpl('test_workflow', ['Step 1', 'Step 2'], {});
 
     expect(frame.workflowName).toBe('test_workflow');
     expect(frame.steps).toEqual(['Step 1', 'Step 2']);
@@ -62,7 +74,7 @@ describe('WorkflowFrame', () => {
       { step_text: 'Check output', working_dir: '/tmp' },
     ];
 
-    const frame = new WorkflowFrameImpl('complex_workflow', stepObjects, 0, {});
+    const frame = new WorkflowFrameImpl('complex_workflow', stepObjects, {});
 
     expect(frame.currentStepText).toBe('Run command');
     expect(frame.advance()).toBe(true);
@@ -70,7 +82,7 @@ describe('WorkflowFrame', () => {
   });
 
   test('should handle step advancement correctly', () => {
-    const frame = new WorkflowFrameImpl('test', ['Step 1', 'Step 2'], 0, {});
+    const frame = new WorkflowFrameImpl('test', ['Step 1', 'Step 2'], {});
 
     // Advance through steps
     expect(frame.advance()).toBe(true);
@@ -88,7 +100,7 @@ describe('WorkflowFrame', () => {
   });
 
   test('should handle empty workflow correctly', () => {
-    const frame = new WorkflowFrameImpl('empty', [], 0, {});
+    const frame = new WorkflowFrameImpl('empty', [], {});
 
     expect(frame.isComplete).toBe(true);
     expect(frame.currentStepText).toBe(null);
@@ -98,8 +110,8 @@ describe('WorkflowFrame', () => {
 
 describe('WorkflowSession', () => {
   test('should create session with multiple workflows', () => {
-    const session = WorkflowSessionImpl.create(
-      'Multi-workflow prompt',
+    const session = WorkflowSessionImplConstructor.create(
+      'Test session for multiple workflows',
       [
         ['workflow1', ['Step 1', 'Step 2']],
         ['workflow2', ['Step A', 'Step B', 'Step C']],
@@ -107,7 +119,7 @@ describe('WorkflowSession', () => {
       { interactive: true }
     );
 
-    expect(session.prompt).toBe('Multi-workflow prompt');
+    expect(session.prompt).toBe('Test session for multiple workflows');
     expect(session.workflowStack).toHaveLength(2);
     expect(session.sessionConfig?.interactive).toBe(true);
     expect(session.isComplete).toBe(false);
@@ -216,7 +228,7 @@ describe('WorkflowSession', () => {
     expect(sessionDict.prompt).toBe(originalSession.prompt);
     expect(sessionDict.workflowStack).toHaveLength(1);
 
-    // Deserialize
+    // Deserialize (without vibeConfig for test)
     const restoredSession = WorkflowSessionImpl.fromDict(sessionDict);
     expect(restoredSession.sessionId).toBe(originalSession.sessionId);
     expect(restoredSession.prompt).toBe(originalSession.prompt);
@@ -227,7 +239,7 @@ describe('WorkflowSession', () => {
     const commandStep = 'run npm test';
     const guidanceStep = 'Review the results';
 
-    const session = WorkflowSessionImpl.create('Test formatting', [
+    const session = WorkflowSessionImplConstructor.create('Test formatting', [
       ['test', [commandStep, guidanceStep]],
     ]);
 
@@ -330,9 +342,11 @@ describe('SessionManager', () => {
   });
 
   test('should clean up old sessions', () => {
-    // Create old session by manipulating creation date
+    // Create old session by manipulating lastAccessed date
     const oldSession = createTestSession('old');
-    oldSession.createdAt = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(); // 8 days ago
+    oldSession.lastAccessed = new Date(
+      Date.now() - 8 * 24 * 60 * 60 * 1000
+    ).toISOString(); // 8 days ago
     sessionManager.saveSession(oldSession);
 
     const recentSession = createTestSession('recent');
@@ -403,17 +417,21 @@ describe('Session Integration Tests', () => {
     expect(session.getCurrentStep()?.step_number).toBe(1);
   });
 
-  test('should persist session across manager restarts', () => {
+  test('should persist session across manager restarts', async () => {
     const originalSession = sessionManager.createSession('Persistence test', [
       ['workflow', ['Step 1', 'Step 2']],
     ]);
 
     originalSession.advanceStep(); // Move to step 2
-    sessionManager.saveSession(originalSession);
+    await sessionManager.saveSessionAsync(originalSession);
 
-    // Create new session manager (simulating restart)
+    // Create new session manager with same session directory (simulating restart)
     const config = createTestConfig();
-    const newSessionManager = new SessionManager(config);
+    const sessionDir = (sessionManager as any).sessionDir;
+    const newSessionManager = new SessionManager(sessionDir, config);
+
+    // Load sessions from disk
+    await newSessionManager.loadSessionsAsync();
 
     // Should be able to load the session
     const loadedSession = newSessionManager.loadSession(originalSession.sessionId);
