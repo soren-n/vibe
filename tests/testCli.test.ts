@@ -30,7 +30,7 @@ describe('CLI functionality', () => {
 
     test('should validate workflows', () => {
       const output = runCLI('workflows validate');
-      expect(output.includes('validated')).toBe(true);
+      expect(output.includes('Validated')).toBe(true);
     });
 
     test('should list workflows', () => {

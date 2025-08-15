@@ -31,7 +31,7 @@ export async function handlePlanStatus(options: {
     // Text format
     const formatItem = (item: PlanItem, depth = 0): string => {
       const indent = '  '.repeat(depth);
-      const status = item.status === 'complete' ? '✅' : '⏳';
+      const status = item.status === 'complete' ? '[X]' : '[ ]';
       const children =
         item.children
           ?.map((child: PlanItem) => formatItem(child, depth + 1))
@@ -119,7 +119,7 @@ export async function handlePlanComplete(
     }
 
     return createSuccessResponse({
-      message: `Marked item ${itemId} as complete ✅`,
+      message: `Marked item ${itemId} as complete`,
     });
   } catch (error) {
     return createErrorResponse(`Failed to complete plan item: ${String(error)}`);
