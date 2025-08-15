@@ -30,7 +30,7 @@ describe('CLI functionality', () => {
 
     test('should validate workflows', () => {
       const output = runCLI('workflows validate');
-      expect(output.includes('validated') || output.includes('✅')).toBe(true);
+      expect(output.includes('validated')).toBe(true);
     });
 
     test('should list workflows', () => {
@@ -61,7 +61,9 @@ describe('CLI functionality', () => {
     });
 
     test('should handle lint text with different contexts', () => {
-      const output = runCLI('lint text "Test message 😀" --context documentation');
+      const output = runCLI(
+        'lint text "Test message with emoji" --context documentation'
+      );
       expect(output.length).toBeGreaterThan(0);
     });
 
@@ -84,11 +86,7 @@ describe('CLI functionality', () => {
 
     test('should validate workflow files', () => {
       const output = runCLI('workflows validate');
-      expect(
-        output.includes('validation') ||
-          output.includes('✅') ||
-          output.includes('valid')
-      ).toBe(true);
+      expect(output.includes('validation') || output.includes('valid')).toBe(true);
     });
 
     test('should validate configuration', () => {
