@@ -96,6 +96,7 @@ class VibeMCPServer {
     }
   }
 
+  // eslint-disable-next-line max-lines-per-function
   private setupTools(): void {
     // Define all available MCP tools
     const tools: Tool[] = [

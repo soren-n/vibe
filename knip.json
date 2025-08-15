@@ -4,6 +4,7 @@
   "project": ["src/**/*.ts", "tests/**/*.ts"],
   "ignore": ["dist/**", "coverage/**"],
   "ignoreDependencies": ["@types/node", "typescript", "tsx"],
+  "ignoreBinaries": ["uv", "jq"],
   "rules": {
     "files": "error",
     "dependencies": "error",

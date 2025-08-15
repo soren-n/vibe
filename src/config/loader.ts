@@ -14,6 +14,7 @@ interface LoadedConfig {
   projectRoot: string;
 }
 
+// eslint-disable-next-line complexity
 export async function loadFromFile(configPath?: string): Promise<LoadedConfig> {
   const actualConfigPath = configPath ?? findConfigFile();
   const projectRoot = actualConfigPath ? path.dirname(actualConfigPath) : process.cwd();
