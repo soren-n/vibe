@@ -19,7 +19,7 @@ if [ -n "$staged_files" ]; then
     done
 
     # Run emoji check on staged content
-    if ! python3 scripts/check-emojis.py "$temp_dir" --exclude "*.md" --exclude "*.txt" --exclude "*.rst"; then
+    if ! uv run python scripts/check-emojis.py "$temp_dir" --exclude "*.md" --exclude "*.txt" --exclude "*.rst"; then
         echo "❌ Emoji check failed - emojis found in staged source code"
         echo "Please remove emojis from source code before committing"
         exit 1
