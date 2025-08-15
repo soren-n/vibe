@@ -82,7 +82,7 @@ Vibe automatically detects project type and adapts its recommendations according
 | -------------------------------------- | ------------------------------------ | --------------------------------------------------------- |
 | `query_workflows(pattern?, category?)` | Search workflows by pattern/category | `pattern?`: Search text<br>`category?`: Workflow category |
 
-### Environment Tools
+### Environment & Quality Tools
 
 | Tool                               | Description                  | Parameters                                              |
 | ---------------------------------- | ---------------------------- | ------------------------------------------------------- |
@@ -95,7 +95,7 @@ Vibe automatically detects project type and adapts its recommendations according
 
 ### Batch Operations
 
-**NEW in v1.7.0**: The `add_plan_items` tool provides significant performance improvements:
+**NEW in v1.6.0**: The `add_plan_items` tool provides significant performance improvements:
 
 ```javascript
 // ❌ Old way - Multiple API calls, N disk writes
@@ -132,7 +132,8 @@ src/
 │   ├── plan-handlers.ts    # Plan management operations
 │   ├── workflow-handlers.ts # Workflow search operations
 │   ├── lint-handlers.ts    # Code quality operations
-│   └── environment-handlers.ts # Environment operations
+│   ├── environment-handlers.ts # Environment operations
+│   └── query-handlers.ts   # Generic MCP queries
 └── config/              # Configuration system
 ```
 
@@ -153,7 +154,7 @@ src/
 
 ## 📚 Workflow Categories
 
-Vibe includes workflows organized in these categories:
+Vibe includes **58 workflows** organized in these categories:
 
 - **Core** (20 workflows) - Fundamental development practices
 - **Development** (29 workflows) - Coding, testing, debugging
@@ -171,7 +172,7 @@ Vibe maintains **99%+ test coverage** across critical components:
 | `plan.ts`              | 99.13%    | 43 tests      |
 | `workflow-registry.ts` | 91.30%    | 31 tests      |
 | `mcp-server.ts`        | 57.63%    | 25 tests      |
-| **Overall**            | **61.8%** | **234 tests** |
+| **Overall**            | **61.8%** | **243 tests** |
 
 ### Test Categories
 
@@ -193,7 +194,7 @@ Vibe maintains **99%+ test coverage** across critical components:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/vibe-mcp.git
+git clone https://github.com/soren-n/vibe-mcp.git
 cd vibe-mcp
 
 # Install dependencies
@@ -266,8 +267,10 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - [x] Core plan management system
 - [x] MCP server implementation
 - [x] Workflow guidance library
-- [x] 99%+ test coverage
+- [x] 243 comprehensive tests
 - [x] Pure ES modules migration
+- [x] Batch plan operations (add_plan_items)
+- [x] Lint and environment tools
 - [x] Comprehensive documentation
 
 ### Upcoming 🚀
@@ -304,8 +307,8 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Getting Help
 
 - 📖 [Documentation](docs/)
-- 🐛 [Issue Tracker](https://github.com/your-username/vibe-mcp/issues)
-- 💬 [Discussions](https://github.com/your-username/vibe-mcp/discussions)
+- 🐛 [Issue Tracker](https://github.com/soren-n/vibe-mcp/issues)
+- 💬 [Discussions](https://github.com/soren-n/vibe-mcp/discussions)
 
 ## 📄 License
 
