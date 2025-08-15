@@ -3,7 +3,7 @@
  */
 import { VibeConfigImpl } from '../config.js';
 import { loadAllWorkflows } from '../workflows.js';
-import { WorkflowOrchestrator } from '../orchestrator.js';
+import { WorkflowRegistry } from '../workflow-registry.js';
 import type { CLIResult } from './utils.js';
 import { createErrorResponse, createSuccessResponse } from './utils.js';
 
@@ -50,9 +50,8 @@ export async function handleRun(
 ): Promise<CLIResult> {
   try {
     const config = new VibeConfigImpl();
-    const orchestrator = new WorkflowOrchestrator(config);
-    const allWorkflows = orchestrator.getAllWorkflows();
-    const targetWorkflow = Object.values(allWorkflows).find(w => w.name === workflow);
+    const workflowRegistry = new WorkflowRegistry(config);
+    const targetWorkflow = workflowRegistry.getWorkflow(workflow);
 
     if (!targetWorkflow) {
       return createErrorResponse(`Workflow '${workflow}' not found`);

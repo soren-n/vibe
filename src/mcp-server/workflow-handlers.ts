@@ -1,4 +1,4 @@
-import type { WorkflowOrchestrator } from '../orchestrator.js';
+import type { WorkflowRegistry } from '../workflow-registry.js';
 
 interface WorkflowQueryResult {
   success: boolean;
@@ -24,37 +24,25 @@ interface WorkflowGuidanceResult {
 }
 
 export class WorkflowHandlers {
-  constructor(private orchestrator: WorkflowOrchestrator) {}
+  constructor(private workflowRegistry: WorkflowRegistry) {}
 
   async queryWorkflows(pattern?: string, category?: string): Promise<WorkflowQueryResult> {
     try {
-      const allWorkflows = this.orchestrator.getAllWorkflows();
-      let workflows = Object.values(allWorkflows);
-
-      // Filter by pattern if provided
-      if (pattern) {
-        const lowerPattern = pattern.toLowerCase();
-        workflows = workflows.filter(w =>
-          w.name.toLowerCase().includes(lowerPattern) ||
-          w.description?.toLowerCase().includes(lowerPattern) ||
-          w.triggers?.some(t => t.toLowerCase().includes(lowerPattern))
-        );
-      }
-
-      // Filter by category if provided
-      if (category) {
-        workflows = workflows.filter(w => w.category === category);
+      const result = this.workflowRegistry.searchWorkflows(pattern, category);
+      
+      if (!result.success) {
+        return result;
       }
 
       return {
         success: true,
-        workflows: workflows.map(w => ({
+        workflows: result.workflows ? result.workflows.map(w => ({
           name: w.name,
-          description: w.description ?? '',
+          description: w.description,
           category: w.category,
-          triggers: w.triggers ?? [],
-          steps: w.steps?.map(step => typeof step === 'string' ? step : step.step_text ?? step.command ?? 'Step')
-        }))
+          triggers: w.triggers,
+          steps: this.getWorkflowSteps(w.name)
+        })) : []
       };
     } catch (error) {
       return {
@@ -64,10 +52,18 @@ export class WorkflowHandlers {
     }
   }
 
+  private getWorkflowSteps(workflowName: string): string[] {
+    const workflow = this.workflowRegistry.getWorkflow(workflowName);
+    if (!workflow?.steps) return [];
+    
+    return workflow.steps.map(step => 
+      typeof step === 'string' ? step : step.step_text ?? step.command ?? 'Step'
+    );
+  }
+
   async getWorkflowGuidance(name: string): Promise<WorkflowGuidanceResult> {
     try {
-      const allWorkflows = this.orchestrator.getAllWorkflows();
-      const workflow = Object.values(allWorkflows).find(w => w.name === name);
+      const workflow = this.workflowRegistry.getWorkflow(name);
 
       if (!workflow) {
         return {
@@ -81,7 +77,7 @@ export class WorkflowHandlers {
         workflow: {
           name: workflow.name,
           description: workflow.description ?? '',
-          steps: workflow.steps?.map(step => typeof step === 'string' ? step : step.step_text ?? step.command ?? 'Step') ?? [],
+          steps: this.getWorkflowSteps(name),
           guidance: `This workflow provides guidance for: ${workflow.description}. Use these steps as inspiration for your development process.`
         }
       };

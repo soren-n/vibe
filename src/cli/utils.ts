@@ -2,6 +2,9 @@
  * CLI utilities for common patterns and error handling
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 export interface CLIResult {
   success: boolean;
   error?: string;
@@ -92,8 +95,10 @@ export function withSuppressedOutput<T>(action: () => T): T {
  */
 export function getVersion(): string {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const packageJson = require('../../package.json');
+    // Load version from package.json using ES modules
+    const moduleDir = path.dirname(new URL(import.meta.url).pathname);
+    const packageJsonPath = path.join(moduleDir, '../../package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
     return packageJson.version;
   } catch (_error) {
     return '1.0.0'; // fallback version

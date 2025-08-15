@@ -7,19 +7,27 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Workflow } from '../src/models';
 import { VibeConfigImpl } from '../src/config';
-import { WorkflowOrchestrator as Orchestrator } from '../src/orchestrator';
+import { WorkflowRegistry as Registry } from '../src/workflow-registry';
 import { loadAllWorkflows } from '../src/workflows';
 
+// Test interface for checklist functionality
+interface Checklist {
+  name: string;
+  description: string;
+  triggers: string[];
+  items: string[];
+}
+
 describe('MCP Workflow Integration', () => {
-  let orchestrator: Orchestrator;
+  let workflowRegistry: Registry;
   let tempDir: string;
 
   beforeEach(async () => {
-    console.log('🔧 Setting up MCP workflow test environment...');
+    console.log('Setting up MCP workflow test environment...');
 
-    // Initialize orchestrator with config
+    // Initialize workflow registry with config
     const config = await VibeConfigImpl.loadFromFile();
-    orchestrator = new Orchestrator(config);
+    workflowRegistry = new Registry(config);
 
     // Create temporary directory for test outputs
     tempDir = path.join(process.cwd(), 'temp_test_mcp');
@@ -31,7 +39,7 @@ describe('MCP Workflow Integration', () => {
   });
 
   afterEach(async () => {
-    console.log('🧹 Cleaning up MCP test environment...');
+    console.log('Cleaning up MCP test environment...');
 
     // Clean up temporary directory
     try {
@@ -42,15 +50,15 @@ describe('MCP Workflow Integration', () => {
   });
 
   test('MCP workflow system initializes correctly', async () => {
-    console.log('🔧 Testing MCP workflow system initialization...');
+    console.log('Testing MCP workflow system initialization...');
 
-    expect(orchestrator).toBeDefined();
+    expect(workflowRegistry).toBeDefined();
 
-    console.log('✅ MCP system initialized successfully');
+    console.log('MCP system initialized successfully');
   });
 
   test('workflow discovery and loading works', async () => {
-    console.log('🔧 Testing workflow discovery and loading...');
+    console.log('Testing workflow discovery and loading...');
 
     const workflows = loadAllWorkflows();
 
@@ -66,13 +74,11 @@ describe('MCP Workflow Integration', () => {
     );
     expect(coreWorkflows.length).toBeGreaterThan(0);
 
-    console.log(
-      `✅ Workflow discovery completed with ${workflowNames.length} workflows`
-    );
+    console.log(`Workflow discovery completed with ${workflowNames.length} workflows`);
   });
 
   test('workflow validation works correctly', async () => {
-    console.log('🔧 Testing workflow validation...');
+    console.log('Testing workflow validation...');
 
     const workflows = loadAllWorkflows();
     const workflowNames = Object.keys(workflows).slice(0, 5); // Test first 5 workflows
@@ -91,36 +97,28 @@ describe('MCP Workflow Integration', () => {
       }
     }
 
-    console.log('✅ Workflow validation completed');
+    console.log('Workflow validation completed');
   });
 
-  test('workflow planning framework works', async () => {
-    console.log('🔧 Testing workflow planning framework...');
+  test('workflow search functionality works', async () => {
+    console.log('Testing workflow search functionality...');
 
-    // Test workflow planning with a simple query
-    const planRequest = {
-      query: 'validate my code',
-      projectType: 'python',
-    };
+    // Test workflow search with a simple query
+    const searchResult = workflowRegistry.searchWorkflows('validate');
 
-    const plan = orchestrator.planWorkflow(planRequest);
-
-    if (plan) {
-      expect(plan.workflow).toBeDefined();
-      expect(plan.confidence).toBeDefined();
-      expect(plan.reasoning).toBeDefined();
-      expect(typeof plan.confidence).toBe('number');
-      expect(plan.confidence).toBeGreaterThan(0);
-
-      console.log(`✅ Workflow planning succeeded with confidence ${plan.confidence}`);
+    expect(searchResult.success).toBe(true);
+    if (searchResult.workflows) {
+      expect(searchResult.workflows.length).toBeGreaterThan(0);
+      console.log(
+        `Workflow search succeeded with ${searchResult.workflows.length} results`
+      );
     } else {
-      console.log('⚠️ No workflow plan found for test query');
-      // This is acceptable - not all queries should return plans
+      console.log('No workflows found for test query');
     }
   });
 
   test('workflow categories are properly organized', async () => {
-    console.log('🔧 Testing workflow category organization...');
+    console.log('Testing workflow category organization...');
 
     const workflows = loadAllWorkflows();
     const categories = new Set(
@@ -146,20 +144,20 @@ describe('MCP Workflow Integration', () => {
       );
       if (categoryWorkflows.length > 0) {
         console.log(
-          `✅ Found ${categoryWorkflows.length} workflows in ${expectedCategory} category`
+          `Found ${categoryWorkflows.length} workflows in ${expectedCategory} category`
         );
       }
     }
 
-    console.log(`✅ Total categories found: ${Array.from(categories).join(', ')}`);
+    console.log(`Total categories found: ${Array.from(categories).join(', ')}`);
   });
 
   test('checklist system integration works', async () => {
-    console.log('🔧 Testing checklist system integration...');
+    console.log('Testing checklist system integration...');
 
     // Test that the checklist system is working
     // Checklists are now fully implemented in TypeScript version
-    console.log('✅ Testing checklist system integration...');
+    console.log('Testing checklist system integration...');
 
     // Test that the Checklist interface is available
     const mockChecklist: Checklist = {
@@ -174,55 +172,48 @@ describe('MCP Workflow Integration', () => {
     expect(Array.isArray(mockChecklist.triggers)).toBe(true);
     expect(Array.isArray(mockChecklist.items)).toBe(true);
 
-    console.log('✅ Checklist system integration verified and working');
+    console.log('Checklist system integration verified and working');
   });
 
-  test('workflow trigger matching works', async () => {
-    console.log('🔧 Testing workflow trigger matching...');
+  test('workflow search matching works', async () => {
+    console.log('Testing workflow search matching...');
 
-    const workflows = loadAllWorkflows();
-
-    // Test common trigger patterns
-    const testQueries = [
-      'help me test my code',
-      'validate my project',
-      'set up development environment',
-      'create documentation',
-    ];
+    // Test common search patterns
+    const testQueries = ['test', 'validate', 'development', 'documentation'];
 
     for (const query of testQueries) {
-      const plan = orchestrator.planWorkflow({ query });
+      const searchResult = workflowRegistry.searchWorkflows(query);
 
-      if (plan) {
-        expect(plan.workflow.triggers).toBeDefined();
-        expect(plan.workflow.triggers.length).toBeGreaterThan(0);
-        console.log(`✅ Query "${query}" matched workflow: ${plan.workflow.name}`);
+      expect(searchResult.success).toBe(true);
+      if (searchResult.workflows && searchResult.workflows.length > 0) {
+        console.log(
+          `Query "${query}" matched ${searchResult.workflows.length} workflows`
+        );
       } else {
-        console.log(`⚠️ Query "${query}" did not match any workflow`);
+        console.log(`Query "${query}" did not match any workflows`);
       }
     }
 
-    console.log('✅ Trigger matching tests completed');
+    console.log('Search matching tests completed');
   });
 
   test('error handling in workflow system works', async () => {
-    console.log('🔧 Testing workflow system error handling...');
+    console.log('Testing workflow system error handling...');
 
     // Test empty query
-    const emptyPlan = orchestrator.planWorkflow({ query: '' });
-    // Should handle gracefully (return null or valid response)
-    expect(emptyPlan === null || typeof emptyPlan === 'object').toBe(true);
+    const emptyResult = workflowRegistry.searchWorkflows('');
+    expect(emptyResult.success).toBe(true);
 
-    // Test invalid query
-    const invalidPlan = orchestrator.planWorkflow({ query: 'xcvbnm123456789' });
-    // Should handle gracefully
-    expect(invalidPlan === null || typeof invalidPlan === 'object').toBe(true);
+    // Test query with no matches
+    const noMatchResult = workflowRegistry.searchWorkflows('xcvbnm123456789');
+    expect(noMatchResult.success).toBe(true);
+    expect(noMatchResult.workflows?.length || 0).toBe(0);
 
-    console.log('✅ Error handling tests completed');
+    console.log('Error handling tests completed');
   });
 
   test('workflow and checklist integration works together', async () => {
-    console.log('🔧 Testing workflow and checklist integration...');
+    console.log('Testing workflow and checklist integration...');
 
     const workflows = loadAllWorkflows();
 
@@ -239,21 +230,16 @@ describe('MCP Workflow Integration', () => {
 
     expect(mockChecklist.items.length).toBe(2);
 
-    // Test that planning still works
-    const plan = orchestrator.planWorkflow({
-      query: 'help me validate my python project',
-      projectType: 'python',
-    });
+    // Test that search still works
+    const searchResult = workflowRegistry.searchWorkflows('validate');
 
-    if (plan) {
-      expect(plan.workflow).toBeDefined();
-      console.log('✅ Integrated workflow planning works');
+    expect(searchResult.success).toBe(true);
+    if (searchResult.workflows && searchResult.workflows.length > 0) {
+      console.log('Integrated workflow search works');
     } else {
-      console.log(
-        '⚠️ No plan generated, but system integration structure is functional'
-      );
+      console.log('No workflows found, but system integration structure is functional');
     }
 
-    console.log('✅ Integration test completed');
+    console.log('Integration test completed');
   });
 });

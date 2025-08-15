@@ -28,7 +28,7 @@ export interface PlanItem {
 /**
  * Root plan structure containing all plan items
  */
-export interface Plan {
+interface Plan {
   /** Root-level plan items */
   items: PlanItem[];
   /** When the plan was last modified */

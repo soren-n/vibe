@@ -32,7 +32,7 @@ npm run deps:fix          # Remove unused dependencies
 
 ## Architecture Overview
 
-Vibe is a **planning tool** for AI agents built around three core concepts:
+Vibe is a **planning tool** for AI agents built around two core concepts:
 
 ### 1. Plan System (Core Feature)
 
@@ -41,12 +41,12 @@ Vibe is a **planning tool** for AI agents built around three core concepts:
 - Agents can break down tasks into arbitrary sub-task depth
 - Key classes: `PlanManager`, `PlanImpl`, `PlanItemImpl` in `src/plan.ts`
 
-### 2. Workflow Guidance (Read-Only)
+### 2. Workflow Guidance (Read-Only Reference)
 
-- **77+ searchable workflows** that provide inspiration and best practices
-- Workflows are **guidance-only** - agents cannot execute them, only read them
+- **58+ searchable workflows** that provide inspiration and best practices
+- Workflows are **guidance-only** - agents search and reference them for inspiration
 - YAML files in `data/workflows/` organized by category
-- Key classes: Workflow loading in `src/workflows.ts`, `src/guidance/`
+- Key classes: `WorkflowRegistry` in `src/workflow-registry.ts`, workflow loading in `src/workflows.ts`
 
 ### 3. MCP Integration
 
@@ -59,7 +59,8 @@ Vibe is a **planning tool** for AI agents built around three core concepts:
 ```
 src/
 ├── plan.ts              # Core plan system (PlanManager, PlanItem classes)
-├── workflows.ts         # Workflow loading and querying
+├── workflow-registry.ts # Simple workflow search and reference
+├── workflows.ts         # Workflow loading from YAML files
 ├── mcp-server.ts        # Main MCP server entry point
 ├── cli.ts              # CLI entry point
 ├── cli/

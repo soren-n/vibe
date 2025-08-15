@@ -10,7 +10,7 @@ import {
   ListToolsRequestSchema,
   type Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import { WorkflowOrchestrator } from './orchestrator.js';
+import { WorkflowRegistry } from './workflow-registry.js';
 import { VibeConfigImpl } from './config.js';
 import { ProjectLinter, createLintConfig } from './lint.js';
 import type { PlanItem } from './plan.js';
@@ -24,7 +24,7 @@ import {
 
 class VibeMCPServer {
   private server: Server;
-  private orchestrator: WorkflowOrchestrator;
+  private workflowRegistry: WorkflowRegistry;
   private linter: ProjectLinter;
 
   // Handler instances
@@ -39,7 +39,7 @@ class VibeMCPServer {
       // Initialize MCP Server
       this.server = new Server(
         {
-          name: 'vibe-guide',
+          name: 'vibe-mcp',
           version: '1.1.1',
         },
         {
@@ -57,10 +57,10 @@ class VibeMCPServer {
     try {
       // Initialize configuration
       const config = new VibeConfigImpl();
-      this.orchestrator = new WorkflowOrchestrator(config);
+      this.workflowRegistry = new WorkflowRegistry(config);
     } catch (error) {
       throw new Error(
-        `Failed to initialize configuration or workflow orchestrator: ${error instanceof Error ? error.message : String(error)}. Check if vibe.yaml configuration is valid and workflow files are accessible.`
+        `Failed to initialize configuration or workflow registry: ${error instanceof Error ? error.message : String(error)}. Check if vibe.yaml configuration is valid and workflow files are accessible.`
       );
     }
 
@@ -75,7 +75,7 @@ class VibeMCPServer {
 
     try {
       // Initialize handlers
-      this.workflowHandlers = new WorkflowHandlers(this.orchestrator);
+      this.workflowHandlers = new WorkflowHandlers(this.workflowRegistry);
       this.planHandlers = new PlanHandlers();
       this.lintHandlers = new LintHandlers(this.linter);
       this.queryHandlers = new QueryHandlers();
@@ -490,18 +490,19 @@ class VibeMCPServer {
 export { VibeMCPServer };
 
 // If this file is run directly, start the server
-if (require.main === module) {
+// Check if this is the main module in ES modules style
+if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     const server = new VibeMCPServer();
     server.run().catch(error => {
-      console.error('🔴 MCP Server Runtime Failed:');
+      console.error('MCP Server Runtime Failed:');
       console.error('═══════════════════════════════');
 
       if (error instanceof Error) {
         console.error(`Error: ${error.message}`);
 
         // Provide additional troubleshooting guidance
-        console.error('\n💡 Troubleshooting Tips:');
+        console.error('\nTroubleshooting Tips:');
         if (error.message.includes('transport')) {
           console.error('• Check if another MCP server instance is running');
           console.error('• Verify stdio transport is available');
@@ -512,7 +513,7 @@ if (require.main === module) {
           console.error('• Verify project structure is intact');
         }
 
-        console.error('\n📖 For more help:');
+        console.error('\nFor more help:');
         console.error('• Run: uv run vibe --help');
         console.error('• Check: docs/README.md');
         console.error('• Report issues: https://github.com/soren-n/vibe-mcp/issues');
@@ -524,14 +525,14 @@ if (require.main === module) {
       process.exit(1);
     });
   } catch (error) {
-    console.error('🔴 MCP Server Initialization Failed:');
+    console.error('MCP Server Initialization Failed:');
     console.error('═══════════════════════════════');
 
     if (error instanceof Error) {
       console.error(`Error: ${error.message}`);
 
       // Provide specific troubleshooting guidance based on error type
-      console.error('\n💡 Troubleshooting Tips:');
+      console.error('\nTroubleshooting Tips:');
       if (error.message.includes('configuration')) {
         console.error('• Check if vibe.yaml exists and is valid');
         console.error('• Verify workflow files in data/workflows/ are accessible');
@@ -550,7 +551,7 @@ if (require.main === module) {
         console.error('• Check file system permissions');
       }
 
-      console.error('\n📖 For more help:');
+      console.error('\nFor more help:');
       console.error('• Run: uv run vibe --help');
       console.error('• Check: docs/README.md');
       console.error('• Report issues: https://github.com/soren-n/vibe-mcp/issues');

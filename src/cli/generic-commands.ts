@@ -15,38 +15,49 @@ export async function handleGuide(
   try {
     if (!query) {
       return createSuccessResponse({
-        message: 'Vibe Guide',
-        description: 'Use workflows to improve your development process',
-        usage: 'uv run vibe guide "what should I do next?"',
+        message: 'Vibe Workflow Guidance',
+        description: 'Search workflows for development guidance',
+        usage: 'uv run vibe guide "testing" or "documentation"',
+        suggestion:
+          'Use the plan system to organize your tasks after finding relevant workflows',
       });
     }
 
     // Dynamically import to avoid circular dependencies
     const configModule = await import('../config.js');
-    const orchestratorModule = await import('../orchestrator.js');
+    const workflowRegistryModule = await import('../workflow-registry.js');
 
     const config = new configModule.VibeConfigImpl();
-    const orchestrator = new orchestratorModule.WorkflowOrchestrator(config);
+    const workflowRegistry = new workflowRegistryModule.WorkflowRegistry(config);
 
-    // Plan workflow for the query
-    const plan = await orchestrator.planWorkflow({ query });
+    // Search for workflows matching the query
+    const searchResult = workflowRegistry.searchWorkflows(query);
 
-    if (!plan) {
+    if (
+      !searchResult.success ||
+      !searchResult.workflows ||
+      searchResult.workflows.length === 0
+    ) {
       return createSuccessResponse({
-        message: 'No specific workflow found',
+        message: 'No workflows found',
         suggestion:
-          'Try describing your task more specifically, like "help me test my code" or "set up development environment"',
+          'Try broader terms like "testing", "documentation", "development", or "quality"',
         query: query,
+        available_categories: workflowRegistry.getCategories(),
       });
     }
 
     return createSuccessResponse({
-      message: 'Workflow Guidance',
+      message: `Found ${searchResult.workflows.length} workflows for "${query}"`,
       query: query,
-      guidance: plan.guidance,
-      workflows: plan.workflows,
-      execution_plan: plan.execution_plan,
-      next_action: 'Review the guidance and use the plan system to organize tasks',
+      workflows: searchResult.workflows.map(w => ({
+        name: w.name,
+        description: w.description,
+        category: w.category,
+        triggers: w.triggers.slice(0, 3), // Show first 3 triggers
+      })),
+      next_action:
+        'Use "vibe run <workflow-name>" to see full guidance, or add tasks to your plan',
     });
   } catch (error) {
     return createErrorResponse(error instanceof Error ? error : String(error));
@@ -94,7 +105,7 @@ async function _handleConfigInit(options: { format?: string }): Promise<CLIResul
     const configPath = 'vibe.config.js';
 
     const defaultConfig = `// Vibe Configuration
-module.exports = {
+export default {
   projectType: 'generic',
   preferences: {
     maxSessions: 10,

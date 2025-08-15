@@ -32,25 +32,3 @@ export interface VibeConfig {
   };
   detectProjectType?(): Promise<string>;
 }
-
-/**
- * Workflow execution plan result structure
- */
-export interface WorkflowPlanResult {
-  success: boolean;
-  workflows: string[];
-  execution_plan: ExecutionPlanStep[];
-  guidance: string;
-  errors?: string[];
-}
-
-/**
- * Execution plan step structure
- */
-export interface ExecutionPlanStep {
-  type: 'workflow';
-  name: string;
-  description: string;
-  reasoning: string;
-  workflow?: Workflow;
-}

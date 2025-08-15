@@ -47,11 +47,12 @@ const logger: Logger = {
 function getDataPath(): string {
   // In production (bundled), data will be copied to the same directory as the bundle
   // In development, look for data directory relative to source
+  const moduleDir = path.dirname(new URL(import.meta.url).pathname);
   const possiblePaths = [
-    path.join(__dirname, '../data'), // Development path
-    path.join(__dirname, '../../data'), // Alt development path
+    path.join(moduleDir, '../data'), // Development path
+    path.join(moduleDir, '../../data'), // Alt development path
     path.join(process.cwd(), 'data'), // Current directory
-    path.join(__dirname, 'data'), // Same directory as bundle
+    path.join(moduleDir, 'data'), // Same directory as bundle
   ];
 
   for (const dataPath of possiblePaths) {
