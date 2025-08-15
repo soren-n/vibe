@@ -200,7 +200,7 @@ describe('Plan System', () => {
       const originalLastModified = plan.lastModified;
 
       // Wait a moment to ensure timestamp difference
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       const item = plan.addItem('Test task');
 
@@ -312,7 +312,7 @@ describe('Plan System', () => {
       expect(plan.items).toHaveLength(2);
 
       const originalLastModified = plan.lastModified;
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       plan.clear();
 
@@ -354,7 +354,7 @@ describe('Plan System', () => {
       const originalLastModified = plan.lastModified;
 
       // Wait a moment to ensure timestamp difference
-      await new Promise(resolve => setTimeout(resolve, 1));
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       plan.touch();
 
