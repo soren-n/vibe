@@ -71,6 +71,7 @@ Vibe automatically detects project type and adapts its recommendations according
 | -------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------- |
 | `get_plan_status()`                    | View current plan with completion statistics | None                                                                    |
 | `add_plan_item(text, parent_id?)`      | Add new task or subtask                      | `text`: Task description<br>`parent_id?`: Parent task ID                |
+| `add_plan_items(items)` **NEW**        | **Batch add multiple tasks efficiently**     | `items`: Array of `{text, parent_id?}` objects                          |
 | `complete_plan_item(item_id)`          | Mark task as complete                        | `item_id`: Task ID to complete                                          |
 | `expand_plan_item(item_id, sub_tasks)` | Break down task into subtasks                | `item_id`: Parent task ID<br>`sub_tasks`: Array of subtask descriptions |
 | `clear_plan()`                         | Clear entire plan                            | None                                                                    |
@@ -89,6 +90,33 @@ Vibe automatically detects project type and adapts its recommendations according
 | `init_vibe_project(project_type?)` | Initialize project with Vibe | `project_type?`: Project type                           |
 | `lint_project(fix?)`               | Run project quality checks   | `fix?`: Auto-fix issues                                 |
 | `lint_text(content, content_type)` | Lint specific text content   | `content`: Text to lint<br>`content_type`: Content type |
+
+## ⚡ Performance Features
+
+### Batch Operations
+
+**NEW in v1.7.0**: The `add_plan_items` tool provides significant performance improvements:
+
+```javascript
+// ❌ Old way - Multiple API calls, N disk writes
+const task1 = await add_plan_item('Phase 1: Setup');
+const task2 = await add_plan_item('Phase 2: Implementation');
+const task3 = await add_plan_item('Phase 3: Testing');
+
+// ✅ New way - Single API call, 1 disk write
+const phases = await add_plan_items([
+  { text: 'Phase 1: Setup' },
+  { text: 'Phase 2: Implementation' },
+  { text: 'Phase 3: Testing' },
+]);
+```
+
+**Performance Benefits:**
+
+- **90% fewer disk operations** for large task lists
+- **Transactional integrity** - all items added or none
+- **Mixed hierarchies** - root and child items in one call
+- **Backward compatible** - existing `add_plan_item` still works
 
 ## 🏛️ Architecture Deep Dive
 

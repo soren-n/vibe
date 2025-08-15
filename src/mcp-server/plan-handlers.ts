@@ -73,21 +73,69 @@ export class PlanHandlers {
     message?: string;
     error?: string;
   }> {
+    const item: { text: string; parentId?: string } = { text };
+    if (parentId) {
+      item.parentId = parentId;
+    }
+    const result = await this.addPlanItems([item]);
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error ?? 'Unknown error',
+      };
+    }
+    
+    const addedItem = result.items?.[0];
+    if (!addedItem) {
+      return {
+        success: false,
+        error: 'Failed to retrieve added item',
+      };
+    }
+    return {
+      success: true,
+      item: addedItem,
+      message: parentId
+        ? `Added sub-item to parent ${parentId}`
+        : 'Added root-level item',
+    };
+  }
+
+  /**
+   * Add multiple items to the plan in a single batch operation
+   * 
+   * This handler provides efficient batch processing for plan items,
+   * significantly improving performance when adding multiple tasks.
+   * 
+   * @param items Array of items to add with text and optional parentId
+   * @returns Success/error response with created items details
+   */
+  async addPlanItems(
+    items: Array<{ text: string; parentId?: string }>
+  ): Promise<{
+    success: boolean;
+    items?: Array<{
+      id: string;
+      text: string;
+      status: string;
+      createdAt: string;
+    }>;
+    message?: string;
+    error?: string;
+  }> {
     try {
       await this.planManager.loadPlan();
-      const item = await this.planManager.addItem(text, parentId);
+      const addedItems = await this.planManager.addItems(items);
 
       return {
         success: true,
-        item: {
+        items: addedItems.map(item => ({
           id: item.id,
           text: item.text,
           status: item.status,
           createdAt: item.createdAt,
-        },
-        message: parentId
-          ? `Added sub-item to parent ${parentId}`
-          : 'Added root-level item',
+        })),
+        message: `Added ${addedItems.length} item${addedItems.length === 1 ? '' : 's'} to plan`,
       };
     } catch (error) {
       return {

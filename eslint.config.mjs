@@ -40,6 +40,12 @@ export default tseslint.config(
       // Import organization
       'sort-imports': ['error', { ignoreDeclarationSort: true }],
 
+      // Complexity analysis
+      'complexity': ['warn', { max: 15 }],
+      'max-depth': ['warn', { max: 5 }],
+      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
+      'max-params': ['warn', { max: 7 }],
+
       // Naming conventions - relaxed for now to avoid massive changes
       '@typescript-eslint/naming-convention': [
         'warn', // Changed from error to warn

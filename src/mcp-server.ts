@@ -126,6 +126,35 @@ class VibeMCPServer {
         },
       },
       {
+        name: 'add_plan_items',
+        description: 'Add multiple items to the plan in a single batch operation',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  text: {
+                    type: 'string',
+                    description: 'Text description of the task',
+                  },
+                  parent_id: {
+                    type: 'string',
+                    description:
+                      'Parent item ID for sub-tasks (optional for root items)',
+                  },
+                },
+                required: ['text'],
+              },
+              description: 'Array of items to add to the plan',
+            },
+          },
+          required: ['items'],
+        },
+      },
+      {
         name: 'complete_plan_item',
         description: 'Mark a plan item as complete',
         inputSchema: {
@@ -266,6 +295,12 @@ class VibeMCPServer {
             );
             break;
 
+          case 'add_plan_items':
+            result = await this.addPlanItems(
+              args?.['items'] as Array<{ text: string; parent_id?: string }>
+            );
+            break;
+
           case 'complete_plan_item':
             result = await this.completePlanItem(args?.['item_id'] as string);
             break;
@@ -374,6 +409,30 @@ class VibeMCPServer {
     error?: string;
   }> {
     return this.planHandlers.addPlanItem(text, parentId);
+  }
+
+  private async addPlanItems(
+    items: Array<{ text: string; parent_id?: string }>
+  ): Promise<{
+    success: boolean;
+    items?: Array<{
+      id: string;
+      text: string;
+      status: string;
+      createdAt: string;
+    }>;
+    message?: string;
+    error?: string;
+  }> {
+    // Convert parent_id to parentId to match internal API
+    const internalItems = items.map(item => {
+      const result: { text: string; parentId?: string } = { text: item.text };
+      if (item.parent_id) {
+        result.parentId = item.parent_id;
+      }
+      return result;
+    });
+    return this.planHandlers.addPlanItems(internalItems);
   }
 
   private async completePlanItem(itemId: string): Promise<{

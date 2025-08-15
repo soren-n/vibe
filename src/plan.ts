@@ -307,20 +307,80 @@ export class PlanManager {
    * Add an item to the plan
    */
   async addItem(text: string, parentId?: string): Promise<PlanItem> {
+    const item: { text: string; parentId?: string } = { text };
     if (parentId) {
-      const parent = this.currentPlan.findItem(parentId);
-      if (!parent) {
-        throw new Error(`Parent item with ID ${parentId} not found`);
-      }
-      const item = (parent as PlanItemImpl).addChild(text);
-      this.currentPlan.touch();
-      await this.savePlan();
-      return item;
-    } else {
-      const item = this.currentPlan.addItem(text);
-      await this.savePlan();
-      return item;
+      item.parentId = parentId;
     }
+    const items = await this.addItems([item]);
+    const firstItem = items[0];
+    if (!firstItem) {
+      throw new Error('Failed to add item to plan');
+    }
+    return firstItem;
+  }
+
+  /**
+   * Add multiple items to the plan in a single batch operation
+   *
+   * This method provides significant performance benefits over multiple
+   * individual addItem calls by:
+   * - Performing only one disk write operation regardless of item count
+   * - Maintaining transactional integrity (all items added or none)
+   * - Supporting mixed root-level and nested items in one call
+   *
+   * @param items Array of items to add, each with text and optional parentId
+   * @returns Promise resolving to array of created PlanItem objects
+   * @throws Error if any parent ID is not found or other validation fails
+   *
+   * @example
+   * // Add multiple root-level items
+   * const rootItems = await planManager.addItems([
+   *   { text: "Phase 1: Setup" },
+   *   { text: "Phase 2: Implementation" },
+   *   { text: "Phase 3: Testing" }
+   * ]);
+   *
+   * // Add child items to a parent
+   * const childItems = await planManager.addItems([
+   *   { text: "Setup database", parentId: rootItems[0].id },
+   *   { text: "Setup API", parentId: rootItems[0].id },
+   *   { text: "Setup frontend", parentId: rootItems[0].id }
+   * ]);
+   */
+  async addItems(
+    items: Array<{ text: string; parentId?: string }>
+  ): Promise<PlanItem[]> {
+    if (items.length === 0) {
+      return [];
+    }
+
+    // First pass: validate all parent IDs exist before making any changes
+    const validatedItems = items.map(({ text, parentId }) => {
+      if (parentId) {
+        const parent = this.currentPlan.findItem(parentId);
+        if (!parent) {
+          throw new Error(`Parent item with ID ${parentId} not found`);
+        }
+        return { text, parent: parent as PlanItemImpl };
+      }
+      return { text, parent: null };
+    });
+
+    // Second pass: all validations passed, now add all items
+    const addedItems: PlanItem[] = [];
+    for (const { text, parent } of validatedItems) {
+      if (parent) {
+        const item = parent.addChild(text);
+        addedItems.push(item);
+      } else {
+        const item = this.currentPlan.addItem(text);
+        addedItems.push(item);
+      }
+    }
+
+    this.currentPlan.touch();
+    await this.savePlan();
+    return addedItems;
   }
 
   /**

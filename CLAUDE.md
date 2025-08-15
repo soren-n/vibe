@@ -52,7 +52,7 @@ Vibe is a **planning tool** for AI agents built around two core concepts:
 
 - Exposes plan management and workflow search via Model Context Protocol
 - Main MCP tools defined in `src/mcp-server/` handlers
-- Core tools: `get_plan_status`, `add_plan_item`, `complete_plan_item`, `expand_plan_item`, `clear_plan`, `query_workflows`
+- Core tools: `get_plan_status`, `add_plan_item`, `add_plan_items`, `complete_plan_item`, `expand_plan_item`, `clear_plan`, `query_workflows`
 
 ## Key Files and Structure
 

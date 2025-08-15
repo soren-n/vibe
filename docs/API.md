@@ -101,6 +101,73 @@ const rootTask = await add_plan_item('Implement user authentication');
 const subTask = await add_plan_item('Set up JWT tokens', rootTask.item.id);
 ```
 
+### add_plan_items(items)
+
+**NEW in v1.7.0** - Add multiple items to the plan in a single batch operation for improved performance.
+
+**Parameters:**
+
+- `items` (array, required): Array of item objects to add to the plan
+
+Each item object has the following structure:
+
+- `text` (string, required): Text description of the task
+- `parent_id` (string, optional): Parent item ID for sub-tasks
+
+**Returns:**
+
+```json
+{
+  "success": true,
+  "items": [
+    {
+      "id": "uuid-1",
+      "text": "Task 1",
+      "status": "pending",
+      "createdAt": "2025-01-15T10:30:00.000Z"
+    },
+    {
+      "id": "uuid-2",
+      "text": "Task 2",
+      "status": "pending",
+      "createdAt": "2025-01-15T10:30:00.000Z"
+    }
+  ],
+  "message": "Added 2 items to plan"
+}
+```
+
+**Performance Benefits:**
+
+- **Single disk write** regardless of item count (vs N writes for N items)
+- **Transactional integrity** - all items added or none on failure
+- **Mixed hierarchies** - can add root and child items in one call
+
+**Example Usage:**
+
+```javascript
+// Add multiple root-level phases
+const phases = await add_plan_items([
+  { text: 'Phase 1: Setup' },
+  { text: 'Phase 2: Implementation' },
+  { text: 'Phase 3: Testing' },
+]);
+
+// Add multiple subtasks to first phase
+const setupTasks = await add_plan_items([
+  { text: 'Setup database', parent_id: phases.items[0].id },
+  { text: 'Setup API', parent_id: phases.items[0].id },
+  { text: 'Setup frontend', parent_id: phases.items[0].id },
+]);
+
+// Mixed batch - root item + child items in one call
+const mixedItems = await add_plan_items([
+  { text: 'New Feature' },
+  { text: 'Sub-feature A', parent_id: 'existing-parent-id' },
+  { text: 'Sub-feature B', parent_id: 'existing-parent-id' },
+]);
+```
+
 ### complete_plan_item(item_id)
 
 Marks a task as complete with timestamp.
