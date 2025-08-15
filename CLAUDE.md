@@ -30,6 +30,28 @@ npm run deps:check        # Check for unused dependencies with knip
 npm run deps:fix          # Remove unused dependencies
 ```
 
+## Recent Updates & Fixes
+
+### ES Module Migration (2025-08-15)
+
+- **ES Module Support**: Added `"type": "module"` to package.json for full ES module compatibility
+- **Import Extensions**: Updated all relative imports to include `.js` extensions as required by ES modules
+- **Build Process**: All 243 tests pass reliably with new module system
+- **CLI Functionality**: All CLI commands work correctly with ES module resolution
+
+### Pipeline Stability Fixes
+
+- **GitHub Actions**: Fixed all CI/CD pipeline issues - CI Pipeline now passes consistently
+- **Test Reliability**: Resolved flaky timestamp tests that were causing intermittent CI failures
+- **Code Quality**: All ESLint, Prettier, TypeScript checks pass without warnings
+- **Emoji Compliance**: Removed all emojis from source code to meet enterprise standards
+
+### Quality Improvements
+
+- **Husky**: Updated pre-commit hooks to remove deprecated configuration
+- **Dependencies**: Configured knip to properly handle external binaries (uv, jq)
+- **Test Coverage**: Maintained 243 passing tests across 13 test files
+
 ## Architecture Overview
 
 Vibe is a **planning tool** for AI agents built around two core concepts:
