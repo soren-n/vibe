@@ -3,14 +3,14 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { loadAllWorkflows } from '../workflows';
-import type { Workflow } from '../models';
+import { loadAllWorkflows } from '../workflows.js';
+import type { Workflow } from '../models.js';
 import {
   type CLIResult,
   createErrorResponse,
   createSuccessResponse,
   withSuppressedOutput,
-} from './utils';
+} from './utils.js';
 
 /**
  * Simple workflow summary interface
@@ -180,7 +180,7 @@ export async function handleWorkflowValidate(options?: {
       });
     } else {
       const summary = {
-        message: `✅ validated ${validFiles.length + errors.length} workflow files`,
+        message: `Validated ${validFiles.length + errors.length} workflow files`,
         valid: validFiles.length,
         invalid: errors.length,
       };

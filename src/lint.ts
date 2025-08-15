@@ -2,7 +2,7 @@
  * Project linting system for Vibe - TypeScript implementation
  */
 
-import type { LintConfig } from './config';
+import type { LintConfig } from './config.js';
 
 // Factory function to create LintConfig instances
 export function createLintConfig(overrides?: Partial<LintConfig>): LintConfig {

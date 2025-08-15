@@ -3,9 +3,9 @@
  * Replaces complex WorkflowOrchestrator with simple search and reference
  */
 
-import type { VibeConfigImpl } from './config';
-import type { Workflow } from './models';
-import { loadAllWorkflows } from './workflows';
+import type { VibeConfigImpl } from './config.js';
+import type { Workflow } from './models.js';
+import { loadAllWorkflows } from './workflows.js';
 
 export class WorkflowRegistry {
   private workflows: Record<string, Workflow>;

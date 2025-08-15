@@ -3,9 +3,9 @@
  * TypeScript translation of vibe/analyzer.py
  */
 
-import type { VibeConfigImpl } from './config';
-import { loadAllWorkflows } from './workflows';
-import type { Workflow } from './models';
+import type { VibeConfigImpl } from './config.js';
+import { loadAllWorkflows } from './workflows.js';
+import type { Workflow } from './models.js';
 
 export class PromptAnalyzer {
   private config: VibeConfigImpl;

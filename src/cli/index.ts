@@ -9,14 +9,14 @@ export {
   handleCheck,
   handleConfigInfo,
   handleValidate,
-} from './core-commands';
+} from './core-commands.js';
 
 // Workflow Commands
 export {
   handleWorkflowList,
   handleWorkflowShow,
   handleWorkflowValidate,
-} from './workflow-commands';
+} from './workflow-commands.js';
 
 // Plan Commands
 export {
@@ -25,13 +25,13 @@ export {
   handlePlanComplete,
   handlePlanExpand,
   handlePlanStatus,
-} from './plan-commands';
+} from './plan-commands.js';
 
 // Lint Commands
-export { handleLintRun } from './lint-commands';
+export { handleLintRun } from './lint-commands.js';
 
 // Generic Commands
-export { handleGuide, handleConfigShow } from './generic-commands';
+export { handleGuide, handleConfigShow } from './generic-commands.js';
 
 // Utilities
-export { withErrorHandling, getVersion } from './utils';
+export { withErrorHandling, getVersion } from './utils.js';

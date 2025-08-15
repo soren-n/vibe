@@ -6,7 +6,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import type { Workflow } from './models';
+import type { Workflow } from './models.js';
 
 // YAML data interfaces for type safety
 interface WorkflowYamlData {

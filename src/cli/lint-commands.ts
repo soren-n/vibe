@@ -2,7 +2,7 @@
  * Lint command handlers
  */
 import { ProjectLinter, createLintConfig } from '../lint.js';
-import { type CLIResult, createErrorResponse, createSuccessResponse } from './utils';
+import { type CLIResult, createErrorResponse, createSuccessResponse } from './utils.js';
 
 /**
  * Handles lint run command

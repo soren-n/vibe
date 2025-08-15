@@ -2,8 +2,8 @@
  * Generic command handlers (guide, config, etc.)
  */
 import * as fs from 'node:fs';
-import type { VibeConfig } from '../models';
-import { type CLIResult, createErrorResponse, createSuccessResponse } from './utils';
+import type { VibeConfig } from '../models.js';
+import { type CLIResult, createErrorResponse, createSuccessResponse } from './utils.js';
 
 /**
  * Handles guide command
