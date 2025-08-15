@@ -1,3 +1,22 @@
+# [1.7.0](https://github.com/soren-n/vibe-mcp/compare/v1.6.0...v1.7.0) (2025-08-15)
+
+### Bug Fixes
+
+- install uv in GitHub Actions pipeline for emoji check compatibility ([496ad36](https://github.com/soren-n/vibe-mcp/commit/496ad36b57c3ca3eaad5c0ef54a9f7cea505c527))
+- remove all emojis from source code to comply with language standards ([2a89bbf](https://github.com/soren-n/vibe-mcp/commit/2a89bbf352b6dd3d4b896d3db333221653cf8fae))
+- remove emojis from test files to comply with language standards ([00b4156](https://github.com/soren-n/vibe-mcp/commit/00b4156b8055ae7ecfa42b7a78257165c964d65e))
+- replace uv with python3 in pre-commit hook for CI compatibility ([2133b4f](https://github.com/soren-n/vibe-mcp/commit/2133b4f534135257a5de075eae742397105a68cc))
+- resolve code quality issues and deprecation warnings ([7bdc77a](https://github.com/soren-n/vibe-mcp/commit/7bdc77af1b5343980ea8f4405ed734f796aa89a7))
+- resolve flaky timestamp test failures in CI ([bc31eec](https://github.com/soren-n/vibe-mcp/commit/bc31eecdbe4128d22884895f774d90390888fe75))
+- update release pipeline to use valid CLI commands ([dbd9e67](https://github.com/soren-n/vibe-mcp/commit/dbd9e6701e90ad7d7a9340ea7b782c6eecd16fb0))
+
+### Features
+
+- achieve 100% tool-agnostic workflow compliance ([d8812d9](https://github.com/soren-n/vibe-mcp/commit/d8812d9b446de98c71556456cb8f06e34c57bd53))
+- add emoji detection to pre-commit hooks ([d569787](https://github.com/soren-n/vibe-mcp/commit/d569787d71b20ee9c12fdd6482e9c71b0cfdbf63))
+- implement batch add_plan_items API for improved performance ([dc7b296](https://github.com/soren-n/vibe-mcp/commit/dc7b296ac13199cf64fa88a8cb08dafc3bb1b53a))
+- implement batch add_plan_items API for improved performance ([e3e0af7](https://github.com/soren-n/vibe-mcp/commit/e3e0af789765403a4d306fbc6a306f3bccbcc054))
+
 # [2.0.0-next] Major Architecture Simplification (2025-08-15)
 
 ## 🎯 **Major Breaking Changes - Plan-Focused Architecture**

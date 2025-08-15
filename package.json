@@ -1,6 +1,6 @@
 {
   "name": "vibe-mcp",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Workflow orchestrator and MCP server for development automation and guidance.",
   "type": "module",
   "main": "dist/src/cli.js",
