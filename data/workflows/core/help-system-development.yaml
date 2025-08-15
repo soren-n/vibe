@@ -1,0 +1,16 @@
+name: help-system-development
+description: Develop and maintain effective help system functionality.
+triggers:
+  - help validation
+  - help system
+  - command guidance
+  - user assistance
+steps:
+  - 'Implement natural language guidance: Ensure help system responds appropriately to conversational requests.'
+  - 'Provide project analysis guidance: Make commands for project structure analysis accessible and functional.'
+  - 'Make development workflows accessible: Ensure common development tasks like testing, formatting, and refactoring have clear guidance.'
+  - 'Ensure documentation workflows are available: Make documentation creation and maintenance workflows discoverable.'
+  - 'Implement development environment guidance: Set up IDE and development tool integration guidance that works across platforms.'
+  - 'Create fallback guidance: Provide generic "what next" guidance that gives helpful direction when users are uncertain.'
+dependencies: []
+project_types: []

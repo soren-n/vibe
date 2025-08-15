@@ -109,20 +109,3 @@ function _validateRequired<T>(value: T | undefined, name: string): T {
   }
   return value;
 }
-
-/**
- * Safely handles file system operations with better error messages
- */
-export async function safeFileOperation<T>(
-  operation: () => Promise<T> | T,
-  context: string
-): Promise<T> {
-  try {
-    return await operation();
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`${context}: ${error.message}`);
-    }
-    throw new Error(`${context}: Unknown error occurred`);
-  }
-}

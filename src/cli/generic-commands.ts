@@ -16,7 +16,7 @@ export async function handleGuide(
     if (!query) {
       return createSuccessResponse({
         message: 'Vibe Guide',
-        description: 'Use workflows and checklists to improve your development process',
+        description: 'Use workflows to improve your development process',
         usage: 'uv run vibe guide "what should I do next?"',
       });
     }
@@ -29,7 +29,7 @@ export async function handleGuide(
     const orchestrator = new orchestratorModule.WorkflowOrchestrator(config);
 
     // Plan workflow for the query
-    const plan = orchestrator.planWorkflow({ query });
+    const plan = await orchestrator.planWorkflow({ query });
 
     if (!plan) {
       return createSuccessResponse({
@@ -43,17 +43,10 @@ export async function handleGuide(
     return createSuccessResponse({
       message: 'Workflow Guidance',
       query: query,
-      suggested_workflow: plan.workflow.name,
-      description: plan.workflow.description,
-      confidence: plan.confidence,
-      reasoning: plan.reasoning,
-      steps_preview: plan.workflow.steps
-        .slice(0, 3)
-        .map(step =>
-          typeof step === 'string' ? step : (step.step_text ?? step.command ?? 'Step')
-        ),
-      total_steps: plan.workflow.steps.length,
-      next_action: `Run: vibe mcp start "${query}"`,
+      guidance: plan.guidance,
+      workflows: plan.workflows,
+      execution_plan: plan.execution_plan,
+      next_action: 'Review the guidance and use the plan system to organize tasks',
     });
   } catch (error) {
     return createErrorResponse(error instanceof Error ? error : String(error));

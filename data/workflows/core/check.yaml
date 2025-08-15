@@ -1,12 +1,12 @@
-name: Check Vibe Configuration
-description: Validate vibe configuration and environment compatibility.
+name: Check Project Configuration
+description: Validate project configuration and environment compatibility.
 triggers:
   - check
   - validate
   - verify setup
   - config status
 steps:
-  - 'Check Vibe configuration: `cat .vibe.yaml` (if exists).'
-  - 'Show current setup: `uv run vibe config`.'
-  - 'Test workflow loading: `uv run vibe guide --list`.'
-  - 'Create default config: `uv run vibe init` (if needed).'
+  - 'Check project configuration: Review configuration files for current setup.'
+  - 'Show current setup: Display current project configuration status.'
+  - 'Test workflow loading: Verify that workflow guidance system is functioning.'
+  - 'Create default config: Initialize default configuration if needed.'

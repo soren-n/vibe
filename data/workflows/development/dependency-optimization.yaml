@@ -1,0 +1,30 @@
+dependencies: []
+description: Comprehensive guidance for dependency optimization and minimization across
+  all package managers.
+name: dependency-optimization
+project_types: []
+steps:
+  - 'All dependencies: actively used in the current codebase'
+  - 'Unused dependencies: identified and removed from package manifests'
+  - 'Development dependencies: properly separated from production dependencies'
+  - 'Meta-packages or wrapper dependencies: removed when individual components are available'
+  - 'Heavy dependencies: justified and alternatives have been evaluated'
+  - 'Build tool dependencies: appropriate for the project complexity'
+  - 'Ensure: Security audit shows no vulnerabilities in remaining dependencies'
+  - 'Package lock files: updated after dependency changes'
+  - 'CI/CD workflows: updated to remove obsolete workarounds'
+  - 'Ensure: All tests pass with the optimized dependency set'
+  - 'Ensure: Build process completes successfully with reduced dependencies'
+  - 'Application functionality: preserved after optimization'
+  - 'Installation time: measured and shows improvement'
+  - 'Bundle size or distribution size: reduced'
+  - 'Ensure: Documentation accurately reflects current dependency requirements'
+  - 'Installation instructions: updated and tested'
+  - 'Ensure: Dependency tree shows no unnecessary transitive dependencies'
+  - 'Optional dependencies: properly documented and implemented'
+  - 'Ensure: Error messages provide clear guidance for missing optional dependencies'
+triggers:
+  - dependency optimization
+  - package minimization
+  - dependency cleanup validation
+  - optimize packages

@@ -20,16 +20,16 @@ triggers:
   - validate.*implementation
   - verify.*feature
 steps:
-  - 'Create feature branch: `git checkout -b feature/feature-name`.'
+  - 'Create feature branch: Create new branch for feature development.'
   - 'Write failing test: Create test case for new functionality.'
   - 'Implement minimal code: Write just enough code to make test pass.'
   - 'Add type annotations: Include proper typing for new functions/classes.'
-  - 'Tests: `uv run pytest tests/` or project-specific test command.'
-  - 'Quality checks: `uv run ruff check . --fix && uv run ruff format .`.'
+  - 'Run tests: Execute test suite to verify functionality.'
+  - 'Quality checks: Run linting, formatting, and code quality validation.'
   - 'Update documentation: Add docstrings and update relevant docs.'
-  - "Commit changes: `git add . && git commit -m 'feat: add [feature description]'`."
+  - 'Commit changes: Stage and commit changes with descriptive message.'
   - 'Test integration: Verify changes work with existing codebase.'
-  - 'Push branch: `git push origin feature/feature-name`.'
+  - 'Push branch: Push feature branch to remote repository.'
 dependencies: []
 project_types: []
 conditions: []

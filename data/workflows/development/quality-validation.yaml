@@ -1,10 +1,7 @@
 name: 'Quality Validation'
 description: 'Run comprehensive quality checks including unused dependency detection'
 category: 'development'
-project_types:
-  - 'typescript'
-  - 'javascript'
-  - 'nodejs'
+project_types: []
 
 steps:
   - 'Execute comprehensive quality checks including code quality, formatting, type safety, tests, and dependency validation'

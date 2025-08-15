@@ -13,19 +13,18 @@ triggers:
   - validate.*docs
   - verify.*documentation
 steps:
-  - "Documentation discovery: Run `find . -name 'README*' -o -name 'docs' -type
-    d` to locate current documentation."
-  - 'Create documentation structure: Execute `mkdir -p docs && touch docs/README.md`
-    to establish framework.'
+  - 'Documentation discovery: Locate existing documentation files and directories.'
+  - 'Create documentation structure: Establish documentation framework and directory structure.'
   - 'Update main README: Add project description, installation, and usage sections with
     current information.'
-  - 'Generate API documentation: Execute `pydoc` for Python or `typedoc` for TypeScript
-    projects.'
-  - 'Create contributing guide: Generate `CONTRIBUTING.md` with development setup instructions.'
+  - 'Generate API documentation: Use language-appropriate documentation generation tools
+    for automated API docs.'
+  - 'Create contributing guide: Generate development setup and contribution guidelines.'
   - 'Add architecture documentation: Document key design decisions and patterns in structured
     format.'
-  - 'Update changelog: Add recent changes to `CHANGELOG.md` with proper versioning.'
-  - 'Build documentation site: Execute documentation build tools if applicable.'
+  - 'Update changelog: Add recent changes with proper versioning information.'
+  - 'Build documentation site: Use documentation build tools if applicable to generate
+    final documentation.'
 items:
   - README clearly explains project purpose and value.
   - Installation instructions are accurate and complete.

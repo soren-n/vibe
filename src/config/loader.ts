@@ -1,12 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import type {
-  LintConfig,
-  ProjectTypeConfig,
-  SessionConfig,
-  WorkflowConfig,
-} from './types.js';
+import type { LintConfig, ProjectTypeConfig } from './types.js';
 
 /**
  * Configuration file loading and merging utilities
@@ -14,10 +9,8 @@ import type {
 
 interface LoadedConfig {
   projectType: string;
-  workflows: Record<string, WorkflowConfig>;
   projectTypes: Record<string, ProjectTypeConfig>;
   lint: Partial<LintConfig>;
-  session: Partial<SessionConfig>;
   projectRoot: string;
 }
 
@@ -28,10 +21,8 @@ export async function loadFromFile(configPath?: string): Promise<LoadedConfig> {
   // Initialize with empty config
   const config: LoadedConfig = {
     projectType: 'auto',
-    workflows: {},
     projectTypes: {},
     lint: {},
-    session: {},
     projectRoot,
   };
 
@@ -46,45 +37,6 @@ export async function loadFromFile(configPath?: string): Promise<LoadedConfig> {
       // Merge configuration sections
       if (data['projectType'] || data['project_type']) {
         config.projectType = (data['projectType'] ?? data['project_type']) as string;
-      }
-
-      if (data['workflows'] && typeof data['workflows'] === 'object') {
-        // Merge workflow configs
-        for (const [name, workflowConfig] of Object.entries(
-          data['workflows'] as Record<string, unknown>
-        )) {
-          if (typeof workflowConfig === 'object' && workflowConfig !== null) {
-            const wfConfig = workflowConfig as Record<string, unknown>;
-            const newWorkflowConfig: WorkflowConfig = {
-              enabled:
-                wfConfig['enabled'] !== undefined
-                  ? (wfConfig['enabled'] as boolean)
-                  : true,
-              priority:
-                wfConfig['priority'] !== undefined
-                  ? (wfConfig['priority'] as number)
-                  : 1,
-            };
-
-            if (Array.isArray(wfConfig['triggers'])) {
-              newWorkflowConfig.triggers = wfConfig['triggers'] as string[];
-            }
-            if (wfConfig['description']) {
-              newWorkflowConfig.description = wfConfig['description'] as string;
-            }
-            if (Array.isArray(wfConfig['steps'])) {
-              newWorkflowConfig.steps = wfConfig['steps'] as string[];
-            }
-            if (Array.isArray(wfConfig['commands'])) {
-              newWorkflowConfig.commands = wfConfig['commands'] as string[];
-            }
-            if (Array.isArray(wfConfig['dependencies'])) {
-              newWorkflowConfig.dependencies = wfConfig['dependencies'] as string[];
-            }
-
-            config.workflows[name] = newWorkflowConfig;
-          }
-        }
       }
 
       if (data['projectTypes'] && typeof data['projectTypes'] === 'object') {
@@ -148,23 +100,6 @@ export async function loadFromFile(configPath?: string): Promise<LoadedConfig> {
         }
 
         config.lint = lintConfig;
-      }
-
-      if (data['session'] && typeof data['session'] === 'object') {
-        const sessionData = data['session'] as Record<string, unknown>;
-        const sessionConfig: Partial<SessionConfig> = {};
-
-        if (sessionData['maxSessions'] !== undefined) {
-          sessionConfig.maxSessions = sessionData['maxSessions'] as number;
-        }
-        if (sessionData['sessionTimeout'] !== undefined) {
-          sessionConfig.sessionTimeout = sessionData['sessionTimeout'] as number;
-        }
-        if (sessionData['sessionDir'] !== undefined) {
-          sessionConfig.sessionDir = sessionData['sessionDir'] as string;
-        }
-
-        config.session = sessionConfig;
       }
     } catch (error) {
       console.warn(`Warning: Error loading config from ${actualConfigPath}: ${error}`);

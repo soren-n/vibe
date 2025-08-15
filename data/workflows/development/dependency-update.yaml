@@ -17,13 +17,18 @@ triggers:
   - validate.*dependencies
   - verify.*update
 steps:
-  - 'Update uv package manager: `curl -LsSf https://astral.sh/uv/install.sh | sh`.'
-  - 'Update Python dependencies: `uv sync --upgrade`.'
-  - 'Update Node.js dependencies: `npm update` (if package.json exists).'
-  - 'Security audit: `npm audit` or `uv audit`.'
-  - "Test build: `uv run python -c 'import sys; print(sys.version)'`."
-  - 'Tests: `uv run pytest -q` (if tests exist).'
-  - "Commit changes: `git add -A && git commit -m 'Update dependencies'`."
+  - 'Update package manager: Update your dependency management tools to the latest
+    versions.'
+  - 'Update project dependencies: Run dependency update commands appropriate for
+    your project type.'
+  - 'Update all dependency types: Ensure all categories of dependencies are updated
+    consistently.'
+  - 'Security audit: Run security audit tools to identify vulnerabilities in updated
+    dependencies.'
+  - 'Test build: Verify that the project builds successfully with updated dependencies.'
+  - 'Tests: Execute the test suite to ensure compatibility with updated dependencies.'
+  - 'Commit changes: Stage and commit dependency updates with descriptive commit
+    messages.'
 dependencies: []
 project_types: []
 conditions: []

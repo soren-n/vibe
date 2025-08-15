@@ -1,5 +1,5 @@
 name: Development Environment Setup
-description: Development environment setup.
+description: Set up complete development environment with dependencies, quality tools, and testing infrastructure.
 triggers:
   - configure quality tools
   - dev.*env.*check
@@ -7,27 +7,25 @@ triggers:
   - install development tools
   - setup dev env
   - setup development environment
-  - setup pre-commit
   - validate.*dev.*environment
   - verify.*development.*setup
 category: development
 steps:
-  - 'Install dependencies: `uv sync --dev`.'
-  - 'Setup pre-commit hooks: `uv run pre-commit install`.'
-  - 'Quality checks: `uv run pre-commit run --all-files`.'
-  - 'Test workflow system: `uv run pytest tests/ -q --maxfail=1`.'
-  - 'Test MCP functionality: `uv run python test_mcp.py`.'
-  - 'Configure VS Code settings: Add `{"chat.agent.enabled": true, "chat.mcp.enabled":
-    true}` to settings.json.'
-  - 'Verify MCP server: `ls -la mcp-server/`.'
+  - 'Install dependencies: Install all project dependencies including development tools.'
+  - 'Setup quality automation: Install and configure quality validation hooks for code commits.'
+  - 'Run initial quality checks: Execute quality validation on existing codebase to ensure baseline.'
+  - 'Test project infrastructure: Run test suite to verify development setup is functional.'
+  - 'Test MCP functionality: Verify MCP protocol integration works correctly.'
+  - 'Configure development tools: Set up IDE or editor with appropriate extensions and settings.'
+  - 'Verify server components: Ensure all server-side components are properly installed and accessible.'
 items:
   - All development dependencies are installed successfully.
-  - Pre-commit hooks are installed and functional.
+  - Quality automation hooks are installed and functional.
   - Quality checks pass on all files.
   - Test suite executes without failures.
   - MCP functionality is working correctly.
-  - VS Code is configured for agent mode integration.
-  - MCP server is properly set up and accessible.
-  - Development tools are available in PATH.
-  - Virtual environment is properly activated.
-  - IDE/editor integration is working.
+  - Development environment is configured for MCP integration.
+  - MCP server components are properly set up and accessible.
+  - Development tools are available and functioning.
+  - Project environment is properly configured.
+  - IDE or editor integration is working correctly.

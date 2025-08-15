@@ -1,41 +1,35 @@
-name: 'Dependency Quality Gate'
-description: 'Comprehensive quality gate that includes unused dependency detection as part of code quality validation'
-category: 'development'
-project_types:
-  - 'typescript'
-  - 'javascript'
-  - 'nodejs'
-
-steps:
-  - 'Run security audit to check for known vulnerabilities in dependencies'
-  - 'Check for unused dependencies, exports, and files'
-  - 'Run code quality and style checks'
-  - 'Verify code follows consistent formatting standards'
-  - 'Verify type safety and compilation'
-  - 'Execute all unit and integration tests'
-  - 'Ensure project builds successfully'
-
-validation_checklist: 'dependency-quality-gate-validation'
-success_criteria:
-  - 'No security vulnerabilities in dependencies'
-  - 'No unused dependencies detected'
-  - 'Code passes all quality checks'
-  - 'Code is properly formatted'
-  - 'No compilation errors'
-  - 'All tests pass'
-  - 'Project builds successfully'
-
-failure_handling:
-  - 'Review security audit results and update vulnerable packages'
-  - 'Use automated tools to remove unused dependencies'
-  - 'Use automated tools to fix code quality issues'
-  - 'Use automated tools to fix formatting issues'
-  - 'Address compilation errors manually'
-  - 'Fix failing tests'
-  - 'Resolve build errors'
-
-post_steps:
-  - 'Document any dependency exceptions in configuration if needed'
-  - 'Update documentation if dependency changes affect setup instructions'
-  - 'Consider running this quality gate in CI/CD pipeline'
 dependencies: []
+description: guidance for comprehensive dependency and code quality gate
+name: dependency-quality-gate
+project_types: []
+steps:
+  - 'Ensure: Security audit passes with no high or critical vulnerabilities'
+  - 'Medium-risk vulnerabilities: documented and have mitigation plans'
+  - 'Ensure: No unused dependencies remain after analysis'
+  - 'No unused development dependencies that: not justified'
+  - 'Ensure: No unused exports in public API surface'
+  - 'Ensure: No completely unused source files'
+  - 'Ensure: All code quality rules pass without errors'
+  - 'Code formatting: consistent across the entire codebase'
+  - 'Ensure: Language compilation succeeds without errors or warnings'
+  - 'Ensure: All unit tests pass successfully'
+  - 'Ensure: All integration tests pass successfully'
+  - 'Ensure: Test coverage meets project requirements'
+  - 'Ensure: Build process completes without errors'
+  - 'Build artifacts: generated correctly'
+  - 'Ensure: No console errors or warnings during build'
+  - 'Ensure: Project scripts function correctly after dependency changes'
+  - 'Dependency lock files: up to date'
+  - 'Ensure: No dependency conflicts or version mismatches'
+  - 'Production build: tested and functional'
+  - 'Performance benchmarks: within acceptable ranges (if applicable)'
+  - 'Documentation: updated to reflect dependency changes'
+  - 'Ensure: CI/CD pipeline will pass with these changes'
+  - 'Breaking changes: properly documented and versioned'
+  - 'Team dependencies (Node.js version, etc.): still compatible'
+  - Ensure Quality gate can be reproduced in clean environments
+triggers:
+  - dependency quality gate
+  - quality gate validation
+  - comprehensive quality check
+  - dependency gate validation

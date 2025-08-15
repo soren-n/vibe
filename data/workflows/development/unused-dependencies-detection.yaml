@@ -1,10 +1,7 @@
 name: 'Unused Dependencies Detection'
 description: 'Detect and analyze unused dependencies, exports, and files in TypeScript/JavaScript projects'
 category: 'development'
-project_types:
-  - 'typescript'
-  - 'javascript'
-  - 'nodejs'
+project_types: []
 
 steps:
   - 'Install dependency analysis tool as development dependency if not already available'

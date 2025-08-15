@@ -1,0 +1,20 @@
+dependencies: []
+description: guidance for guidance-oriented development approach.
+name: guidance-approach
+project_types: []
+steps:
+  - 'Ensure: Guidance-first approach followed: Steps provide clear explanations of what
+    to do and when to run commands'
+  - 'Context discovery completed: Project structure and active tasks: reviewed before
+    taking action'
+  - 'Testing strategy appropriate: Relevant tests: executed based on project type and
+    requirements'
+  - 'Change management proper: Small, focused changes: committed with frequent validation'
+  - 'Task breakdown effective: Complex tasks: divided into manageable steps with clear
+    progress tracking'
+  - 'Maintain token efficiency: Communication remains concise with batched operations
+    and minimal verbosity.'
+triggers:
+  - guidance validation
+  - guidance approach checklist
+  - demo validation

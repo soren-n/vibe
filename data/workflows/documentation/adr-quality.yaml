@@ -1,0 +1,25 @@
+dependencies: []
+description: Architecture Decision Record quality and completeness workflow guidance.
+name: adr-quality
+project_types: []
+steps:
+  - 'ADR structure verified: Directory structure exists and template: available for
+    new decision records'
+  - 'Decision history reviewed: Existing ADRs: examined to understand context and determine
+    appropriate numbering'
+  - 'Context clearly documented: Problem, constraints, and circumstances motivating
+    the decision: thoroughly explained'
+  - 'Rationale comprehensively captured: Alternatives considered, trade-offs evaluated,
+    and reasoning behind choice: documented'
+  - 'Consequences honestly assessed: Long-term implications, risks, and impacts on system
+    maintainability: addressed'
+  - 'Ensure: Implementation actionable: Next steps and execution references provide
+    clear guidance for decision implementation'
+  - 'Quality standards met: Title: clear, language is accessible, stakeholders identified,
+    and all sections complete'
+  - 'Traceability maintained: ADR: linked to related code commits, issues, and cross-referenced
+    with related decisions'
+triggers:
+  - adr validation
+  - architecture decision validation
+  - adr quality checklist

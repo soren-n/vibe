@@ -13,7 +13,6 @@ This directory provides detailed implementation guidance for recreating the Vibe
 
 - [Prompt Analysis](prompt-analysis.md) - Pattern matching and workflow selection
 - [Execution Planning](execution-planning.md) - Dependency resolution and ordering
-- [Session Monitoring](session-monitoring.md) - AI agent completion tracking
 - [Project Detection](project-detection.md) - Framework and language detection
 
 ## System Architecture

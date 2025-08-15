@@ -1,0 +1,22 @@
+dependencies: []
+description: Checklist to ensure bug fixes are complete and safe.
+name: bug-fix-verification
+project_types: []
+steps:
+  - 'Root cause of the bug: identified'
+  - 'Ensure: Fix addresses the root cause, not just symptoms'
+  - 'Test case: added to prevent regression'
+  - 'Ensure: All existing tests still pass'
+  - 'Fix: tested in relevant environments'
+  - 'No new bugs: introduced'
+  - 'Edge cases related to the bug: considered'
+  - 'Error handling: appropriate for the fix'
+  - 'Ensure: Documentation updated if behavior changed'
+  - 'Issue tracking: updated'
+  - Ensure Fix can be deployed independently if needed
+triggers:
+  - bug fix
+  - fix bug
+  - bugfix
+  - fix issue
+  - resolve bug

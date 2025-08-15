@@ -17,15 +17,13 @@ triggers:
   - examine
   - study
 steps:
-  - 'Scan dependencies: `uv tree` or `npm list` to check current packages.'
-  - "Find source files: `find . -name '*.py' -o -name '*.js' -o -name '*.ts' |
-    head -20`."
-  - "Locate config files: `find . -name 'package.json' -o -name 'pyproject.toml'
-    -o -name 'Cargo.toml' -o -name 'go.mod'`."
-  - "Check documentation: `find . -name 'README*' -o -name 'docs' -type d`."
-  - 'List project root: `ls -la`.'
-  - Research best practices using Context7 tools for detected technologies.
-  - 'Security scan: `uv run pip-audit` or equivalent for project type.'
+  - 'Scan dependencies: Use package manager tree command to check current packages.'
+  - 'Find source files: Locate source code files using file system search tools.'
+  - 'Locate config files: Find project configuration files (package manifests, build configs).'
+  - 'Check documentation: Locate documentation files and directories.'
+  - 'List project root: Review top-level project structure.'
+  - Research best practices using available analysis tools for detected technologies.
+  - 'Security scan: Run security audit tool appropriate for project type.'
 dependencies: []
 project_types: []
 conditions: []

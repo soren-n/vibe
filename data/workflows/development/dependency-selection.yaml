@@ -9,22 +9,22 @@ triggers:
 steps:
   - 'Define requirements: Clearly specify what functionality you need before searching
     for packages.'
-  - 'Research options: Use PyPI search, GitHub curated lists, and community recommendations.'
+  - 'Research options: Use package registries, curated lists, and community recommendations
+    for your platform.'
   - 'Evaluate package health: Check GitHub stars, last commit date, issue response time,
     and maintainer activity.'
   - 'Assess stability: Review version history, breaking changes, and semantic versioning
     practices.'
-  - 'Check compatibility: Verify Python version support and compatibility with existing
-    dependencies.'
-  - 'Analyze size impact: Consider package size and transitive dependencies using `pip
-    show` or wheel inspection.'
+  - 'Check compatibility: Verify platform version support and compatibility with
+    existing dependencies.'
+  - 'Analyze size impact: Consider package size and transitive dependencies using
+    dependency analysis tools.'
   - 'Review documentation: Ensure adequate documentation, examples, and API reference.'
   - 'Test integration: Create a minimal test to verify the package works in your environment.'
   - 'Consider maintenance: Evaluate if you could maintain/fork the package if needed.'
   - 'Plan fallback strategy: Design graceful degradation if the dependency becomes unavailable.'
-  - 'Make optional when possible: Use try/except imports for non-critical features.'
+  - 'Make optional when possible: Use conditional loading for non-critical features.'
   - 'Document decision: Record why you chose this dependency and any trade-offs made.'
 dependencies: []
-project_types:
-  - python
+project_types: []
 conditions: []

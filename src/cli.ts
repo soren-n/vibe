@@ -7,21 +7,16 @@ import { Command } from 'commander';
 import {
   getVersion,
   handleCheck,
-  handleChecklistList,
-  handleChecklistRun,
-  handleChecklistShow,
   handleConfigInfo,
   handleConfigShow,
   handleGuide,
   handleInit,
   handleLintRun,
-  handleMCPBack,
-  handleMCPBreak,
-  handleMCPList,
-  handleMCPNext,
-  handleMCPRestart,
-  handleMCPStart,
-  handleMCPStatus,
+  handlePlanAdd,
+  handlePlanClear,
+  handlePlanComplete,
+  handlePlanExpand,
+  handlePlanStatus,
   handleRun,
   handleValidate,
   handleWorkflowList,
@@ -51,9 +46,11 @@ program
 
 program
   .command('run')
-  .description('Run a workflow')
-  .argument('<workflow>', 'Name of the workflow to run')
-  .option('--interactive', 'Run in interactive mode')
+  .description(
+    'Show workflow guidance (execution removed - workflows are now guidance-only)'
+  )
+  .argument('<workflow>', 'Name of the workflow to show guidance for')
+  .option('--interactive', 'Display in interactive format')
   .option('--timeout <ms>', 'Timeout in milliseconds', '300000')
   .action(withErrorHandling(handleRun));
 
@@ -97,32 +94,43 @@ workflowsCmd
   .option('--format <format>', 'Output format (yaml, json)', 'yaml')
   .action(withErrorHandling(handleWorkflowShow));
 
-// Checklists subcommand
-const checklistsCmd = program
-  .command('checklists')
-  .description('Operations for checklist management');
+// Plan subcommand
+const planCmd = program.command('plan').description('Operations for plan management');
 
-checklistsCmd
-  .command('list')
-  .description('List all available checklists')
-  .option('--category <category>', 'Filter by category')
-  .option('--project-type <type>', 'Filter by project type')
+planCmd
+  .command('status')
+  .description('Show current plan status')
   .option('--format <format>', 'Output format (table, json)', 'table')
-  .action(withErrorHandling(handleChecklistList));
+  .action(withErrorHandling(handlePlanStatus));
 
-checklistsCmd
-  .command('show')
-  .description('Show checklist details')
-  .argument('<name>', 'Checklist name')
-  .option('--format <format>', 'Output format (json, yaml)', 'json')
-  .action(withErrorHandling(handleChecklistShow));
-
-checklistsCmd
-  .command('run')
-  .description('Run a checklist interactively')
-  .argument('<name>', 'Checklist name')
+planCmd
+  .command('add')
+  .description('Add an item to the plan')
+  .argument('<text>', 'Item text')
+  .option('--parent <parentId>', 'Parent item ID for sub-tasks')
   .option('--format <format>', 'Output format (json, text)', 'text')
-  .action(withErrorHandling(handleChecklistRun));
+  .action(withErrorHandling(handlePlanAdd));
+
+planCmd
+  .command('complete')
+  .description('Mark a plan item as complete')
+  .argument('<itemId>', 'Item ID to complete')
+  .option('--format <format>', 'Output format (json, text)', 'text')
+  .action(withErrorHandling(handlePlanComplete));
+
+planCmd
+  .command('expand')
+  .description('Expand a plan item with sub-tasks')
+  .argument('<itemId>', 'Item ID to expand')
+  .argument('<subTasks...>', 'Sub-task texts')
+  .option('--format <format>', 'Output format (json, text)', 'text')
+  .action(withErrorHandling(handlePlanExpand));
+
+planCmd
+  .command('clear')
+  .description('Clear the entire plan')
+  .option('--format <format>', 'Output format (json, text)', 'text')
+  .action(withErrorHandling(handlePlanClear));
 
 // Lint subcommand
 const lintCmd = program.command('lint').description('Project linting commands');
@@ -147,54 +155,6 @@ lintCmd
   .description('Lint entire project structure')
   .option('--format <format>', 'Output format (table, json)', 'table')
   .action(withErrorHandling(handleLintRun));
-
-// MCP subcommand
-const mcpCmd = program
-  .command('mcp')
-  .description('Model Context Protocol server operations');
-
-mcpCmd
-  .command('start')
-  .description('Start an interactive workflow session')
-  .argument('<prompt>', 'Initial prompt to start the session')
-  .option('--timeout <ms>', 'Session timeout in milliseconds', '3600000')
-  .action(withErrorHandling(handleMCPStart));
-
-mcpCmd
-  .command('status')
-  .description('Get status of a workflow session')
-  .argument('<sessionId>', 'Session ID to check')
-  .action(withErrorHandling(handleMCPStatus));
-
-mcpCmd
-  .command('next')
-  .description('Get next step in workflow session')
-  .argument('<sessionId>', 'Session ID')
-  .action(withErrorHandling(handleMCPNext));
-
-mcpCmd
-  .command('back')
-  .description('Go back to previous step in workflow session')
-  .argument('<sessionId>', 'Session ID')
-  .action(withErrorHandling(handleMCPBack));
-
-mcpCmd
-  .command('break')
-  .description('Break/pause current workflow session')
-  .argument('<sessionId>', 'Session ID')
-  .action(withErrorHandling(handleMCPBreak));
-
-mcpCmd
-  .command('restart')
-  .description('Restart workflow session from beginning')
-  .argument('<sessionId>', 'Session ID')
-  .action(withErrorHandling(handleMCPRestart));
-
-mcpCmd
-  .command('list')
-  .description('List all active workflow sessions')
-  .option('--format <format>', 'Output format (table, json)', 'table')
-  .action(withErrorHandling(handleMCPList));
 
 // Generic commands
 program

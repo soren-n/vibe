@@ -10,13 +10,13 @@ Vibe is a workflow orchestration tool that analyzes natural language prompts and
 
 PromptAnalyzer: Analyzes prompts, matches workflow triggers, supports project-specific selection
 WorkflowOrchestrator: Plans execution order, generates step guidance, integrates validation
-SessionManager: Manages incremental execution, prevents token overflow, maintains state persistence
+**PlanManager**: Manages persistent plan structures, prevents todo overflow, maintains state persistence
 Configuration: Detects project types, loads YAML workflows with Python fallback
 
 ### Execution Pipeline
 
 ```
-Prompt → Analysis → Planning → Session Management → Execution
+Prompt → Analysis → Planning → Plan Management → Guidance Display
 ```
 
 Process: Prompt triggers → Workflow selection → Step generation → Incremental execution → Completion
@@ -24,7 +24,7 @@ Process: Prompt triggers → Workflow selection → Step generation → Incremen
 ## Design Principles
 
 Unattended Operation: Minimal user interaction after initial prompt
-Session-Based Execution: Discrete steps prevent token overflow in AI agents
+Plan-Based Management: Persistent todo lists prevent context loss in AI agents
 YAML Workflow System: External definitions enable code-independent updates
 
 ## Implementation Components
@@ -33,7 +33,7 @@ Core Components:
 
 - Analyzer: Prompt analysis and workflow matching
 - Orchestrator: Planning and execution guidance
-- Session Manager: State management and persistence
+- Plan Manager: Persistent todo list management
 - Configuration: Project detection and settings management
 
 ## Core Data Structures
@@ -50,14 +50,16 @@ project_types: [string] # Applicable project types (optional)
 dependencies: [string] # Required tools/packages (optional)
 ```
 
-### Session State Interface
+### Plan Item Interface
 
 ```
-WorkflowFrame:
-  workflow_name: string        # Name of the current workflow
-  steps: list<string>         # List of guidance steps
-  current_step: integer       # Index of the current step
-  context: map<string, any>   # Contextual data for the session
+PlanItem:
+  id: string                  # Unique identifier
+  text: string               # Task description
+  status: string             # 'pending' or 'complete'
+  children: list<PlanItem>   # Nested subtasks
+  createdAt: string         # ISO timestamp
+  completedAt?: string      # ISO timestamp (optional)
 ```
 
 ## Documentation
@@ -79,14 +81,13 @@ WorkflowFrame:
 The API documentation provides complete interface specifications including:
 
 - **[PromptAnalyzer](api/prompt-analyzer.md)** - Pattern matching and workflow selection algorithms
-- **[WorkflowOrchestrator](api/workflow-orchestrator.md)** - Execution planning and dependency resolution
-- **[SessionManager](api/session-manager.md)** - State persistence and step-by-step execution
+- **[WorkflowOrchestrator](api/workflow-orchestrator.md)** - Guidance planning and workflow recommendations
+- **[PlanManager](api/plan-models.md)** - Persistent plan structures and nested todo management
 - **[Configuration](api/configuration.md)** - Project detection and configuration management
 - **[Core Data Models](api/models.md)** - Complete data structure specifications
 - **[Workflow Registry](api/workflow-registry.md)** - YAML loading with hot reloading support
 - **[Project Detection](api/project-detection.md)** - Framework and language detection
 - **[CLI Interface](api/cli.md)** - Command routing and user interaction patterns
-- **[Session Monitoring](api/session-monitoring.md)** - AI agent completion tracking and intervention
 - **[Lint System](api/lint.md)** - Code quality and professional language validation
 
 ### Documentation Completeness Statement

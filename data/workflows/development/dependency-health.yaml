@@ -1,0 +1,26 @@
+dependencies: []
+description: Comprehensive checklist to validate the health, security, and quality
+  of project dependencies.
+name: dependency-health
+project_types: []
+steps:
+  - 'All dependencies: actively maintained with recent commits or releases'
+  - 'Ensure: Security audit reports no known vulnerabilities in current dependency versions'
+  - 'Ensure: All dependencies support the target runtime versions for the project'
+  - 'Package sizes: reasonable and justified for their functionality'
+  - 'Ensure: All dependencies have compatible licenses for the project requirements'
+  - 'Ensure: No circular dependencies or version conflicts exist in the dependency tree'
+  - 'Transitive dependencies: reviewed and are acceptable'
+  - 'Critical dependencies: pinned to specific secure versions'
+  - 'Development and testing dependencies: separated from production requirements'
+  - 'Optional dependencies: properly documented with fallback behavior'
+  - 'Dependency installation: tested in clean environments'
+  - 'Alternative packages: evaluated for heavyweight dependencies'
+  - 'Package sources: from trusted repositories and maintainers'
+  - 'Dependency update strategy: documented and implemented'
+  - 'Automated security monitoring: configured for ongoing dependency health'
+triggers:
+  - dependency validation
+  - package health check
+  - dependency audit checklist
+  - dependency health

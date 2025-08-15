@@ -32,12 +32,5 @@ steps:
   - 'Measure improvements: Track metrics for security posture, build time, and installation
     efficiency.'
 dependencies: []
-project_types:
-  - python
-  - javascript
-  - typescript
-  - nodejs
-  - java
-  - go
-  - ruby
+project_types: []
 conditions: []

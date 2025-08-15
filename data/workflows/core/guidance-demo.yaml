@@ -5,14 +5,11 @@ triggers:
   - show guidance method
   - execute guidance demo
 steps:
-  - "Context discovery: Review project structure using `find . -name '*.py' -o -name
-    '*.js' -o -name '*.ts' | head -10`."
-  - 'Project tests: Execute `uv run pytest -q` for Python or `npm test` for Node.js
-    projects.'
-  - "Make focused commit: Execute `git add . && git commit -m 'Demo: guidance approach
-    implementation'`."
-  - 'Summarize progress: Provide brief status update with key accomplishments and next
-    steps.'
+  - 'Context discovery: Review project structure using file system analysis tools to understand codebase organization.'
+  - 'Project validation: Execute test suite appropriate for the project type to verify functionality.'
+  - 'Make focused commit: Stage and commit changes with descriptive message following project conventions.'
+  - 'Summarize progress: Provide brief status update with key accomplishments and next steps.'
+  - 'Validate guidance effectiveness: Confirm that guidance-oriented approach produced desired outcomes.'
 project_types: []
 dependencies: []
 conditions: []

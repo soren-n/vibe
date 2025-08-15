@@ -1,0 +1,35 @@
+dependencies: []
+description: Comprehensive guidance for unused dependency detection and cleanup
+name: unused-dependencies
+project_types: []
+steps:
+  - 'Analysis tool configuration: properly configured for the project structure'
+  - 'All entry points: correctly defined in the analysis configuration'
+  - 'Ensure: Project file patterns accurately include all source files'
+  - 'Dependencies marked as unused: genuinely not needed'
+  - 'Development dependencies marked as unused: not required for build or development'
+  - 'Exports marked as unused: not part of the public API'
+  - 'Files marked as unused: not referenced by dynamic imports or external tools'
+  - 'Language configuration files: properly recognized by the analysis tool'
+  - 'Build tool configurations: included in entry patterns'
+  - 'Test files and their dependencies: properly handled'
+  - 'Configuration files for development tools: recognized'
+  - 'Binary dependencies and CLI tools: not incorrectly marked as unused'
+  - 'Workspace and monorepo configurations: properly set up if applicable'
+  - 'False positives: documented in ignore patterns'
+  - 'Intentionally unused exports: marked with appropriate documentation tags'
+  - 'Dynamic imports and module loading patterns: handled correctly'
+  - 'Ensure: Analysis configurations account for framework-specific patterns'
+  - 'Production vs development modes: properly configured'
+  - 'Automated cleanup suggestions: reviewed before applying'
+  - 'Ensure: Project build scripts still work after dependency removal'
+  - 'Ensure: CI/CD pipelines function correctly with cleaned dependencies'
+  - 'Ensure: Documentation reflects current dependency requirements'
+  - 'Bundle size reduction: measured and documented if significant'
+  - 'All team members: aware of changes to dependencies'
+  - 'Ensure: Dependency removal follows proper semantic versioning practices'
+triggers:
+  - unused dependencies validation
+  - dependency analysis validation
+  - dependency cleanup validation
+  - unused code validation

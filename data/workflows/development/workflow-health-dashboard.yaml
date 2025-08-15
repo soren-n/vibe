@@ -6,13 +6,7 @@ triggers:
   - session overview
   - monitor workflow status
   - workflow health check
-project_types:
-  - python
-  - typescript
-  - javascript
-  - rust
-  - go
-  - general
+project_types: []
 steps:
   - 'Session overview: Use `list_workflow_sessions` to get basic session list.'
   - 'Health monitoring: Use `monitor_sessions` to get detailed health data and alerts.'

@@ -100,11 +100,6 @@ describe('CLI functionality', () => {
       const output = runCLI('init --help');
       expect(output.length).toBeGreaterThan(0);
     });
-
-    test('should validate checklist system', () => {
-      const output = runCLI('checklists list');
-      expect(output.length).toBeGreaterThan(0);
-    });
   });
 
   describe('Error handling', () => {

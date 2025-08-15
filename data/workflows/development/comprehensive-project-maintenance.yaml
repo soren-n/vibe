@@ -1,0 +1,30 @@
+dependencies: []
+description: guidance for end-to-end project maintenance including dependencies, CI/CD,
+  and infrastructure.
+name: comprehensive-project-maintenance
+project_types: []
+steps:
+  - 'Ensure: Security audit shows no vulnerabilities in current dependencies'
+  - 'All unused dependencies: identified and removed'
+  - 'Development dependencies: properly separated from production dependencies'
+  - 'Package lock files: updated and consistent with package manifests'
+  - 'Meta-packages and wrapper dependencies: evaluated and removed if redundant'
+  - 'Ensure: CI/CD workflows contain no obsolete workarounds or deprecated installation
+    steps'
+  - 'Ensure: Build processes complete successfully with optimized dependencies'
+  - 'Ensure: All test suites pass with the current dependency set'
+  - 'Core application functionality: preserved after cleanup'
+  - 'Version control ignore patterns: updated to exclude temporary files'
+  - 'Build artifacts and temporary files: cleaned from the repository'
+  - 'Installation instructions: accurate and tested'
+  - 'Ensure: Documentation reflects current project state and requirements'
+  - 'Dependency update strategy: documented and automated where possible'
+  - 'Ensure: Performance metrics show improvement in build time, installation time,
+    or bundle size'
+  - 'Security monitoring: configured for ongoing dependency health'
+  - 'Project structure: organized and free of legacy artifacts'
+triggers:
+  - project maintenance validation
+  - comprehensive cleanup validation
+  - maintenance completion check
+  - infrastructure cleanup validation

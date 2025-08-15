@@ -7,18 +7,9 @@ triggers:
   - configure pipeline
 category: development
 steps:
-  - step_text: Create GitHub Actions workflow files
-    command: mkdir -p .github/workflows && cp templates/workflow.yml .github/workflows/
-    working_dir: .
-  - step_text: Local quality checks
-    command: uv run pre-commit run --all-files && uv run pytest -q --maxfail=1
-    working_dir: .
-  - step_text: MCP server tests
-    command: cd mcp-server && npm test --silent && node test.js
-    working_dir: .
-  - step_text: Generate coverage report
-    command: uv run pytest -q --maxfail=1 --cov=vibe --cov-report=term | head -40
-    working_dir: .
-  - step_text: Install pre-commit hooks
-    command: uv run pre-commit install && uv run pre-commit autoupdate
-    working_dir: .
+  - 'Create CI/CD workflow files: Set up automated pipeline configuration files in appropriate directory structure.'
+  - 'Execute local quality checks: Run quality validation tools and automated testing to verify local changes.'
+  - 'Test server components: Execute server-side tests to verify backend functionality and integration.'
+  - 'Generate coverage reports: Run test suite with coverage analysis to ensure adequate test coverage.'
+  - 'Install automation hooks: Set up commit hooks and automated quality checks for ongoing validation.'
+  - 'Validate pipeline configuration: Verify that CI/CD pipeline configuration is correct and functional.'

@@ -27,29 +27,10 @@ export interface Workflow {
 
 export interface VibeConfig {
   projectType?: string;
-  workflows?: Record<string, unknown>;
-  workflowOverrides?: Record<string, unknown>;
-  checklistOverrides?: Record<string, unknown>;
   preferences?: {
-    maxSessions?: number;
-    sessionTimeout?: number;
     enableLogging?: boolean;
   };
   detectProjectType?(): Promise<string>;
-}
-
-/**
- * Enhanced Checklist interface matching documented structure
- */
-export interface Checklist {
-  name: string;
-  description: string;
-  triggers: string[];
-  items: string[];
-  dependencies?: string[];
-  projectTypes?: string[];
-  conditions?: string[];
-  category?: string;
 }
 
 /**
@@ -58,7 +39,6 @@ export interface Checklist {
 export interface WorkflowPlanResult {
   success: boolean;
   workflows: string[];
-  checklists?: string[];
   execution_plan: ExecutionPlanStep[];
   guidance: string;
   errors?: string[];
@@ -67,11 +47,10 @@ export interface WorkflowPlanResult {
 /**
  * Execution plan step structure
  */
-interface ExecutionPlanStep {
-  type: 'workflow' | 'checklist';
+export interface ExecutionPlanStep {
+  type: 'workflow';
   name: string;
-  title: string;
   description: string;
-  steps: string[];
   reasoning: string;
+  workflow?: Workflow;
 }

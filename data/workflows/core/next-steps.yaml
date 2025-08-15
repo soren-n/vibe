@@ -7,12 +7,12 @@ triggers:
   - recommendations
   - guidance
 steps:
-  - 'Check project status: `git status`.'
-  - 'Show recent commits: `git log --oneline -5`.'
-  - 'List TODO comments: `grep -r ''TODO\|FIXME\|XXX'' --include=''*.py'' --include=''*.js''
-    --include=''*.ts'' . | head -5`.'
-  - "Project analysis: `uv run vibe guide 'analyze project'`."
-  - "Update dependencies: `uv run vibe guide 'update dependencies'`."
-  - "Check documentation: `uv run vibe guide 'check docs'`."
-  - "Quality checks: `uv run vibe guide 'quality'`."
-  - "Tests: `uv run vibe guide 'test'`."
+  - 'Check project status: Review current git status to understand pending changes.'
+  - 'Show recent commits: Display recent commit history to understand recent progress.'
+  - 'List TODO comments: Search codebase for TODO, FIXME, and similar markers indicating pending work.'
+  - 'Project analysis: Use project analysis tools to identify areas needing attention.'
+  - 'Update dependencies: Review and update project dependencies for security and compatibility.'
+  - 'Check documentation: Verify that documentation is current and complete.'
+  - 'Quality validation: Run quality checks to identify code improvement opportunities.'
+  - 'Test execution: Run test suite to ensure project functionality remains intact.'
+  - 'Prioritize tasks: Order identified tasks by importance and impact for systematic execution.'

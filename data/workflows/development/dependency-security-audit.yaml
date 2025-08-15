@@ -9,10 +9,10 @@ triggers:
   - package vulnerabilities
   - audit dependencies
 steps:
-  - 'Install audit tools: Set up security scanning tools appropriate for your package
-    manager (npm audit, pip-audit, bundle audit).'
-  - 'Run native vulnerability scan: Execute built-in security audit commands (npm audit,
-    pip-audit --format json).'
+  - 'Install audit tools: Set up security scanning tools appropriate for your project
+    type and dependency management system.'
+  - 'Run native vulnerability scan: Execute built-in security audit commands provided
+    by your dependency management system.'
   - 'Check for known vulnerabilities: Query package security databases for CVEs in current
     dependencies.'
   - 'Scan for outdated packages: Identify packages with available security updates using
@@ -34,12 +34,5 @@ steps:
   - 'Establish security policy: Document procedures for handling critical vulnerabilities
     and incident response.'
 dependencies: []
-project_types:
-  - python
-  - javascript
-  - typescript
-  - nodejs
-  - ruby
-  - java
-  - go
+project_types: []
 conditions: []

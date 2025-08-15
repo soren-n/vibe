@@ -1,0 +1,17 @@
+name: comprehensive-test-validation
+description: comprehensive test.
+category: testing
+triggers:
+  - comprehensive test validation
+  - comprehensive.*testing.*done
+  - test suite validation
+  - test validation checklist
+  - tests.*complete
+  - validate.*all.*tests
+  - verify.*test.*suite
+steps:
+  - 'Ensure: CLI commands work correctly and produce expected output'
+  - 'All test environments: properly configured'
+  - 'Ensure: Unit tests pass with adequate coverage (>80%)'
+  - 'Ensure: Integration tests execute without failures'
+  - 'Test execution time: reasonable'

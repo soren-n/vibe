@@ -8,23 +8,19 @@ triggers:
   - release readiness checklist
   - release validation
   - run release process
-project_types:
-  - python
-  - javascript
-  - typescript
-  - vscode_extension
+project_types: []
 steps:
-  - "Project type detection: Analyze project structure using `find . -name 'package.json'
-    -o -name 'pyproject.toml' -o -name 'Cargo.toml'`."
-  - 'Quality validation: Execute `uv run pytest -q && uv run ruff check .` for Python
-    or `npm test && npm run lint` for Node.js.'
+  - 'Project type detection: Analyze project structure to identify build systems
+    and deployment targets.'
+  - 'Quality validation: Execute test suites and code quality checks appropriate
+    for your project type.'
   - 'Version management: Update version numbers using appropriate tools for detected
     project type.'
-  - 'Build process: Run `uv build` for Python, `npm run build` for Node.js, or equivalent
-    for other project types.'
-  - 'Marketplace publishing: Deploy to target platforms using project-specific publishing
-    commands.'
-  - 'Create GitHub release: Execute `gh release create` with changelog and built assets.'
+  - 'Build process: Execute build commands to create distributable packages for
+    your platform.'
+  - 'Package publishing: Deploy to target distribution platforms using appropriate
+    publishing workflows.'
+  - 'Create release: Generate release artifacts with changelog and built packages.'
 items:
   - 'Project type identified: Release strategy has been determined based on project
     structure analysis.'
@@ -36,8 +32,9 @@ items:
     files and configurations.'
   - 'Build process functional: Production builds and packages are created successfully
     without errors.'
-  - 'Marketplace compatibility confirmed: Project meets requirements for target platforms
-    (npm, PyPI, VS Code Marketplace).'
-  - 'GitHub release prepared: Release notes and assets are ready for publication.'
+  - 'Distribution platform compatibility confirmed: Project meets requirements for
+    target distribution platforms.'
+  - 'Release artifacts prepared: Release notes and distribution packages are ready
+    for publication.'
   - 'Post-release verification planned: Installation and deployment verification procedures
     are established.'

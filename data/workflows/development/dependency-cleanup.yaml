@@ -9,9 +9,8 @@ triggers:
   - remove unused packages
   - optimize dependencies
 steps:
-  - 'Document current state: Create backup of package manifests (package.json, requirements.txt,
-    etc.) before changes.'
-  - 'Run security audit: Execute npm audit, pip-audit, or equivalent to identify vulnerabilities.'
+  - 'Document current state: Create backup of package manifests before changes.'
+  - 'Run security audit: Execute dependency security scanning to identify vulnerabilities.'
   - 'Analyze usage patterns: Use static analysis tools to identify unused imports and
     dependencies.'
   - 'Remove unused dependencies: Uninstall packages that are not imported or referenced
@@ -32,9 +31,5 @@ steps:
   - 'Monitor metrics: Track improvements in installation time, bundle size, and security
     posture.'
 dependencies: []
-project_types:
-  - python
-  - javascript
-  - typescript
-  - nodejs
+project_types: []
 conditions: []

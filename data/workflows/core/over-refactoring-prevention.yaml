@@ -1,0 +1,21 @@
+dependencies: []
+description: Checklist to prevent excessive refactoring that degrades code quality.
+name: over-refactoring-prevention
+project_types: []
+steps:
+  - 'Ensure: Extracted functions perform meaningful operations, not trivial wrappers'
+  - 'Ensure: Function names clearly indicate purpose without needing implementation
+    details'
+  - 'Ensure: No eta reduction functions that simply call another function'
+  - 'Ensure: Related logic remains cohesive rather than scattered across multiple files'
+  - 'One-line operations: not extracted into separate functions'
+  - 'Ensure: Function signatures provide clear abstraction boundaries'
+  - 'Ensure: Code readability improved rather than decreased after extraction'
+  - Ensure Functions can be understood independently without excessive context switching
+  - 'Complexity reduction: measurable and significant'
+  - 'Ensure: Refactoring addresses genuine complexity issues, not cosmetic preferences'
+triggers:
+  - avoid over-refactoring
+  - refactoring guidelines
+  - prevent over-engineering
+  - refactoring best practices

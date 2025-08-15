@@ -1,36 +1,24 @@
-name: Complexity Analysis and Reduction Execution
-description: complexity analysis.
+name: Code Complexity Analysis and Reduction
+description: Analyze code complexity and reduce it through systematic refactoring.
 triggers:
-  - apply complexity tools
-  - complexity analysis checklist
-  - complexity validation checklist
-  - execute complexity reduction
-  - pre-complexity validation
+  - analyze complexity
+  - complexity analysis
+  - complexity validation
   - reduce complexity
-  - run complexity analysis
+  - refactor complex code
+  - simplify code structure
 steps:
-  - 'McCabe complexity check: Execute `uv run ruff check --select=C901 .` to identify
-    functions exceeding threshold.'
-  - 'Apply function extraction: Split complex functions into focused helper functions
-    with single responsibilities.'
-  - 'Validation tests: Execute `uv run pytest` after each refactoring step to ensure
-    no regressions.'
-  - 'Re-run complexity analysis: Execute `uv run ruff check --select=C901 .` to confirm
-    measurable improvement.'
-  - 'Update documentation: Revise function docstrings to reflect new structure and purpose.'
-dependencies:
-  - ruff
-  - pytest
+  - 'Run complexity analysis: Use static analysis tools to identify functions and methods exceeding complexity thresholds.'
+  - 'Apply function extraction: Split complex functions into focused helper functions with single responsibilities.'
+  - 'Execute validation tests: Run test suite after each refactoring step to ensure no functional regressions.'
+  - 'Re-analyze complexity metrics: Run complexity analysis again to confirm measurable improvement in code structure.'
+  - 'Update documentation: Revise function documentation to reflect new structure and clarify purpose.'
+  - 'Review architectural patterns: Consider design patterns that can reduce complexity at the system level.'
+dependencies: []
 items:
-  - 'High-complexity functions identified: Functions exceeding McCabe complexity threshold
-    have been found using ruff analysis.'
-  - 'Complexity metrics generated: AST-based analysis has identified functions with
-    concerning complexity scores based on branches, loops, and line counts.'
-  - 'Refactoring targets prioritized: Highest complexity functions with clear separation
-    of concerns have been identified for focused improvement.'
-  - 'Functionality preservation verified: Full test suite passes before any complexity
-    reduction work begins.'
-  - 'Complexity reduction confirmed: Re-analysis shows measurable improvement in complexity
-    metrics after refactoring.'
-  - 'Documentation accuracy verified: Function docstrings accurately reflect new structure
-    and purpose after refactoring.'
+  - 'High-complexity functions identified: Functions exceeding complexity thresholds have been found using static analysis tools.'
+  - 'Complexity metrics generated: Analysis has identified functions with concerning complexity scores based on control flow and structural measures.'
+  - 'Refactoring targets prioritized: Highest complexity functions with clear separation opportunities have been identified for focused improvement.'
+  - 'Functionality preservation verified: Full test suite passes before any complexity reduction work begins.'
+  - 'Complexity reduction confirmed: Re-analysis shows measurable improvement in complexity metrics after refactoring.'
+  - 'Documentation accuracy verified: Function documentation accurately reflects new structure and purpose after refactoring.'

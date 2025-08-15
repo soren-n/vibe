@@ -15,7 +15,6 @@ export enum LogLevel {
 
 interface LogContext {
   operation?: string;
-  sessionId?: string;
   workflowName?: string;
   component?: string;
   duration?: number;

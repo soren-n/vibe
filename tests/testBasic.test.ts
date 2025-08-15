@@ -26,22 +26,8 @@ describe('Basic Vibe functionality', () => {
     console.log('Detected project type:', detectedType);
     expect(['typescript', 'node', 'javascript', 'generic']).toContain(detectedType);
 
-    // We should have some workflows loaded (either config-based or defaults)
-    expect(Object.keys(config.workflows).length).toBeGreaterThan(0);
-
-    // Check for either default workflows or loaded ones
-    const workflowNames = Object.keys(config.workflows);
-    const hasBasicWorkflows = workflowNames.some(name =>
-      [
-        'analysis',
-        'implementation',
-        'testing',
-        'quality',
-        'bootstrap',
-        'lint',
-      ].includes(name)
-    );
-    expect(hasBasicWorkflows).toBe(true);
+    // Check project types configuration
+    expect(Object.keys(config.projectTypes).length).toBeGreaterThan(0);
   });
 
   test('prompt analysis works', async () => {

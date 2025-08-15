@@ -3,7 +3,6 @@
  */
 import { VibeConfigImpl } from '../config.js';
 import { loadAllWorkflows } from '../workflows.js';
-import { getChecklistsArray } from '../guidance/loader.js';
 import { WorkflowOrchestrator } from '../orchestrator.js';
 import type { CLIResult } from './utils.js';
 import { createErrorResponse, createSuccessResponse } from './utils.js';
@@ -43,7 +42,7 @@ export async function handleInit(options: InitOptions): Promise<CLIResult> {
 }
 
 /**
- * Handles run command - Run a workflow
+ * Handles run command - Show workflow guidance (execution removed)
  */
 export async function handleRun(
   workflow: string,
@@ -53,16 +52,18 @@ export async function handleRun(
     const config = new VibeConfigImpl();
     const orchestrator = new WorkflowOrchestrator(config);
     const allWorkflows = orchestrator.getAllWorkflows();
-    const targetWorkflow = allWorkflows.find(w => w.name === workflow);
+    const targetWorkflow = Object.values(allWorkflows).find(w => w.name === workflow);
 
     if (!targetWorkflow) {
       return createErrorResponse(`Workflow '${workflow}' not found`);
     }
 
     return createSuccessResponse({
-      message: `Workflow '${workflow}' executed successfully`,
+      message: `Showing guidance for workflow '${workflow}'`,
       workflow: targetWorkflow.name,
       description: targetWorkflow.description,
+      steps: targetWorkflow.steps,
+      guidance: `This workflow provides guidance for: ${targetWorkflow.description}. Use these steps as inspiration for your development process.`,
     });
   } catch (error) {
     return createErrorResponse(error instanceof Error ? error : String(error));
@@ -92,7 +93,6 @@ export async function handleCheck(options: CheckOptions): Promise<CLIResult> {
         github_integration: {},
       },
       projectType,
-      workflows: Object.keys(config.workflows).length,
       projectTypes: Object.keys(config.projectTypes).length,
     };
 
@@ -102,7 +102,6 @@ export async function handleCheck(options: CheckOptions): Promise<CLIResult> {
       return createSuccessResponse({
         message: 'Environment check completed',
         projectType,
-        workflows: `${Object.keys(config.workflows).length} configured`,
         projectTypes: `${Object.keys(config.projectTypes).length} supported`,
       });
     }
@@ -141,9 +140,7 @@ export async function handleConfigInfo(): Promise<CLIResult> {
     return createSuccessResponse({
       message: 'Vibe Configuration',
       projectType: config.projectType,
-      sessionConfig: config.session,
       lintConfig: config.lint,
-      workflows: `${Object.keys(config.workflows).length} configured`,
       projectTypes: `${Object.keys(config.projectTypes).length} supported`,
     });
   } catch (error) {
@@ -157,12 +154,10 @@ export async function handleConfigInfo(): Promise<CLIResult> {
 export async function handleValidate(): Promise<CLIResult> {
   try {
     const workflows = loadAllWorkflows();
-    const checklists = getChecklistsArray();
 
     return createSuccessResponse({
       message: 'Configuration validation completed',
       workflows: `${Object.keys(workflows).length} workflows validated`,
-      checklists: `${checklists.length} checklists validated`,
     });
   } catch (error) {
     return createErrorResponse(error instanceof Error ? error : String(error));

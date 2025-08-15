@@ -1,0 +1,20 @@
+name: feature-development
+description: Step-by-step guidance for implementing new features properly.
+triggers:
+  - feature development
+  - new feature
+  - implement feature
+  - feature workflow
+steps:
+  - 'Define and understand requirements clearly: Gather stakeholder input and document feature specifications.'
+  - 'Consider and document design approach: Plan the implementation strategy and architectural decisions.'
+  - 'Identify and document breaking changes: Assess impact on existing functionality and plan migration.'
+  - 'Implement feature with appropriate error handling: Write robust code with proper exception management.'
+  - 'Write unit tests to cover new functionality: Ensure comprehensive test coverage for the feature.'
+  - 'Create integration tests to verify end-to-end behavior: Test the feature in realistic scenarios.'
+  - 'Update documentation (API docs, README, etc.): Keep documentation current with new functionality.'
+  - 'Performance impact: evaluated'
+  - 'Security implications: reviewed'
+  - 'Backwards compatibility: maintained (if required)'
+  - 'Ensure Feature can be safely rolled back if needed'
+  - 'Monitoring/logging: in place for the new feature'

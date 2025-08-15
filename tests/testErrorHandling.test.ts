@@ -4,7 +4,6 @@
 
 import { describe, it, expect } from 'vitest';
 import {
-  SessionNotFoundError,
   FilesystemError,
   categorizeError,
   ErrorCategory,
@@ -17,21 +16,6 @@ import {
 import { VibeMCPServer } from '../src/mcp-server.js';
 
 describe('Error Handling', () => {
-  describe('SessionNotFoundError', () => {
-    it('should create error with correct message and properties', () => {
-      const sessionId = 'test-session-123';
-      const error = new SessionNotFoundError(sessionId);
-
-      expect(error.message).toBe(`Session not found: ${sessionId}`);
-      expect(error.name).toBe('SessionNotFoundError');
-      expect(error.code).toBe('SESSION_NOT_FOUND');
-      expect(error.category).toBe(ErrorCategory.SESSION);
-      expect(error.severity).toBe(ErrorSeverity.HIGH);
-      expect(error.context.sessionId).toBe(sessionId);
-      expect(error).toBeInstanceOf(Error);
-    });
-  });
-
   describe('FilesystemError', () => {
     it('should create error with correct message and properties', () => {
       const message = 'File operation failed';
@@ -93,7 +77,7 @@ describe('Error Handling', () => {
 
   describe('categorizeError', () => {
     it('should return same error if already VibeError', () => {
-      const error = new SessionNotFoundError('test-123');
+      const error = new FileNotFoundError('/test/file.txt');
       const result = categorizeError(error);
 
       expect(result).toBe(error);
@@ -138,7 +122,7 @@ describe('Error Handling', () => {
 
   describe('isVibeError', () => {
     it('should return true for VibeError instances', () => {
-      const error = new SessionNotFoundError('test');
+      const error = new FileNotFoundError('/test/file.txt');
       expect(isVibeError(error)).toBe(true);
     });
 
@@ -157,20 +141,20 @@ describe('Error Handling', () => {
 
   describe('formatErrorForLogging', () => {
     it('should format error for logging correctly', () => {
-      const error = new SessionNotFoundError('test-123', { operation: 'load' });
+      const error = new FileNotFoundError('/test/file.txt', { operation: 'load' });
       const formatted = formatErrorForLogging(error);
 
       expect(formatted.error).toBeDefined();
       const errorData = formatted.error as Record<string, any>;
-      expect(errorData.name).toBe('SessionNotFoundError');
-      expect(errorData.message).toBe('Session not found: test-123');
-      expect(errorData.category).toBe(ErrorCategory.SESSION);
-      expect(errorData.severity).toBe(ErrorSeverity.HIGH);
-      expect(errorData.code).toBe('SESSION_NOT_FOUND');
+      expect(errorData.name).toBe('FileNotFoundError');
+      expect(errorData.message).toBe('File not found: /test/file.txt');
+      expect(errorData.category).toBe(ErrorCategory.FILESYSTEM);
+      expect(errorData.severity).toBe(ErrorSeverity.MEDIUM);
+      expect(errorData.code).toBe('FILE_NOT_FOUND');
       expect(errorData.retryable).toBe(false);
       expect(errorData.context).toEqual(
         expect.objectContaining({
-          sessionId: 'test-123',
+          resource: '/test/file.txt',
           operation: 'load',
           timestamp: expect.any(String),
         })

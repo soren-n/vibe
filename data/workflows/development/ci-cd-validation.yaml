@@ -1,0 +1,26 @@
+name: ci-cd-validation
+description: Set up and maintain CI/CD pipeline.
+triggers:
+  - check pipeline
+  - ci cd validation
+  - ci validation
+  - continuous integration validation
+  - pipeline health
+  - pipeline validation
+  - validate ci
+  - setup pipeline
+steps:
+  - 'Verify test stage functions correctly: All tests run and pass in CI environment.'
+  - 'Check build stage operates properly: Code compiles and packages successfully.'
+  - 'Ensure deployment stage works: Automated deployment to staging/production functions.'
+  - 'Validate security scanning is active: Security vulnerabilities are detected and reported.'
+  - 'Confirm dependency updates work: Automated dependency updates function correctly.'
+  - 'Check notifications are configured: Team receives alerts for pipeline failures.'
+  - 'Verify rollback mechanisms exist: Failed deployments can be reverted quickly.'
+  - 'Ensure environment parity: Development, staging, and production environments match.'
+  - 'Check performance monitoring: Pipeline execution times are tracked and optimized.'
+  - 'Validate artifact storage: Build artifacts are stored and versioned properly.'
+  - 'Confirm access controls work: Only authorized personnel can modify pipeline.'
+  - 'Check disaster recovery: Pipeline can be restored from backup configurations.'
+dependencies: []
+project_types: []

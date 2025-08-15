@@ -11,16 +11,8 @@ triggers:
   - review documentation
   - validate.*documentation.*review
   - verify.*docs.*audit
-project_types:
-  - python
-  - typescript
-  - javascript
-  - rust
-  - go
-  - general
-dependencies:
-  - git (for analyzing recent changes)
-  - find command (for discovering files)
+project_types: []
+dependencies: []
 conditions:
   - When documentation needs review or improvement
   - After significant development sessions

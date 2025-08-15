@@ -1,3 +1,74 @@
+# [2.0.0-next] Major Architecture Simplification (2025-08-15)
+
+## 🎯 **Major Breaking Changes - Plan-Focused Architecture**
+
+This release represents a **complete architectural refactor** simplifying Vibe into a **plan-focused guidance system** for AI agents.
+
+### ❌ **Removed Systems**
+
+- **Session Management** - Eliminated complex session lifecycle
+- **Checklist System** - Converted all checklists to workflow guidance
+- **Workflow Execution** - Workflows now provide guidance only
+- **Session-based MCP Tools** - Replaced with plan management tools
+
+### ✨ **New Core Features**
+
+#### Plan System (Primary Feature)
+
+- **Persistent Nested Todo Lists** - Plans survive restarts, serving as agent long-term memory
+- **Arbitrary Depth Nesting** - Break down tasks to any level of detail
+- **Dynamic Planning** - Expand tasks on-the-fly as understanding improves
+- **Simple Persistence** - Automatic storage to `~/.vibe/current-plan.json`
+
+#### Plan-Focused MCP Interface
+
+- `get_plan_status()` - View plan with completion statistics
+- `add_plan_item(text, parent_id?)` - Add tasks/subtasks
+- `complete_plan_item(item_id)` - Mark tasks complete
+- `expand_plan_item(item_id, sub_tasks[])` - Break down complex tasks
+- `clear_plan()` - Start fresh
+- `query_workflows(pattern?, category?)` - Search 77+ guidance workflows
+
+### 📁 **Structural Changes**
+
+- **Added**: `src/plan.ts` - Core plan system
+- **Added**: `src/cli/plan-commands.ts` - Plan CLI interface
+- **Added**: `src/mcp-server/plan-handlers.ts` - Plan MCP tools
+- **Removed**: `src/session/` - Entire session system (30+ files)
+- **Removed**: `data/checklists/` - All checklist files
+- **Removed**: Session and checklist CLI/MCP commands
+
+### 🎯 **Benefits**
+
+- **30% code reduction** - Eliminated complex session management
+- **Better agent experience** - Simple persistent planning interface
+- **Improved performance** - No session management overhead
+- **Enhanced documentation** - Complete guides for new architecture
+
+### 📚 **New Documentation**
+
+- `CLAUDE.md` - Development guide for future Claude instances
+- `docs/adr/adr-004-simplified-architecture.md` - Architecture decision record
+- `docs/MCP-Integration.md` - Comprehensive MCP integration guide
+- `docs/api/plan-models.md` - Complete plan system API reference
+
+### 🔄 **Migration Guide**
+
+```bash
+# OLD: Session-based workflow
+vibe session start workflow-name
+vibe session advance
+
+# NEW: Plan-based approach
+vibe plan add "Task description"
+vibe plan expand item-id "Subtask 1" "Subtask 2"
+vibe plan complete item-id
+```
+
+This change transforms Vibe from a workflow execution system into a **persistent planning and guidance tool** specifically designed for AI agents.
+
+---
+
 # [1.6.0](https://github.com/soren-n/vibe-mcp/compare/v1.5.0...v1.6.0) (2025-08-14)
 
 ### Features

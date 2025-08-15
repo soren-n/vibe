@@ -1,0 +1,25 @@
+dependencies: []
+description: guidance for comprehensive quality checks including dependency analysis
+name: quality
+project_types: []
+steps:
+  - 'Ensure: All code quality rules pass without errors or warnings'
+  - 'Ensure: Code formatting follows project standards consistently'
+  - 'Ensure: Language compilation succeeds without errors'
+  - 'Ensure: All tests pass successfully with expected coverage'
+  - 'No unused dependencies: detected by analysis tools'
+  - 'Ensure: No unused exports exist in the codebase'
+  - 'No unused files: present in the project'
+  - 'Ensure: Build process completes successfully'
+  - 'Ensure: No security vulnerabilities in dependencies'
+  - 'Ensure: Package.json scripts function correctly'
+  - 'Configuration files: valid and properly formatted'
+  - 'Documentation: up to date with any changes'
+  - Ensure Quality checks can be reproduced consistently
+  - 'Team coding standards: maintained'
+  - 'CI/CD pipeline compatibility: verified'
+triggers:
+  - quality validation
+  - quality check
+  - comprehensive validation
+  - code quality

@@ -1,6 +1,5 @@
 name: Dependency Analysis and Optimization
-description: Analyze project dependencies to identify optimization opportunities,
-  security issues, and unnecessary packages.
+description: Analyze project dependencies to identify optimization opportunities, security issues, and unnecessary packages.
 triggers:
   - analyze dependencies
   - dependency audit
@@ -8,26 +7,18 @@ triggers:
   - reduce package size
   - dependency security
   - package bloat
+  - dependency health
 steps:
-  - 'Inventory current dependencies: List all direct and transitive dependencies using
-    `pip list`, `uv tree`, or `poetry show --tree`.'
-  - 'Analyze dependency usage: Use tools like `pipdeptree` or `pydeps` to visualize
-    dependency relationships.'
-  - 'Check for unused dependencies: Run `pip-autoremove --list` or manually review imports
-    vs dependencies.'
-  - 'Identify heavy dependencies: Look for packages >10MB using `pip show <package>`
-    or check wheel sizes.'
-  - 'Security audit: Run `pip-audit` or `safety check` to identify known vulnerabilities.'
-  - 'Version compatibility check: Ensure all dependencies support your target Python
-    version.'
-  - 'License compliance: Check license compatibility using `pip-licenses` for commercial
-    projects.'
-  - 'Alternative evaluation: Research lighter alternatives for heavy dependencies (e.g.,
-    `rich` vs `colorama`).'
-  - 'Test optional dependencies: Identify which dependencies could be made optional
-    with graceful fallbacks.'
-  - 'Document findings: Create a dependency analysis report with recommendations.'
+  - 'Inventory current dependencies: List all direct and transitive dependencies using package manager tools.'
+  - 'Analyze dependency relationships: Use dependency analysis tools to visualize and understand package relationships.'
+  - 'Check for unused dependencies: Identify dependencies that are declared but not actually used in the codebase.'
+  - 'Identify heavy dependencies: Look for packages that significantly increase bundle size or installation time.'
+  - 'Security audit: Run security scanning tools to identify packages with known vulnerabilities.'
+  - 'Version compatibility check: Ensure all dependencies support your target runtime version and requirements.'
+  - 'License compliance review: Check license compatibility and obligations for commercial or open source projects.'
+  - 'Alternative evaluation: Research lighter or more suitable alternatives for heavy or problematic dependencies.'
+  - 'Test optional dependencies: Identify which dependencies could be made optional with graceful fallbacks.'
+  - 'Document findings: Create a comprehensive dependency analysis report with actionable recommendations.'
 dependencies: []
-project_types:
-  - python
+project_types: []
 conditions: []

@@ -1,0 +1,21 @@
+dependencies: []
+description: Research process quality and completeness workflow guidance.
+name: research-quality
+project_types: []
+steps:
+  - 'Query analysis complete: User request: broken down into specific, searchable research
+    topics and keywords'
+  - 'Ensure: Multiple sources consulted: Research includes technical documentation,
+    official sources, and current best practices from diverse channels'
+  - 'Information currency verified: All findings: cross-referenced and confirmed to
+    be current and accurate'
+  - 'Actionable recommendations provided: Research results: synthesized into specific,
+    implementable guidance'
+  - 'Documentation quality maintained: Insights: clearly documented with concrete examples
+    and next steps'
+  - 'Ensure: Token efficiency achieved: Research process uses efficient lookup methods
+    and avoids excessive output'
+triggers:
+  - research validation
+  - research quality checklist
+  - research completeness checklist

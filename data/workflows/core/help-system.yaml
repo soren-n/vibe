@@ -1,0 +1,21 @@
+dependencies: []
+description: Help system functionality and completeness workflow guidance.
+name: help-system
+project_types: []
+steps:
+  - 'Ensure: Natural language guidance functional: Help system responds appropriately
+    to conversational requests'
+  - 'Project analysis guidance available: Commands for project structure analysis: accessible
+    and functional'
+  - 'Ensure: Development workflows accessible: Common development tasks like testing,
+    formatting, and refactoring have clear guidance'
+  - 'Documentation workflows available: Documentation creation and maintenance workflows:
+    discoverable'
+  - 'Ensure: Development environment integration functional: IDE and development tool setup guidance works
+    correctly across platforms'
+  - 'Fallback guidance operational: Generic "what next" guidance provides helpful direction
+    when users: uncertain'
+triggers:
+  - help validation
+  - help system checklist
+  - command guidance validation

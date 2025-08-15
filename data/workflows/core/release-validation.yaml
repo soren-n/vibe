@@ -1,0 +1,26 @@
+dependencies: []
+description: Checklist to verify project is ready for release.
+name: release-validation
+project_types: []
+steps:
+  - 'Ensure: All tests pass without errors'
+  - 'Version numbers: updated in all relevant files'
+  - 'Changelog: updated with new features and fixes'
+  - 'Ensure: Documentation reflects current functionality'
+  - 'Ensure: No critical security vulnerabilities present'
+  - 'Ensure: Build process completes successfully'
+  - 'Dependencies: up to date and secure'
+  - 'License and copyright information: current'
+  - 'Release notes: prepared'
+  - 'Ensure: Backup of current state exists'
+  - 'Target marketplace requirements: met'
+  - 'Installation instructions: accurate'
+  - 'All required assets and files: included'
+  - 'Ensure: Quality gates pass in CI/CD pipeline'
+  - 'Ensure: Manual testing of key functionality completed'
+triggers:
+  - validate release
+  - check release readiness
+  - verify release
+  - pre-release check
+  - release checklist

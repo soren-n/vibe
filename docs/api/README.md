@@ -4,20 +4,31 @@ This directory contains comprehensive API documentation for all Vibe components.
 
 ## Core Components
 
-- [PromptAnalyzer](prompt-analyzer.md) - Analyzes prompts and matches workflows/checklists
-- [WorkflowOrchestrator](workflow-orchestrator.md) - Plans and orchestrates workflow execution
-- [SessionManager](session-manager.md) - Manages step-by-step execution state
+- [CLI Interface](cli.md) - Command-line interface for plan management and workflow guidance
+- [PromptAnalyzer](prompt-analyzer.md) - Analyzes prompts and matches workflows
+- [WorkflowOrchestrator](workflow-orchestrator.md) - Provides workflow guidance and recommendations
 - [Configuration](configuration.md) - Handles project configuration and detection
 
 ## Data Models
 
-- [Core Data Models](models.md) - Core data structures for workflows, checklists, and sessions
-- [Session Models](session-models.md) - Session state and workflow frame structures
+- [Core Data Models](models.md) - Core data structures for workflows and plans
+- [Plan Models](plan-models.md) - Plan system for persistent nested todo lists
 
 ## Guidance System
 
 - [Workflow Registry](workflow-registry.md) - YAML workflow loading and caching with hot reloading
 - [Project Detection](project-detection.md) - Project type detection algorithms
+- [Linting](lint.md) - Code quality checks and linting integration
+
+## Deprecated Components
+
+The following components were removed in the architectural simplification:
+
+- Session-based workflow execution (replaced by plan system)
+- Checklist system (converted to workflows)
+- MCP session management tools (replaced by plan-focused tools)
+
+See [ADR-004](../adr/adr-004-simplified-architecture.md) for details on the architectural changes.
 
 ## Quality Assurance
 
@@ -26,7 +37,6 @@ This directory contains comprehensive API documentation for all Vibe components.
 ## CLI Interface
 
 - [Command Interface](cli.md) - Command-line interface structure and routing
-- [Session Monitoring](session-monitoring.md) - AI agent workflow completion tracking and intervention
 
 ## Implementation Completeness
 

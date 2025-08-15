@@ -1,5 +1,5 @@
 name: Code Quality Standards Enforcement
-description: code.
+description: Enforce comprehensive code quality standards including formatting, type safety, and testing requirements.
 triggers:
   - code quality checklist
   - enforce standards
@@ -10,13 +10,12 @@ triggers:
   - run validation
   - standards checklist
 steps:
-  - 'Code formatting: Execute `uv run ruff check .` to validate consistent code style.'
-  - 'Type checking: Execute `uv run mypy .` to validate type safety and documentation.'
-  - 'Test suite: Execute `uv run pytest` to ensure all functionality works correctly.'
-dependencies:
-  - ruff
-  - mypy
-  - pytest
+  - 'Code formatting validation: Execute static analysis tools to validate consistent code style and formatting.'
+  - 'Type safety validation: Run type checking tools to validate type annotations and catch type-related issues.'
+  - 'Test suite execution: Run comprehensive test suite to ensure all functionality works correctly.'
+  - 'Documentation standards check: Verify that code documentation meets professional quality standards.'
+  - 'Complexity analysis: Check that code complexity metrics are within acceptable thresholds.'
+dependencies: []
 items:
   - 'Professional language: Workflow files use formal language without emojis or decorative
     formatting.'

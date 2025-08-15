@@ -1,29 +1,19 @@
 import { ProjectDetector } from '../project_types/detector.js';
 import type { VibeConfig } from '../models.js';
-import type {
-  LintConfig,
-  ProjectTypeConfig,
-  SessionConfig,
-  WorkflowConfig,
-} from './types.js';
+import type { LintConfig, ProjectTypeConfig } from './types.js';
 import {
   createDefaultLintConfig,
   createDefaultProjectTypeConfigs,
-  createDefaultSessionConfig,
-  createDefaultWorkflowConfigs,
 } from './defaults.js';
 import { addGitignorePatterns, loadFromFile } from './loader.js';
 
 export class VibeConfigImpl implements VibeConfig {
   projectType = 'auto';
-  workflows: Record<string, WorkflowConfig> = {};
   projectTypes: Record<string, ProjectTypeConfig> = {};
   lint: LintConfig;
-  session: SessionConfig;
 
   constructor() {
     this.lint = createDefaultLintConfig();
-    this.session = createDefaultSessionConfig();
     this.loadDefaults();
   }
 
@@ -35,10 +25,6 @@ export class VibeConfigImpl implements VibeConfig {
 
     // Merge loaded configuration
     config.projectType = loadedConfig.projectType;
-
-    // Merge workflows
-    const defaultWorkflows = createDefaultWorkflowConfigs();
-    config.workflows = { ...defaultWorkflows, ...loadedConfig.workflows };
 
     // Merge project types
     const defaultProjectTypes = createDefaultProjectTypeConfigs();
@@ -63,17 +49,6 @@ export class VibeConfigImpl implements VibeConfig {
         loadedConfig.lint.maxStepMessageLength ?? defaultLint.maxStepMessageLength,
       unprofessionalPatterns:
         loadedConfig.lint.unprofessionalPatterns ?? defaultLint.unprofessionalPatterns,
-    };
-
-    // Merge session config
-    const defaultSession = createDefaultSessionConfig();
-    config.session = {
-      maxSessions: loadedConfig.session.maxSessions ?? defaultSession.maxSessions,
-      sessionTimeout:
-        loadedConfig.session.sessionTimeout ?? defaultSession.sessionTimeout,
-      ...(loadedConfig.session.sessionDir && {
-        sessionDir: loadedConfig.session.sessionDir,
-      }),
     };
 
     // Add gitignore patterns to lint exclude patterns
@@ -114,38 +89,7 @@ export class VibeConfigImpl implements VibeConfig {
     return config.tools ?? [];
   }
 
-  /**
-   * Check if a workflow is enabled
-   */
-  isWorkflowEnabled(workflowName: string): boolean {
-    const workflow = this.workflows[workflowName];
-    return workflow ? workflow.enabled : false;
-  }
-
-  /**
-   * Get workflow priority (lower number = higher priority)
-   */
-  getWorkflowPriority(workflowName: string): number {
-    const workflow = this.workflows[workflowName];
-    return workflow ? workflow.priority : 999;
-  }
-
-  /**
-   * Get all enabled workflows sorted by priority
-   */
-  getEnabledWorkflowsSorted(): string[] {
-    return Object.entries(this.workflows)
-      .filter(([_, config]) => config.enabled)
-      .sort(([_a, configA], [_b, configB]) => configA.priority - configB.priority)
-      .map(([name, _]) => name);
-  }
-
   loadDefaults(): void {
-    // Load default workflow configurations
-    if (Object.keys(this.workflows).length === 0) {
-      this.workflows = createDefaultWorkflowConfigs();
-    }
-
     // Load default project type configurations
     if (Object.keys(this.projectTypes).length === 0) {
       this.projectTypes = createDefaultProjectTypeConfigs();

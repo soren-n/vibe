@@ -28,7 +28,7 @@ steps:
     or `git checkout -b major/vX.0.0`.'
   - "Make your changes with conventional commits: `git commit -m 'fix: description'`
     or `git commit -m 'feat: description'`."
-  - 'Tests: `uv run pytest` or project test command.'
+  - 'Tests: Run project test command.'
   - 'Push branch: `git push -u origin branch-name`.'
   - 'Create pull request: Use GitHub UI or `gh pr create`.'
   - 'For major changes: Plan migration guide and coordinate timing.'

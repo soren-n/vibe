@@ -5,7 +5,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { Checklist, VibeConfig, Workflow } from '../src/models';
+import { Workflow } from '../src/models';
 import { VibeConfigImpl } from '../src/config';
 import { WorkflowOrchestrator as Orchestrator } from '../src/orchestrator';
 import { loadAllWorkflows } from '../src/workflows';

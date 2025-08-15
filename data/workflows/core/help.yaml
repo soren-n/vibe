@@ -14,5 +14,5 @@ steps:
     workflows.'
   - 'Development command presentation: Display "run tests", "format code", "refactor
     code", and development workflows.'
-  - 'Agent integration display: Show "setup agent mode" for VS Code AI integration configuration.'
+  - 'Development tools display: Show "setup development environment" for IDE and development tool configuration.'
   - 'Fallback guidance: Display "what next" option for users seeking general direction.'

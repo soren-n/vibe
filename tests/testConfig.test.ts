@@ -30,36 +30,30 @@ describe('VibeConfig tests', () => {
 
       expect(config).toBeDefined();
       expect(config.projectType).toBe('auto');
-      expect(Object.keys(config.workflows).length).toBeGreaterThan(0);
       expect(Object.keys(config.projectTypes).length).toBeGreaterThan(0);
     });
 
     test('finds config file in current directory', async () => {
       const configContent = `
 project_type: typescript
-workflows:
-  custom-workflow:
-    enabled: true
-    priority: 1
-    triggers: ["custom"]
-    description: "Custom workflow"
+lint:
+  checkEmojis: false
+  maxStepMessageLength: 200
 `;
 
       fs.writeFileSync('.vibe.yaml', configContent);
       const config = await VibeConfigImpl.loadFromFile();
 
       expect(config.projectType).toBe('typescript');
-      expect(config.workflows['custom-workflow']).toBeDefined();
-      expect(config.workflows['custom-workflow']?.enabled).toBe(true);
+      expect(config.lint.checkEmojis).toBe(false);
+      expect(config.lint.maxStepMessageLength).toBe(200);
     });
 
     test('finds config file in parent directory', async () => {
       const configContent = `
 project_type: typescript
-workflows:
-  parent-workflow:
-    enabled: true
-    priority: 2
+lint:
+  checkProfessionalLanguage: false
 `;
 
       const subDir = path.join(tempDir, 'subdir');
@@ -70,7 +64,7 @@ workflows:
 
       const config = await VibeConfigImpl.loadFromFile();
       expect(config.projectType).toBe('typescript');
-      expect(config.workflows['parent-workflow']).toBeDefined();
+      expect(config.lint.checkProfessionalLanguage).toBe(false);
     });
 
     test('loads different config file formats', async () => {
@@ -200,47 +194,6 @@ __pycache__/
     });
   });
 
-  describe('Workflow configuration', () => {
-    test('loads default workflows', async () => {
-      const config = await VibeConfigImpl.loadFromFile();
-
-      expect(config.workflows['analysis']).toBeDefined();
-      expect(config.workflows['implementation']).toBeDefined();
-      expect(config.workflows['testing']).toBeDefined();
-      expect(config.workflows['quality-check']).toBeDefined();
-    });
-
-    test('merges custom workflows with defaults', async () => {
-      const configContent = `
-workflows:
-  custom-workflow:
-    enabled: true
-    priority: 1
-    triggers: ["custom", "test"]
-    description: "Custom workflow"
-`;
-
-      fs.writeFileSync('.vibe.yaml', configContent);
-      const config = await VibeConfigImpl.loadFromFile();
-
-      // Should have both default and custom workflows
-      expect(config.workflows['analysis']).toBeDefined();
-      expect(config.workflows['custom-workflow']).toBeDefined();
-      expect(config.workflows['custom-workflow']?.triggers).toEqual(['custom', 'test']);
-    });
-
-    test('workflow priority and enabled status', async () => {
-      const config = await VibeConfigImpl.loadFromFile();
-
-      expect(config.isWorkflowEnabled('analysis')).toBe(true);
-      expect(config.getWorkflowPriority('analysis')).toBe(1);
-
-      const enabledWorkflows = config.getEnabledWorkflowsSorted();
-      expect(enabledWorkflows.length).toBeGreaterThan(0);
-      expect(enabledWorkflows).toContain('analysis');
-    });
-  });
-
   describe('Project type configurations', () => {
     it('loads default project type configurations', async () => {
       const config = await VibeConfigImpl.loadFromFile();
@@ -304,29 +257,6 @@ lint:
     });
   });
 
-  describe('Session configuration', () => {
-    test('loads default session configuration', async () => {
-      const config = await VibeConfigImpl.loadFromFile();
-
-      expect(config.session.maxSessions).toBe(10);
-      expect(config.session.sessionTimeout).toBe(3600000);
-    });
-
-    test('merges custom session configuration', async () => {
-      const configContent = `
-session:
-  maxSessions: 5
-  sessionTimeout: 1800000
-`;
-
-      fs.writeFileSync('.vibe.yaml', configContent);
-      const config = await VibeConfigImpl.loadFromFile();
-
-      expect(config.session.maxSessions).toBe(5);
-      expect(config.session.sessionTimeout).toBe(1800000);
-    });
-  });
-
   describe('Error handling', () => {
     test('handles invalid YAML gracefully', async () => {
       fs.writeFileSync('.vibe.yaml', 'invalid: yaml: content: [');
@@ -362,10 +292,9 @@ project_type: python
       // Should have the custom project_type
       expect(config.projectType).toBe('python');
 
-      // Should still have default workflows and other settings
-      expect(Object.keys(config.workflows).length).toBeGreaterThan(0);
+      // Should still have default lint settings and project types
+      expect(Object.keys(config.projectTypes).length).toBeGreaterThan(0);
       expect(config.lint.checkEmojis).toBe(true);
-      expect(config.session.maxSessions).toBe(10);
     });
   });
 });

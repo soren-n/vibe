@@ -11,12 +11,11 @@ triggers:
   - check config format
   - validate configuration
 steps:
-  - 'Create config if missing: `echo ''protocol_version: 1\nproject_type: "auto"'' >
-    .vibe.yaml`.'
-  - 'Validation: `vibe check`.'
-  - 'Check YAML syntax: `uv run python -c "import yaml; yaml.safe_load(open(''.vibe.yaml''))"`.'
-  - 'Get setup help: `vibe guide "setup vibe project"`.'
-guidance: 'Goal: confirm .vibe.yaml exists, passes `vibe check`, and parses as YAML.
+  - 'Create config if missing: Generate minimal .vibe.yaml with protocol_version and project_type.'
+  - 'Run configuration validation: Use vibe validation tools to check config structure.'
+  - 'Verify YAML syntax: Parse .vibe.yaml file to ensure valid YAML format.'
+  - 'Access setup guidance: Query vibe help system for project setup instructions.'
+guidance: 'Goal: confirm .vibe.yaml exists, passes vibe validation, and parses as YAML.
 
 
   Minimal config:

@@ -1,12 +1,12 @@
 /**
- * Workflow and Checklist Loading System - TypeScript translation of Python YAML loading
+ * Workflow Loading System - TypeScript translation of Python YAML loading
  * Enhanced with proper error handling and fallback mechanisms
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import type { Checklist, Workflow } from './models';
+import type { Workflow } from './models';
 
 // YAML data interfaces for type safety
 interface WorkflowYamlData {
@@ -25,21 +25,8 @@ interface WorkflowYamlData {
   [key: string]: unknown;
 }
 
-interface ChecklistYamlData {
-  name?: string;
-  description?: string;
-  triggers?: string[];
-  items?: string[];
-  dependencies?: string[];
-  projectTypes?: string[];
-  project_types?: string[];
-  conditions?: string[];
-  [key: string]: unknown;
-}
-
-// Cache for loaded workflows and checklists
+// Cache for loaded workflows
 let workflowCache: Record<string, Workflow> | null = null;
-let checklistCache: Record<string, Checklist> | null = null;
 
 // Simple logging interface
 interface Logger {
@@ -218,107 +205,5 @@ export function loadAllWorkflows(): Record<string, Workflow> {
     // Graceful fallback to minimal hardcoded workflows
     workflowCache = getFallbackWorkflows();
     return workflowCache;
-  }
-}
-
-/**
- * Clear the workflow cache (useful for testing or hot reloading)
- */
-export function clearWorkflowCache(): void {
-  workflowCache = null;
-}
-
-/**
- * Load a single YAML checklist file
- */
-function loadChecklistFile(
-  filePath: string,
-  categoryFromPath?: string
-): Checklist | null {
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const data = yaml.load(content) as ChecklistYamlData;
-
-    // Convert YAML structure to our Checklist interface
-    const checklist: Checklist = {
-      name: data.name ?? path.basename(filePath, '.yaml'),
-      description: data.description ?? '',
-      triggers: data.triggers ?? [],
-      items: data.items ?? [],
-      dependencies: data.dependencies ?? [],
-      projectTypes: data.project_types ?? data.projectTypes ?? ['generic'],
-      conditions: data.conditions ?? [],
-      ...(categoryFromPath && { category: categoryFromPath }),
-    };
-
-    return checklist;
-  } catch (error) {
-    console.error(`Error loading checklist from ${filePath}:`, error);
-    return null;
-  }
-}
-
-/**
- * Recursively load all YAML checklist files from a directory
- */
-function loadChecklistsFromDirectory(
-  dirPath: string,
-  basePath?: string
-): Record<string, Checklist> {
-  const checklists: Record<string, Checklist> = {};
-
-  if (!fs.existsSync(dirPath)) {
-    return checklists;
-  }
-
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(dirPath, entry.name);
-
-    if (entry.isDirectory()) {
-      // Recursively load from subdirectories
-      const subChecklists = loadChecklistsFromDirectory(fullPath, basePath ?? dirPath);
-      Object.assign(checklists, subChecklists);
-    } else if (entry.isFile() && entry.name.endsWith('.yaml')) {
-      // Load individual checklist file
-      const checklist = loadChecklistFile(fullPath);
-      if (checklist) {
-        checklists[checklist.name] = checklist;
-      }
-    }
-  }
-
-  return checklists;
-}
-
-/**
- * Load all checklists from YAML files
- */
-export function loadAllChecklists(quiet = false): Record<string, Checklist> {
-  if (checklistCache) {
-    return checklistCache;
-  }
-
-  try {
-    const dataPath = getDataPath();
-    const checklistsPath = path.join(dataPath, 'checklists');
-
-    if (!quiet) {
-      console.log(`Loading checklists from: ${checklistsPath}`);
-    }
-
-    checklistCache = loadChecklistsFromDirectory(checklistsPath);
-
-    const count = Object.keys(checklistCache).length;
-    if (!quiet) {
-      console.log(`Loaded ${count} checklists from YAML files`);
-    }
-
-    return checklistCache;
-  } catch (error) {
-    console.error('Error loading checklists:', error);
-    checklistCache = {};
-    return checklistCache;
   }
 }

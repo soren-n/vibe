@@ -11,17 +11,6 @@ export {
   handleValidate,
 } from './core-commands';
 
-// MCP Commands
-export {
-  handleMCPStart,
-  handleMCPStatus,
-  handleMCPNext,
-  handleMCPBack,
-  handleMCPBreak,
-  handleMCPRestart,
-  handleMCPList,
-} from './mcp-commands';
-
 // Workflow Commands
 export {
   handleWorkflowList,
@@ -29,12 +18,14 @@ export {
   handleWorkflowValidate,
 } from './workflow-commands';
 
-// Checklist Commands
+// Plan Commands
 export {
-  handleChecklistList,
-  handleChecklistShow,
-  handleChecklistRun,
-} from './checklist-commands';
+  handlePlanAdd,
+  handlePlanClear,
+  handlePlanComplete,
+  handlePlanExpand,
+  handlePlanStatus,
+} from './plan-commands';
 
 // Lint Commands
 export { handleLintRun } from './lint-commands';

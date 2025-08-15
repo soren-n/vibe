@@ -10,7 +10,7 @@ This directory contains complete schemas for all Vibe data structures.
 
 ## Data Model Schemas
 
-- [Session State Schema](session-schema.md) - Session persistence format
+- [Plan Schema](plan-schema.md) - Plan persistence format
 - [Registry Schema](registry-schema.md) - Workflow registry data structure
 
 ## Validation

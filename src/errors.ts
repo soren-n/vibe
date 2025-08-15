@@ -8,7 +8,6 @@
 export enum ErrorCategory {
   VALIDATION = 'validation',
   WORKFLOW = 'workflow',
-  SESSION = 'session',
   FILESYSTEM = 'filesystem',
   CONFIGURATION = 'configuration',
   SYSTEM = 'system',
@@ -23,7 +22,6 @@ export enum ErrorSeverity {
 interface ErrorContext {
   operation?: string;
   resource?: string;
-  sessionId?: string;
   workflowName?: string;
   details?: Record<string, unknown>;
   timestamp?: string;
@@ -131,55 +129,6 @@ class WorkflowExecutionError extends WorkflowError {
   constructor(message: string, context: ErrorContext = {}) {
     super(`Workflow execution failed: ${message}`, context, true);
     this.code = 'WORKFLOW_EXECUTION_FAILED';
-  }
-}
-
-// Session Errors
-class SessionError extends VibeError {
-  constructor(message: string, context: ErrorContext = {}, retryable = false) {
-    super(
-      message,
-      ErrorCategory.SESSION,
-      ErrorSeverity.HIGH,
-      'SESSION_ERROR',
-      context,
-      retryable
-    );
-  }
-}
-
-export class SessionNotFoundError extends SessionError {
-  constructor(sessionId: string, context: ErrorContext = {}) {
-    super(`Session not found: ${sessionId}`, { ...context, sessionId });
-    this.code = 'SESSION_NOT_FOUND';
-  }
-}
-
-class SessionStateError extends SessionError {
-  constructor(message: string, context: ErrorContext = {}) {
-    super(`Session state error: ${message}`, context);
-    this.code = 'SESSION_STATE_INVALID';
-  }
-}
-
-class SessionPersistenceError extends SessionError {
-  constructor(
-    operation: string,
-    sessionId: string,
-    cause: Error,
-    context: ErrorContext = {}
-  ) {
-    super(
-      `Session ${operation} failed for ${sessionId}: ${cause.message}`,
-      {
-        ...context,
-        sessionId,
-        operation,
-        details: { cause: cause.message },
-      },
-      true
-    );
-    this.code = 'SESSION_PERSISTENCE_FAILED';
   }
 }
 

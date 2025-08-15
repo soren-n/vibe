@@ -13,12 +13,12 @@ import {
 import { WorkflowOrchestrator } from './orchestrator.js';
 import { VibeConfigImpl } from './config.js';
 import { ProjectLinter, createLintConfig } from './lint.js';
+import type { PlanItem } from './plan.js';
 import {
-  ChecklistHandlers,
   EnvironmentHandlers,
   LintHandlers,
+  PlanHandlers,
   QueryHandlers,
-  SessionHandlers,
   WorkflowHandlers,
 } from './mcp-server/index.js';
 
@@ -29,9 +29,8 @@ class VibeMCPServer {
 
   // Handler instances
   private workflowHandlers: WorkflowHandlers;
-  private checklistHandlers: ChecklistHandlers;
+  private planHandlers: PlanHandlers;
   private lintHandlers: LintHandlers;
-  private sessionHandlers: SessionHandlers;
   private queryHandlers: QueryHandlers;
   private environmentHandlers: EnvironmentHandlers;
 
@@ -77,10 +76,9 @@ class VibeMCPServer {
     try {
       // Initialize handlers
       this.workflowHandlers = new WorkflowHandlers(this.orchestrator);
-      this.checklistHandlers = new ChecklistHandlers();
+      this.planHandlers = new PlanHandlers();
       this.lintHandlers = new LintHandlers(this.linter);
-      this.sessionHandlers = new SessionHandlers();
-      this.queryHandlers = new QueryHandlers(this.orchestrator);
+      this.queryHandlers = new QueryHandlers();
       this.environmentHandlers = new EnvironmentHandlers();
     } catch (error) {
       throw new Error(
@@ -102,97 +100,69 @@ class VibeMCPServer {
     // Define all available MCP tools
     const tools: Tool[] = [
       {
-        name: 'start_workflow',
-        description: 'Start a new workflow session for step-by-step execution',
+        name: 'get_plan_status',
+        description: 'Get current plan status showing all items and statistics',
         inputSchema: {
           type: 'object',
-          properties: {
-            prompt: {
-              type: 'string',
-              description: 'The prompt to start a workflow for',
-            },
-            interactive: {
-              type: 'boolean',
-              description: 'Whether to run in interactive mode',
-              default: false,
-            },
-          },
-          required: ['prompt'],
+          properties: {},
         },
       },
       {
-        name: 'get_workflow_status',
-        description: 'Get current status of a workflow session',
+        name: 'add_plan_item',
+        description: 'Add an item to the plan',
         inputSchema: {
           type: 'object',
           properties: {
-            session_id: {
+            text: {
               type: 'string',
-              description: 'The workflow session ID',
+              description: 'Text description of the task',
+            },
+            parent_id: {
+              type: 'string',
+              description: 'Parent item ID for sub-tasks (optional for root items)',
             },
           },
-          required: ['session_id'],
+          required: ['text'],
         },
       },
       {
-        name: 'advance_workflow',
-        description: 'Mark current step as complete and advance to next step',
+        name: 'complete_plan_item',
+        description: 'Mark a plan item as complete',
         inputSchema: {
           type: 'object',
           properties: {
-            session_id: {
+            item_id: {
               type: 'string',
-              description: 'The workflow session ID',
+              description: 'ID of the item to complete',
             },
           },
-          required: ['session_id'],
+          required: ['item_id'],
         },
       },
       {
-        name: 'back_workflow',
-        description: 'Go back to the previous step in the current workflow',
+        name: 'expand_plan_item',
+        description: 'Expand a plan item by adding multiple sub-tasks',
         inputSchema: {
           type: 'object',
           properties: {
-            session_id: {
+            item_id: {
               type: 'string',
-              description: 'The workflow session ID',
+              description: 'ID of the item to expand',
+            },
+            sub_tasks: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              description: 'Array of sub-task descriptions',
             },
           },
-          required: ['session_id'],
+          required: ['item_id', 'sub_tasks'],
         },
       },
       {
-        name: 'break_workflow',
-        description: 'Break out of current workflow and return to parent workflow',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            session_id: {
-              type: 'string',
-              description: 'The workflow session ID',
-            },
-          },
-          required: ['session_id'],
-        },
-      },
-      {
-        name: 'restart_workflow',
-        description: 'Restart the session from the beginning',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            session_id: {
-              type: 'string',
-              description: 'The workflow session ID',
-            },
-          },
-          required: ['session_id'],
-        },
-      },
-      {
-        name: 'list_workflow_sessions',
-        description: 'List all active workflow sessions',
+        name: 'clear_plan',
+        description: 'Clear the entire plan, removing all items',
         inputSchema: {
           type: 'object',
           properties: {},
@@ -217,42 +187,6 @@ class VibeMCPServer {
               description: 'The type of project to initialize',
             },
           },
-        },
-      },
-      {
-        name: 'list_checklists',
-        description: 'List available checklists',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-        },
-      },
-      {
-        name: 'get_checklist',
-        description: 'Get details for a specific checklist',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              description: 'Name of the checklist',
-            },
-          },
-          required: ['name'],
-        },
-      },
-      {
-        name: 'run_checklist',
-        description: 'Run a checklist',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              description: 'Name of the checklist to run',
-            },
-          },
-          required: ['name'],
         },
       },
       {
@@ -288,42 +222,8 @@ class VibeMCPServer {
         },
       },
       {
-        name: 'monitor_sessions',
-        description: 'Get session health monitoring data',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-        },
-      },
-      {
-        name: 'cleanup_stale_sessions',
-        description: 'Clean up sessions that have been inactive for too long',
-        inputSchema: {
-          type: 'object',
-          properties: {},
-        },
-      },
-      {
-        name: 'analyze_agent_response',
-        description: 'Analyze an agent response for patterns',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            session_id: {
-              type: 'string',
-              description: 'The workflow session ID',
-            },
-            response_text: {
-              type: 'string',
-              description: 'The agent response text to analyze',
-            },
-          },
-          required: ['session_id', 'response_text'],
-        },
-      },
-      {
         name: 'query_workflows',
-        description: 'Query available workflows by pattern or category',
+        description: 'Query available workflows by pattern or category (guidance only)',
         inputSchema: {
           type: 'object',
           properties: {
@@ -336,55 +236,6 @@ class VibeMCPServer {
               description: 'Category to filter workflows',
             },
           },
-        },
-      },
-      {
-        name: 'query_checklists',
-        description: 'Query available checklists by pattern',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            pattern: {
-              type: 'string',
-              description: 'Search pattern to filter checklists',
-            },
-          },
-        },
-      },
-      {
-        name: 'add_workflow_to_session',
-        description: 'Add a workflow to an existing session (nested execution)',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            session_id: {
-              type: 'string',
-              description: 'The session ID to add the workflow to',
-            },
-            workflow_name: {
-              type: 'string',
-              description: 'Name of the workflow to add',
-            },
-          },
-          required: ['session_id', 'workflow_name'],
-        },
-      },
-      {
-        name: 'add_checklist_to_session',
-        description: 'Add a checklist to an existing session (nested execution)',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            session_id: {
-              type: 'string',
-              description: 'The session ID to add the checklist to',
-            },
-            checklist_name: {
-              type: 'string',
-              description: 'Name of the checklist to add',
-            },
-          },
-          required: ['session_id', 'checklist_name'],
         },
       },
     ];
@@ -403,35 +254,31 @@ class VibeMCPServer {
         let result: unknown;
 
         switch (name) {
-          case 'start_workflow':
-            result = await this.startWorkflow(
-              args?.['prompt'] as string,
-              args?.['interactive'] as boolean
+          // Plan operations
+          case 'get_plan_status':
+            result = await this.getPlanStatus();
+            break;
+
+          case 'add_plan_item':
+            result = await this.addPlanItem(
+              args?.['text'] as string,
+              args?.['parent_id'] as string
             );
             break;
 
-          case 'get_workflow_status':
-            result = await this.getWorkflowStatus(args?.['session_id'] as string);
+          case 'complete_plan_item':
+            result = await this.completePlanItem(args?.['item_id'] as string);
             break;
 
-          case 'advance_workflow':
-            result = await this.advanceWorkflow(args?.['session_id'] as string);
+          case 'expand_plan_item':
+            result = await this.expandPlanItem(
+              args?.['item_id'] as string,
+              args?.['sub_tasks'] as string[]
+            );
             break;
 
-          case 'back_workflow':
-            result = await this.backWorkflow(args?.['session_id'] as string);
-            break;
-
-          case 'break_workflow':
-            result = await this.breakWorkflow(args?.['session_id'] as string);
-            break;
-
-          case 'restart_workflow':
-            result = await this.restartWorkflow(args?.['session_id'] as string);
-            break;
-
-          case 'list_workflow_sessions':
-            result = await this.listWorkflowSessions();
+          case 'clear_plan':
+            result = await this.clearPlan();
             break;
 
           case 'check_vibe_environment':
@@ -440,18 +287,6 @@ class VibeMCPServer {
 
           case 'init_vibe_project':
             result = await this.initVibeProject(args?.['project_type'] as string);
-            break;
-
-          case 'list_checklists':
-            result = await this.listChecklists();
-            break;
-
-          case 'get_checklist':
-            result = await this.getChecklist(args?.['name'] as string);
-            break;
-
-          case 'run_checklist':
-            result = await this.runChecklist(args?.['name'] as string);
             break;
 
           case 'lint_project':
@@ -465,43 +300,10 @@ class VibeMCPServer {
             );
             break;
 
-          case 'monitor_sessions':
-            result = await this.monitorSessions();
-            break;
-
-          case 'cleanup_stale_sessions':
-            result = await this.cleanupStaleSessions();
-            break;
-
-          case 'analyze_agent_response':
-            result = await this.analyzeAgentResponse(
-              args?.['session_id'] as string,
-              args?.['response_text'] as string
-            );
-            break;
-
           case 'query_workflows':
             result = await this.queryWorkflows(
               args?.['pattern'] as string,
               args?.['category'] as string
-            );
-            break;
-
-          case 'query_checklists':
-            result = await this.queryChecklists(args?.['pattern'] as string);
-            break;
-
-          case 'add_workflow_to_session':
-            result = await this.addWorkflowToSession(
-              args?.['session_id'] as string,
-              args?.['workflow_name'] as string
-            );
-            break;
-
-          case 'add_checklist_to_session':
-            result = await this.addChecklistToSession(
-              args?.['session_id'] as string,
-              args?.['checklist_name'] as string
             );
             break;
 
@@ -538,59 +340,73 @@ class VibeMCPServer {
     });
   }
 
-  // Tool implementation methods - delegate to handlers
-  private async startWorkflow(
-    prompt: string,
-    interactive: boolean = false
+  // Plan management methods
+  private async getPlanStatus(): Promise<{
+    success: boolean;
+    plan?: {
+      items: PlanItem[];
+      stats: {
+        totalItems: number;
+        completedItems: number;
+        pendingItems: number;
+        completionRate: number;
+      };
+      lastModified: string;
+      createdAt: string;
+    };
+    error?: string;
+  }> {
+    return this.planHandlers.getPlanStatus();
+  }
+
+  private async addPlanItem(
+    text: string,
+    parentId?: string
   ): Promise<{
     success: boolean;
-    session_id: string;
-    workflow: unknown;
-    current_step: unknown;
+    item?: {
+      id: string;
+      text: string;
+      status: string;
+      createdAt: string;
+    };
+    message?: string;
+    error?: string;
   }> {
-    return this.workflowHandlers.startWorkflow(prompt, interactive);
+    return this.planHandlers.addPlanItem(text, parentId);
   }
 
-  private async getWorkflowStatus(sessionId: string): Promise<{
+  private async completePlanItem(itemId: string): Promise<{
     success: boolean;
-    status: unknown;
+    message?: string;
+    error?: string;
   }> {
-    return this.workflowHandlers.getWorkflowStatus(sessionId);
+    return this.planHandlers.completePlanItem(itemId);
   }
 
-  private async advanceWorkflow(sessionId: string): Promise<{
+  private async expandPlanItem(
+    itemId: string,
+    subItems: string[]
+  ): Promise<{
     success: boolean;
-    result?: unknown;
+    addedItems?: {
+      id: string;
+      text: string;
+      status: string;
+      createdAt: string;
+    }[];
+    message?: string;
+    error?: string;
   }> {
-    return this.workflowHandlers.advanceWorkflow(sessionId);
+    return this.planHandlers.expandPlanItem(itemId, subItems);
   }
 
-  private async backWorkflow(sessionId: string): Promise<{
+  private async clearPlan(): Promise<{
     success: boolean;
-    result?: unknown;
+    message?: string;
+    error?: string;
   }> {
-    return this.workflowHandlers.backWorkflow(sessionId);
-  }
-
-  private async breakWorkflow(sessionId: string): Promise<{
-    success: boolean;
-    result?: unknown;
-  }> {
-    return this.workflowHandlers.breakWorkflow(sessionId);
-  }
-
-  private async restartWorkflow(sessionId: string): Promise<{
-    success: boolean;
-    result?: unknown;
-  }> {
-    return this.workflowHandlers.restartWorkflow(sessionId);
-  }
-
-  private async listWorkflowSessions(): Promise<{
-    success: boolean;
-    sessions: unknown;
-  }> {
-    return this.workflowHandlers.listWorkflowSessions();
+    return this.planHandlers.clearPlan();
   }
 
   private async checkVibeEnvironment(): Promise<{
@@ -606,29 +422,6 @@ class VibeMCPServer {
     project_type?: string;
   }> {
     return this.environmentHandlers.initVibeProject(projectType);
-  }
-
-  private async listChecklists(): Promise<{
-    success: boolean;
-    checklists: unknown;
-  }> {
-    return this.checklistHandlers.listChecklists();
-  }
-
-  private async getChecklist(name: string): Promise<{
-    success: boolean;
-    checklist: unknown;
-  }> {
-    return this.checklistHandlers.getChecklist(name);
-  }
-
-  private async runChecklist(name: string): Promise<{
-    success: boolean;
-    name: string;
-    status: string;
-    items: Array<{ item: string; status: string }>;
-  }> {
-    return this.checklistHandlers.runChecklist(name);
   }
 
   private async lintProject(fix: boolean = false): Promise<{
@@ -648,38 +441,6 @@ class VibeMCPServer {
     return this.lintHandlers.lintText(text, type);
   }
 
-  private async monitorSessions(): Promise<{
-    success: boolean;
-    monitoring_data: {
-      active_sessions: number;
-      dormant_sessions: number;
-      alerts: unknown[];
-    };
-  }> {
-    return this.sessionHandlers.monitorSessions();
-  }
-
-  private async cleanupStaleSessions(): Promise<{
-    success: boolean;
-    cleaned_sessions: number;
-  }> {
-    return this.sessionHandlers.cleanupStaleSessions();
-  }
-
-  private async analyzeAgentResponse(
-    sessionId: string,
-    responseText: string
-  ): Promise<{
-    success: boolean;
-    session_id: string;
-    analysis: {
-      patterns_detected: unknown[];
-      suggestions: unknown[];
-    };
-  }> {
-    return this.sessionHandlers.analyzeAgentResponse(sessionId, responseText);
-  }
-
   private async queryWorkflows(
     pattern?: string,
     category?: string
@@ -693,47 +454,7 @@ class VibeMCPServer {
     }[];
     error?: string;
   }> {
-    return this.queryHandlers.queryWorkflows(pattern, category);
-  }
-
-  private async queryChecklists(pattern?: string): Promise<{
-    success: boolean;
-    checklists?: {
-      name: string;
-      description: string | undefined;
-      triggers: string[];
-    }[];
-    error?: string;
-  }> {
-    return this.queryHandlers.queryChecklists(pattern);
-  }
-
-  private async addWorkflowToSession(
-    sessionId: string,
-    workflowName: string
-  ): Promise<{
-    success: boolean;
-    session_id?: string;
-    message?: string;
-    current_step?: unknown;
-    workflow_stack?: string[];
-    error?: string;
-  }> {
-    return this.queryHandlers.addWorkflowToSession(sessionId, workflowName);
-  }
-
-  private async addChecklistToSession(
-    sessionId: string,
-    checklistName: string
-  ): Promise<{
-    success: boolean;
-    session_id?: string;
-    message?: string;
-    current_step?: unknown;
-    workflow_stack?: string[];
-    error?: string;
-  }> {
-    return this.queryHandlers.addChecklistToSession(sessionId, checklistName);
+    return this.workflowHandlers.queryWorkflows(pattern, category);
   }
 
   async run(): Promise<void> {

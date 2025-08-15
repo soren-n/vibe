@@ -2,12 +2,18 @@
 
 <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 20px 0;">
   <img src="images/icon.png" alt="Vibe Guide Icon" width="256" height="256">
-  <p style="margin-top: 16px; max-width: 256px;">A Model Context Protocol server that provides structured workflow guidance for development projects.</p>
+  <p style="margin-top: 16px; max-width: 256px;">A Model Context Protocol server that provides a persistent planning system and workflow guidance for AI agents.</p>
 </div>
 
 ## Overview
 
-Vibe analyzes natural language prompts and provides appropriate development workflows, checklists, and project guidance. It operates as an MCP server that integrates with AI agents in VS Code.
+Vibe is a planning tool designed for AI agents that provides:
+
+1. **Persistent Plan Management**: A nested todo list system that serves as long-term memory for agents
+2. **Workflow Guidance**: 77+ searchable workflows that provide step-by-step inspiration for development tasks
+3. **MCP Integration**: Seamless integration with AI agents via Model Context Protocol
+
+Agents can break down complex problems into manageable tasks, create nested subtasks on the fly, and maintain persistent plans that survive across different work periods.
 
 ## Installation
 
@@ -33,37 +39,46 @@ Configure Vibe as an MCP server in VS Code by creating `.vscode/mcp.json` in you
 
 Once configured, AI agents can use Vibe to:
 
-- Analyze project requirements and suggest appropriate workflows
-- Provide step-by-step guidance for development tasks
-- Run quality checklists for code review and validation
-- Initialize project configurations
-- Monitor workflow progress and session state
+- **Manage persistent plans**: Add, complete, and break down tasks into subtasks
+- **Search workflow guidance**: Find relevant workflows for inspiration and best practices
+- **Track progress**: Monitor completion status and maintain context across work periods
+- **Plan dynamically**: Create nested todo lists that can be expanded to arbitrary detail
 
 Vibe automatically detects project type and adapts its recommendations accordingly.
 
 ## Features
 
-- **MCP server integration** for AI agent compatibility
-- **Pattern-based prompt analysis** for workflow recommendations
-- **Structured workflow guidance** with session management
-- **Nested workflow execution** - agents can dynamically add workflows and checklists to running sessions
-- **Workflow discovery** - query available workflows and checklists by pattern or category
-- **Persistent session state** - work continues across agent runs with full context preservation
+- **Persistent Plan System**: Nested todo lists that persist automatically
+- **Workflow Guidance Library**: 77+ searchable workflows covering development, testing, documentation, and more
+- **MCP Server Integration**: Native support for AI agent communication
+- **Dynamic Planning**: Break down tasks into subtasks on the fly
 - **Project type detection** and adaptation
-- **Quality checklist validation**
+- **Quality guidance** for development best practices
 - **Cross-platform compatibility**
 - **Configurable workflow definitions**
 - **Local execution** - runs safely on user's machine, no server required
 
-### Nested Workflow Capabilities
+## Core MCP Tools
 
-Agents can now:
+Agents have access to these key tools:
 
-- **Query workflows**: `query_workflows(pattern, category)` to discover relevant workflows
-- **Query checklists**: `query_checklists(pattern)` to find validation checklists
-- **Add workflows to sessions**: `add_workflow_to_session(session_id, workflow_name)` for dynamic composition
-- **Add checklists to sessions**: `add_checklist_to_session(session_id, checklist_name)` for nested validation
-- **Build execution trees**: Create nested workflow hierarchies that persist across agent runs
+### Plan Management
+
+- **`get_plan_status()`**: View current plan status with completion statistics
+- **`add_plan_item(text, parent_id?)`**: Add new tasks or subtasks to the plan
+- **`complete_plan_item(item_id)`**: Mark tasks as complete
+- **`expand_plan_item(item_id, sub_tasks[])`**: Break down tasks into multiple subtasks
+- **`clear_plan()`**: Start fresh with a clean plan
+
+### Workflow Guidance
+
+- **`query_workflows(pattern?, category?)`**: Search available workflows for inspiration
+- **`run <workflow_name>`**: Display detailed guidance for specific workflows
+
+### Project Support
+
+- **`check_vibe_environment()`**: Validate Vibe configuration
+- **`lint_project(fix?)`**: Run project quality checks
 - **Reduce token usage**: Follow structured plans instead of thinking from scratch
 
 This enables agents to compose complex workflows dynamically while maintaining persistent progress tracking.

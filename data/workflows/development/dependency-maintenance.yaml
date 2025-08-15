@@ -8,8 +8,7 @@ triggers:
   - update dependencies
   - dependency lifecycle
 steps:
-  - 'Set up automated monitoring: Configure Dependabot, Renovate, or similar tools for
-    update notifications.'
+  - 'Set up automated monitoring: Configure dependency monitoring tools for update notifications.'
   - 'Create update schedule: Establish regular intervals for dependency review (monthly/quarterly).'
   - 'Categorize dependencies: Group dependencies by criticality (core, development,
     optional).'
@@ -27,6 +26,5 @@ steps:
   - 'Backup before updates: Ensure reliable rollback mechanism before applying updates.'
   - 'Communicate changes: Inform team about significant dependency changes and impacts.'
 dependencies: []
-project_types:
-  - python
+project_types: []
 conditions: []

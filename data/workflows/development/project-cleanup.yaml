@@ -1,0 +1,21 @@
+name: 'project-cleanup'
+description: 'Regular maintenance workflow to keep the project clean and organized'
+category: 'development'
+triggers:
+  - 'cleanup project'
+  - 'maintenance workflow'
+  - 'clean project'
+  - 'project maintenance'
+projectTypes: ['all']
+steps:
+  - 'Check for debug files in project root (debug-*.js, debug-*.ts)'
+  - 'Look for misplaced test files in project root (test-*.js, test-*.ts)'
+  - 'Remove test session artifacts from tests/ directory'
+  - 'Clean up system files (.DS_Store, Thumbs.db)'
+  - 'Review and remove legacy configuration files'
+  - 'Check for temporary files (*.tmp, *.temp, *.bak, *.orig)'
+  - 'Verify .gitignore patterns are comprehensive'
+  - 'Update documentation with any new cleanup patterns'
+  - "Run quality checks to ensure cleanup didn't break anything"
+estimatedTime: '15-30 minutes'
+dependencies: []

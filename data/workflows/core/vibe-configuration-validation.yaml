@@ -1,0 +1,19 @@
+dependencies: []
+description: Checklist to verify Vibe configuration is valid and properly formatted.
+name: vibe-configuration-validation
+project_types: []
+steps:
+  - 'Ensure: .vibe.yaml file exists in project root'
+  - 'YAML syntax: valid and parseable'
+  - 'Ensure: vibe check command runs without errors'
+  - 'Protocol version: specified and supported'
+  - 'Project type: correctly identified'
+  - 'Ensure: Configuration follows Vibe schema requirements'
+  - 'No deprecated configuration options: used'
+  - 'Workflow triggers: properly formatted'
+  - 'Vibe session directories (.vibe/ and .vibe_sessions/): added to .gitignore'
+triggers:
+  - config.*validated
+  - vibe.*config.*check
+  - validate.*vibe.*complete
+  - configuration.*validated

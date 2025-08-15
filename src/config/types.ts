@@ -13,22 +13,6 @@ export interface LintConfig {
   unprofessionalPatterns: string[];
 }
 
-export interface SessionConfig {
-  maxSessions: number;
-  sessionTimeout: number;
-  sessionDir?: string; // Directory for session storage (default: .vibe/sessions)
-}
-
-export interface WorkflowConfig {
-  enabled: boolean;
-  priority: number;
-  triggers?: string[];
-  description?: string;
-  steps?: string[];
-  commands?: string[]; // Legacy format
-  dependencies?: string[];
-}
-
 export interface ProjectTypeConfig {
   workflows: string[];
   tools: string[];

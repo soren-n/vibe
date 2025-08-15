@@ -1,91 +1,95 @@
 import type { WorkflowOrchestrator } from '../orchestrator.js';
 
-interface WorkflowResult {
+interface WorkflowQueryResult {
   success: boolean;
-  result?: unknown;
+  workflows?: {
+    name: string;
+    description: string;
+    category: string | undefined;
+    triggers: string[];
+    steps?: string[];
+  }[];
+  error?: string;
 }
 
-interface WorkflowStatusResult {
+interface WorkflowGuidanceResult {
   success: boolean;
-  status: unknown;
-}
-
-interface StartWorkflowResult {
-  success: boolean;
-  session_id: string;
-  workflow: unknown;
-  current_step: unknown;
-}
-
-interface ListSessionsResult {
-  success: boolean;
-  sessions: unknown;
+  workflow?: {
+    name: string;
+    description: string;
+    steps: string[];
+    guidance: string;
+  };
+  error?: string;
 }
 
 export class WorkflowHandlers {
   constructor(private orchestrator: WorkflowOrchestrator) {}
 
-  async startWorkflow(
-    prompt: string,
-    _interactive: boolean = false
-  ): Promise<StartWorkflowResult> {
-    const result = this.orchestrator.startSession(prompt);
-    if (!result.success) {
-      throw new Error(result.error ?? 'Failed to start session');
+  async queryWorkflows(pattern?: string, category?: string): Promise<WorkflowQueryResult> {
+    try {
+      const allWorkflows = this.orchestrator.getAllWorkflows();
+      let workflows = Object.values(allWorkflows);
+
+      // Filter by pattern if provided
+      if (pattern) {
+        const lowerPattern = pattern.toLowerCase();
+        workflows = workflows.filter(w =>
+          w.name.toLowerCase().includes(lowerPattern) ||
+          w.description?.toLowerCase().includes(lowerPattern) ||
+          w.triggers?.some(t => t.toLowerCase().includes(lowerPattern))
+        );
+      }
+
+      // Filter by category if provided
+      if (category) {
+        workflows = workflows.filter(w => w.category === category);
+      }
+
+      return {
+        success: true,
+        workflows: workflows.map(w => ({
+          name: w.name,
+          description: w.description ?? '',
+          category: w.category,
+          triggers: w.triggers ?? [],
+          steps: w.steps?.map(step => typeof step === 'string' ? step : step.step_text ?? step.command ?? 'Step')
+        }))
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      };
     }
-    return {
-      success: true,
-      session_id: result.session_id ?? '',
-      workflow: result.workflow_stack,
-      current_step: result.current_step,
-    };
   }
 
-  async getWorkflowStatus(sessionId: string): Promise<WorkflowStatusResult> {
-    const status = this.orchestrator.getSessionStatus(sessionId);
-    return {
-      success: true,
-      status,
-    };
-  }
+  async getWorkflowGuidance(name: string): Promise<WorkflowGuidanceResult> {
+    try {
+      const allWorkflows = this.orchestrator.getAllWorkflows();
+      const workflow = Object.values(allWorkflows).find(w => w.name === name);
 
-  async advanceWorkflow(sessionId: string): Promise<WorkflowResult> {
-    const result = this.orchestrator.advanceSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
-  }
+      if (!workflow) {
+        return {
+          success: false,
+          error: `Workflow '${name}' not found`
+        };
+      }
 
-  async backWorkflow(sessionId: string): Promise<WorkflowResult> {
-    const result = this.orchestrator.backSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
-  }
-
-  async breakWorkflow(sessionId: string): Promise<WorkflowResult> {
-    const result = this.orchestrator.breakSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
-  }
-
-  async restartWorkflow(sessionId: string): Promise<WorkflowResult> {
-    const result = this.orchestrator.restartSession(sessionId);
-    return {
-      success: true,
-      result,
-    };
-  }
-
-  async listWorkflowSessions(): Promise<ListSessionsResult> {
-    const sessions = this.orchestrator.sessionManagerInstance.listSessions();
-    return {
-      success: true,
-      sessions,
-    };
+      return {
+        success: true,
+        workflow: {
+          name: workflow.name,
+          description: workflow.description ?? '',
+          steps: workflow.steps?.map(step => typeof step === 'string' ? step : step.step_text ?? step.command ?? 'Step') ?? [],
+          guidance: `This workflow provides guidance for: ${workflow.description}. Use these steps as inspiration for your development process.`
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      };
+    }
   }
 }
